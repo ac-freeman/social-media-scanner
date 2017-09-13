@@ -30,5 +30,9 @@ dependencies {
     compile 'com.android.support:design:26.0.0'
     compile 'com.android.support:support-vector-drawable:26.0.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.google.zxing:core:3.3.0'
+    compile 'com.google.zxing:android-core:3.3.0'
+    compile 'com.google.zxing:android-integration:3.3.0'
+    compile 'com.journeyapps:zxing-android-embedded:3.0.2@aar'
     testCompile 'junit:junit:4.12'
 }
