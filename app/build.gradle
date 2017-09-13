@@ -34,5 +34,6 @@ dependencies {
     compile 'com.google.zxing:android-core:3.3.0'
     compile 'com.google.zxing:android-integration:3.3.0'
     compile 'com.journeyapps:zxing-android-embedded:3.5.0'
+    compile 'me.dm7.barcodescanner:zxing:1.9.8'
     testCompile 'junit:junit:4.12'
 }
