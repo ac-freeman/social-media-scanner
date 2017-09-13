@@ -71,10 +71,31 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
     private TextView mTextMessage;
     private ImageView mImageView;
-    private CaptureManager capture;
-    private DecoratedBarcodeView barcodeScannerView;
+    private ZXingScannerView mScannerView;
+    private boolean camera;
 
+    /**
+     * Called when activity begins
+     * Creates basic layout with bottom navigation
+     * @param savedInstanceState
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_main);
+
+        mTextMessage = findViewById(R.id.message);
+        mImageView = new ImageView(this);
+        BottomNavigationView navigation = findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        navigation.setSelectedItemId(R.id.navigation_friends);
+        showFriends();
+    }
+
+    /**
+     * Event listener for the bottom navigation bar
+     */
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -84,39 +105,39 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             switch (item.getItemId()) {
                 case R.id.navigation_show:
                     frameLayout.removeView(mImageView);
+                    camera = false;
                     showCode();
 
                     return true;
+
                 case R.id.navigation_friends:
                     frameLayout.removeAllViews();
-                    mTextMessage.setText(R.string.title_friends);
+                    camera = false;
+                    showFriends();
+
                     return true;
+
                 case R.id.navigation_camera:
                     frameLayout.removeAllViews();
-                    scanCode2();
+                    camera = true;
+                    scanCode();
 
                     return true;
             }
             return false;
         }
-
     };
 
+    /**
+     * Generating and displaying QR code
+     * Uses ZXing
+     */
     private void showCode(){
         QRCodeWriter writer = new QRCodeWriter();
         FrameLayout frameLayout = findViewById(R.id.content);
         try {
-//            int width = mImageView.getWidth();
-//            int height = mImageView.getHeight();
             int width = frameLayout.getWidth();
             int height = frameLayout.getHeight();
-//            BitMatrix bitMatrix = writer.encode("test", BarcodeFormat.QR_CODE, width, height);
-//            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-//            for (int i = 0; i < width; i++) {
-//                for (int j = 0; j < height; j++) {
-//                    bitmap.setPixel(i, j, bitMatrix.get(i, j) ? Color.BLACK: Color.WHITE);
-//                }
-//            }
             MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
             BitMatrix bitMatrix = multiFormatWriter.encode("test", BarcodeFormat.QR_CODE, width, height);
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
@@ -125,29 +146,20 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         } catch (WriterException e) {
             e.printStackTrace();
         }
-        //setting image position
+        //set image position
         mImageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
 
-//adding view to layout
-
-
+        //add view to layout
         frameLayout.addView(mImageView);
-        //setContentView(R.layout.activity_main);
 
     }
 
+    /**
+     * Scanning a new QR code
+     * Uses https://github.com/dm77/barcodescanner
+     */
     private void scanCode(){
-        new IntentIntegrator(this).initiateScan();
-    }
-
-    private void scanCode2(){
-
-
-//        FrameLayout frameLayout = findViewById(R.id.content);
-//        barcodeScannerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.WRAP_CONTENT));
-//        frameLayout.addView(barcodeScannerView);
 
         FrameLayout frameLayout = findViewById(R.id.content);
         mScannerView = new ZXingScannerView(this) {
@@ -160,56 +172,33 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 LinearLayout.LayoutParams.WRAP_CONTENT));
         frameLayout.addView(mScannerView);
 
-        //TEMP
         mScannerView.setResultHandler(this);
         mScannerView.startCamera();
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    private void showFriends(){
+        //TODO: Add scrollable friends page
+        FrameLayout frameLayout = findViewById(R.id.content);
+        mTextMessage = new TextView(this);
+        mTextMessage.setText(R.string.title_friends);
 
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if(result != null) {
-            if(result.getContents() == null) {
-                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-    private ViewGroup contentFrame;
-    private ZXingScannerView mScannerView;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_main);
-
-        mTextMessage = (TextView) findViewById(R.id.message);
-        mImageView = new ImageView(this);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-
-        contentFrame = (ViewGroup) findViewById(R.id.content);
-
+        frameLayout.addView(mTextMessage);
 
     }
 
 
+
+    /**
+     * From https://github.com/dm77/barcodescanner
+     * @param rawResult the raw data contained by the scanned QR code
+     */
     @Override
     public void handleResult(Result rawResult) {
         Toast.makeText(this, "Contents = " + rawResult.getText() +
                 ", Format = " + rawResult.getBarcodeFormat().toString(), Toast.LENGTH_SHORT).show();
 
-        // Note:
-        // * Wait 2 seconds to resume the preview.
-        // * On older devices continuously stopping and resuming camera preview can result in freezing the app.
-        // * I don't know why this is the case but I don't have the time to figure out.
+        // Wait 2 seconds to resume the preview
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -219,11 +208,29 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         }, 2000);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(camera){
+            mScannerView.setResultHandler(this);
+            mScannerView.startCamera();
+        }
 
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(camera) {
+            mScannerView.stopCamera();
+        }
+    }
+
+
+    /**
+     * From https://github.com/dm77/barcodescanner
+     */
     private static class CustomViewFinderView extends ViewFinderView {
-        public static final String TRADE_MARK_TEXT = "ZXing";
-        public static final int TRADE_MARK_TEXT_SIZE_SP = 40;
-        public final Paint PAINT = new Paint();
 
         public CustomViewFinderView(Context context) {
             super(context);
@@ -236,32 +243,12 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         }
 
         private void init() {
-            PAINT.setColor(Color.WHITE);
-            PAINT.setAntiAlias(true);
-            float textPixelSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
-                    TRADE_MARK_TEXT_SIZE_SP, getResources().getDisplayMetrics());
-            PAINT.setTextSize(textPixelSize);
             setSquareViewFinder(true);
         }
 
         @Override
         public void onDraw(Canvas canvas) {
             super.onDraw(canvas);
-            drawTradeMark(canvas);
-        }
-
-        private void drawTradeMark(Canvas canvas) {
-            Rect framingRect = getFramingRect();
-            float tradeMarkTop;
-            float tradeMarkLeft;
-            if (framingRect != null) {
-                tradeMarkTop = framingRect.bottom + PAINT.getTextSize() + 10;
-                tradeMarkLeft = framingRect.left;
-            } else {
-                tradeMarkTop = 10;
-                tradeMarkLeft = canvas.getHeight() - PAINT.getTextSize() - 10;
-            }
-            canvas.drawText(TRADE_MARK_TEXT, tradeMarkLeft, tradeMarkTop, PAINT);
         }
     }
 }
