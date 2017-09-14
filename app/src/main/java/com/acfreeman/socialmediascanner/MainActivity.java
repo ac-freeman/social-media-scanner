@@ -1,6 +1,8 @@
 package com.acfreeman.socialmediascanner;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -29,6 +31,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import me.dm7.barcodescanner.core.IViewFinder;
 import me.dm7.barcodescanner.core.ViewFinderView;
@@ -149,8 +153,35 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         FrameLayout frameLayout = findViewById(R.id.content);
         mTextMessage = new TextView(this);
         mTextMessage.setText(R.string.title_friends);
-//        mTextMessage.setText(readFromFile());
+        List data = readDB();
+        String text = "";
+        for(int x = 0; x < data.size(); x++){
+            text += data.get(x);
+        }
+        mTextMessage.setText(text);
         frameLayout.addView(mTextMessage);
+
+    }
+
+    private List readDB(){
+
+        DBHelper mDbHelper = new DBHelper(getApplicationContext());
+        // Gets the data repository in write mode
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+
+        Cursor  cursor = db.rawQuery("select * from owner",null);
+        List res = new ArrayList<String>();
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                String name = cursor.getString(cursor.getColumnIndex(DBContract.DBOwner.NAME));
+
+                res.add(name);
+                cursor.moveToNext();
+            }
+        }
+
+        return res;
 
     }
 

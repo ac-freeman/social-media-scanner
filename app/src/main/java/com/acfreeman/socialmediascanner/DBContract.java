@@ -12,12 +12,26 @@ public final class DBContract{
     private DBContract() {}
 
     /* Inner class that defines the table contents */
-    public static class DBEntry implements BaseColumns {
+    public static class DBOwner implements BaseColumns {
         public static final String TABLE_NAME = "owner";
         public static final String NAME = "name";
-        public static final String EMAIL = "email";
+
+    }
+
+    //TODO: Specify the phone table
+    public static class DBPhones implements BaseColumns {
+
         public static final String PHONE = "phone";
     }
 
+    //TODO: Specify the email table
+    public static class DBEmails implements BaseColumns {
+
+        public static final String EMAIL = "email";
+    }
+
+    //TODO: Specify the contacts table
+
+    //TODO: Specify the social table
 
 }
