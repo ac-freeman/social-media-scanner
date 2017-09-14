@@ -23,6 +23,13 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import me.dm7.barcodescanner.core.IViewFinder;
 import me.dm7.barcodescanner.core.ViewFinderView;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
@@ -142,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         FrameLayout frameLayout = findViewById(R.id.content);
         mTextMessage = new TextView(this);
         mTextMessage.setText(R.string.title_friends);
-
+//        mTextMessage.setText(readFromFile());
         frameLayout.addView(mTextMessage);
 
     }
@@ -184,6 +191,37 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         if(camera) {
             mScannerView.stopCamera();
         }
+    }
+
+
+    private String readFromFile() {
+
+        String ret = "";
+
+        try {
+            InputStream inputStream = this.openFileInput("ppl.txt");
+
+            if ( inputStream != null ) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString = "";
+                StringBuilder stringBuilder = new StringBuilder();
+
+                while ( (receiveString = bufferedReader.readLine()) != null ) {
+                    stringBuilder.append(receiveString);
+                }
+
+                inputStream.close();
+                ret = stringBuilder.toString();
+            }
+        }
+        catch (FileNotFoundException e) {
+            Log.e("login activity", "File not found: " + e.toString());
+        } catch (IOException e) {
+            Log.e("login activity", "Can not read file: " + e.toString());
+        }
+
+        return ret;
     }
 
 
