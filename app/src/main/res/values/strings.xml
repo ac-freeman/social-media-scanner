@@ -4,4 +4,8 @@
     <string name="title_friends">Friends</string>
     <string name="title_camera">Scan</string>
     <string name="title_qr">Show</string>
+    <string name="title_activity_show">ShowActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>
