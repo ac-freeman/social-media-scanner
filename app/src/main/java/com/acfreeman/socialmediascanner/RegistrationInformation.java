@@ -28,7 +28,7 @@ public class RegistrationInformation extends AppCompatActivity {
         // second argument is the default to use if the preference can't be found
         Boolean firstLaunch = mPrefs.getBoolean(firstLaunchPref, true);
 
-        if(firstLaunch) {
+        //if(firstLaunch) {
 
             setContentView(R.layout.activity_registration_information);
 
@@ -37,7 +37,7 @@ public class RegistrationInformation extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     saveData();
-                    Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+                    Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
                     startActivity(startIntent);
                 }
             });
@@ -45,12 +45,12 @@ public class RegistrationInformation extends AppCompatActivity {
             SharedPreferences.Editor editor = mPrefs.edit();
             editor.putBoolean(firstLaunchPref, false);
             editor.commit(); // Very important to save the preference
-        }
+        //}
 
-        else {
-            Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(startIntent);
-        }
+        //else {
+            //Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+           // startActivity(startIntent);
+        //}
 
 
     }
