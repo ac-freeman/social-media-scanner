@@ -18,9 +18,13 @@ public class LocalDatabase extends SQLiteOpenHelper{
     // Database Name
     private static final String DATABASE_NAME = "userInfo";
     // Contacts table name
+    private static final String TABLE_EMAILS = "Emails";
+    private static final String TABLE_OWNER = "Owner";
+    private static final String TABLE_PHONES = "Phones";
+    private static final String TABLE_Social = "users";
     private static final String TABLE_USERS = "users";
     // Users Table Columns names
-    private static final String KEY_PHONE = "phone";
+    private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
     private static final String KEY_EM_ADDR = "user_email_address";
 
@@ -30,9 +34,11 @@ public class LocalDatabase extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_USERS + "("
-        + KEY_PHONE + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
+        + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
         + KEY_EM_ADDR + " TEXT" + ")";
         db.execSQL(CREATE_CONTACTS_TABLE);
+
+
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -54,12 +60,12 @@ public class LocalDatabase extends SQLiteOpenHelper{
         db.close(); // Closing database connection
     }
     // Getting one user
-    public User getUser(int phone) {
+    public User getUser(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_USERS, new String[]{KEY_PHONE,
-                KEY_NAME, KEY_EM_ADDR}, KEY_PHONE + "=?",
-        new String[]{String.valueOf(phone)}, null, null, null, null);
+        Cursor cursor = db.query(TABLE_USERS, new String[]{KEY_ID,
+                KEY_NAME, KEY_EM_ADDR}, KEY_ID + "=?",
+        new String[]{String.valueOf(id)}, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
@@ -111,14 +117,14 @@ public class LocalDatabase extends SQLiteOpenHelper{
         values.put(KEY_EM_ADDR, user.getAddress());
 
 // updating row
-        return db.update(TABLE_USERS, values, KEY_PHONE + " = ?",
+        return db.update(TABLE_USERS, values, KEY_ID + " = ?",
         new String[]{String.valueOf(user.getId())});
     }
 
     // Deleting a user
     public void deleteUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_USERS, KEY_PHONE + " = ?",
+        db.delete(TABLE_USERS, KEY_ID + " = ?",
         new String[] { String.valueOf(user.getId()) });
         db.close();
     }
