@@ -50,6 +50,7 @@ public class RegistrationInformation extends AppCompatActivity {
         final RelativeLayout.LayoutParams emailParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         final RelativeLayout.LayoutParams buttonParam1 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         final RelativeLayout.LayoutParams buttonParam2 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams submitParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
         //name box
         EditText editName = createEditText("Name", nameParam);
@@ -73,14 +74,29 @@ public class RegistrationInformation extends AppCompatActivity {
         final Button plus2 = createPlusButton(buttonParam2, editEmail);
         buttonParam2.addRule(RelativeLayout.BELOW, editPhone.getId());
 
+        //submit button
+        Button submit = new Button(this);
+        submit.setText("Submit");
+        submitParam.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        submitParam.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
         layout.addView(editName, nameParam);
         layout.addView(editPhone, phoneParam);
         layout.addView(editEmail, emailParam);
         layout.addView(plus1, buttonParam1);
         layout.addView(plus2, buttonParam2);
+        layout.addView(submit, submitParam);
 
         curPhone = editPhone;
         curEmail = editEmail;
+
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(startIntent);
+            }
+        });
 
         plus1.setOnClickListener(new View.OnClickListener() {
             @Override
