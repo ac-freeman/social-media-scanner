@@ -29,7 +29,9 @@ public class RegistrationInformation extends AppCompatActivity {
 
     private int width;
     private int height;
-
+    private EditText curPhone;
+    private EditText curEmail;
+    private RelativeLayout layout;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -39,15 +41,15 @@ public class RegistrationInformation extends AppCompatActivity {
         //get screen dimensions in px
         Display display = getWindowManager().getDefaultDisplay(); Point size = new Point(); display.getSize(size); width = size.x; height = size.y;
 
-        RelativeLayout layout = new RelativeLayout(this);
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        layout = new RelativeLayout(this);
+        final RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         layout.setLayoutParams(layoutParams);
 
         RelativeLayout.LayoutParams nameParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         RelativeLayout.LayoutParams phoneParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        RelativeLayout.LayoutParams emailParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        RelativeLayout.LayoutParams buttonParam1 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        RelativeLayout.LayoutParams buttonParam2 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        final RelativeLayout.LayoutParams emailParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        final RelativeLayout.LayoutParams buttonParam1 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        final RelativeLayout.LayoutParams buttonParam2 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
         //name box
         EditText editName = createEditText("Name", nameParam);
@@ -64,11 +66,11 @@ public class RegistrationInformation extends AppCompatActivity {
         emailParam.addRule(RelativeLayout.BELOW, editPhone.getId());
 
         //first plus button
-        Button plus1 = createPlusButton(buttonParam1, editPhone);
+        final Button plus1 = createPlusButton(buttonParam1, editPhone);
         buttonParam1.addRule(RelativeLayout.BELOW, editName.getId());
 
         //second plus button
-        Button plus2 = createPlusButton(buttonParam2, editEmail);
+        final Button plus2 = createPlusButton(buttonParam2, editEmail);
         buttonParam2.addRule(RelativeLayout.BELOW, editPhone.getId());
 
         layout.addView(editName, nameParam);
@@ -77,13 +79,31 @@ public class RegistrationInformation extends AppCompatActivity {
         layout.addView(plus1, buttonParam1);
         layout.addView(plus2, buttonParam2);
 
-//        nextBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
-//                startActivity(startIntent);
-//            }
-//        });
+        curPhone = editPhone;
+        curEmail = editEmail;
+
+        plus1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RelativeLayout.LayoutParams newPhoneParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                EditText newPhone = createEditText("Phone", newPhoneParam);
+                newPhoneParam.addRule(RelativeLayout.BELOW, curPhone.getId());
+
+                layout.removeView(plus1);
+                buttonParam1.addRule(RelativeLayout.BELOW, curPhone.getId());
+                curPhone = newPhone;
+                layout.addView(newPhone, newPhoneParam);
+                layout.addView(plus1, buttonParam1);
+
+                layout.removeView(curEmail);
+                layout.removeView(plus2);
+                buttonParam2.addRule(RelativeLayout.BELOW, curPhone.getId());
+                emailParam.addRule(RelativeLayout.BELOW, curPhone.getId());
+                layout.addView(curEmail, emailParam);
+                layout.addView(plus2, buttonParam2);
+
+            }
+        });
 
 
         setContentView(layout);
