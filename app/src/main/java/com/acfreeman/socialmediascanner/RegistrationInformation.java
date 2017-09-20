@@ -1,5 +1,6 @@
 package com.acfreeman.socialmediascanner;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -19,6 +20,16 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
 
 public class RegistrationInformation extends AppCompatActivity {
     private LinearLayout mLayout;
@@ -34,9 +45,14 @@ public class RegistrationInformation extends AppCompatActivity {
     private RelativeLayout layout;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    SharedPreferences mPrefs;
+    final String firstLaunchPref= "firstLaunch";
+
     @Override
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         //get screen dimensions in px
         Display display = getWindowManager().getDefaultDisplay(); Point size = new Point(); display.getSize(size); width = size.x; height = size.y;
@@ -93,12 +109,13 @@ public class RegistrationInformation extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+                Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
                 startActivity(startIntent);
             }
         });
 
         plus1.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
             @Override
             public void onClick(View v) {
                 RelativeLayout.LayoutParams newPhoneParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -123,6 +140,7 @@ public class RegistrationInformation extends AppCompatActivity {
 
 
         plus2.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
             @Override
             public void onClick(View v) {
                 RelativeLayout.LayoutParams newEmailParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -140,6 +158,23 @@ public class RegistrationInformation extends AppCompatActivity {
         });
 
         setContentView(layout);
+
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // second argument is the default to use if the preference can't be found
+        Boolean firstLaunch = mPrefs.getBoolean(firstLaunchPref, true);
+
+        //if(firstLaunch) {
+
+        SharedPreferences.Editor editor = mPrefs.edit();
+        editor.putBoolean(firstLaunchPref, false);
+        editor.commit(); // Very important to save the preference
+        //}
+
+        //else {
+        //Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+        // startActivity(startIntent);
+        //}
 
     }
 
@@ -167,5 +202,42 @@ public class RegistrationInformation extends AppCompatActivity {
 
         return button;
     }
+
+
+
+
+
+
+
+
+
+
+    private void saveData(){
+
+        EditText t1 = (EditText) findViewById(R.id.nameEditText);
+        String name = (String) t1.getText().toString();
+        EditText t2 = (EditText) findViewById(R.id.emailEditText);
+        String email = (String) t2.getText().toString();
+        EditText t3 = (EditText) findViewById(R.id.phoneEditText);
+        String phone = (String) t3.getText().toString();
+
+        Log.i("DATABASE","one");
+        DBHelper mDbHelper = new DBHelper(getApplicationContext());
+        Log.i("DATABASE","two");
+        // Gets the data repository in write mode
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        Log.i("DATABASE","three");
+
+// Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(DBContract.DBOwner.NAME, name);
+//        values.put(DBContract.DBOwner.EMAIL, email);
+//        values.put(DBContract.DBOwner.PHONE, phone);
+
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId = db.insert(DBContract.DBOwner.TABLE_NAME, null, values);
+    }
+
+
 
 }
