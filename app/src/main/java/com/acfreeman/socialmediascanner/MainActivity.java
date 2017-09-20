@@ -1,10 +1,12 @@
 package com.acfreeman.socialmediascanner;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -12,6 +14,8 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -75,15 +79,21 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             FrameLayout frameLayout = findViewById(R.id.content);
             switch (item.getItemId()) {
                 case R.id.navigation_show:
-                    frameLayout.removeView(mImageView);
-                    camera = false;
+                    frameLayout.removeAllViews();
+                    if(camera) {
+                        camera = false;
+                        mScannerView.stopCamera();
+                    }
                     showCode();
 
                     return true;
 
                 case R.id.navigation_friends:
                     frameLayout.removeAllViews();
-                    camera = false;
+                    if(camera) {
+                        camera = false;
+                        mScannerView.stopCamera();
+                    }
                     showFriends();
 
                     return true;
@@ -146,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         mScannerView.setResultHandler(this);
         mScannerView.startCamera();
 
+
     }
 
     private void showFriends(){
@@ -160,6 +171,19 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         }
         mTextMessage.setText(text);
         frameLayout.addView(mTextMessage);
+
+        Button addTwitterTest = new Button(this);
+        addTwitterTest.setText("add on twitter");
+        addTwitterTest.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://twitter.com/intent/follow?screen_name=nytimes"));
+                i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);   //Makes it so that a single back-button press brings you back to our app
+                startActivity(i);
+            }
+        });
+        frameLayout.addView(addTwitterTest);
 
     }
 
@@ -195,7 +219,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     public void handleResult(Result rawResult) {
         Toast.makeText(this, "Contents = " + rawResult.getText() +
                 ", Format = " + rawResult.getBarcodeFormat().toString(), Toast.LENGTH_SHORT).show();
-
         // Wait 2 seconds to resume the preview
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {

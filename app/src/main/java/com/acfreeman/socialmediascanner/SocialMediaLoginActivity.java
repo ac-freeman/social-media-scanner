@@ -1,8 +1,10 @@
 package com.acfreeman.socialmediascanner;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -13,8 +15,13 @@ import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+import com.twitter.sdk.android.core.models.User;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public class SocialMediaLoginActivity extends AppCompatActivity {
 
@@ -23,8 +30,10 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_social_media_login);
+
         Twitter.initialize(this);
+
+        setContentView(R.layout.activity_social_media_login);
 
         loginButton = (TwitterLoginButton) findViewById(R.id.login_button);
         loginButton.setCallback(new Callback<TwitterSession>() {
@@ -37,10 +46,14 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
                 String secret = authToken.secret;
 
 
-                TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+                Toast.makeText(SocialMediaLoginActivity.this, "Logged in to Twitter", Toast.LENGTH_SHORT).show();
 
-                TwitterClient twitterClient = new TwitterClient(session);
-                twitterClient.getCustomService();
+
+
+
+                Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+                 startActivity(startIntent);
+
 
             }
 
@@ -62,21 +75,4 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
     }
 }
 
-class TwitterClient extends TwitterApiClient {
-    public TwitterClient(TwitterSession session) {
-        super(session);
-    }
-
-    /**
-     * Provide CustomService with defined endpoints
-     */
-    public CustomService getCustomService() {
-        return getService(CustomService.class);
-    }
-}
-
-// example users/show service endpoint
-interface CustomService {
-    @POST("/1.1/friendships/create.json?screen_name=nytimes&follow=true ")
-}
 

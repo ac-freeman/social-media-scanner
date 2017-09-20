@@ -164,17 +164,17 @@ public class RegistrationInformation extends AppCompatActivity {
         // second argument is the default to use if the preference can't be found
         Boolean firstLaunch = mPrefs.getBoolean(firstLaunchPref, true);
 
-        //if(firstLaunch) {
+        if(firstLaunch) {
 
         SharedPreferences.Editor editor = mPrefs.edit();
         editor.putBoolean(firstLaunchPref, false);
         editor.commit(); // Very important to save the preference
-        //}
+        }
 
-        //else {
-        //Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
-        // startActivity(startIntent);
-        //}
+        else {
+        Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+         startActivity(startIntent);
+        }
 
     }
 
