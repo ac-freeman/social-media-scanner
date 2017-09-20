@@ -20,20 +20,20 @@ public class Social {
     public void setId(int id) {
         this.id = id;
     }
-    public void setName(String type) {
+    public void setType(String type) {
         this.type = type;
     }
-
-    public void setAddress(String username) {
+    public void setUsername(String username) {
         this.username = username;
     }
+
     public int getId() {
         return id;
     }
-    public String getAddress() {
+    public String getUsername() {
         return username;
     }
-    public String getName() {
+    public String getType() {
         return type;
     }
 }

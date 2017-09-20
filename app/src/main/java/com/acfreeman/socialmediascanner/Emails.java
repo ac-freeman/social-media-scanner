@@ -20,20 +20,20 @@ public class Emails {
     public void setId(int id) {
         this.id = id;
     }
-    public void setName(String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    public void setAddress(String type) {
+    public void setType(String type) {
         this.type = type;
     }
     public int getId() {
         return id;
     }
-    public String getAddress() {
+    public String getType() {
         return type;
     }
-    public String getName() {
+    public String getEmail() {
         return email;
     }
 }

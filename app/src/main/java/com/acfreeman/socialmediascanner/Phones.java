@@ -20,20 +20,20 @@ public class Phones {
     public void setId(int id) {
         this.id = id;
     }
-    public void setName(String number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 
-    public void setAddress(String type) {
+    public void setType(String type) {
         this.type = type;
     }
     public int getId() {
         return id;
     }
-    public String getAddress() {
+    public String getType() {
         return type;
     }
-    public String getName() {
+    public String getNumber() {
         return number;
     }
 }
