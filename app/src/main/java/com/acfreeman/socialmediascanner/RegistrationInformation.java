@@ -106,82 +106,24 @@ public class RegistrationInformation extends AppCompatActivity {
         });
 
 
+        plus2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RelativeLayout.LayoutParams newEmailParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                EditText newEmail = createEditText("Email", newEmailParam);
+                newEmailParam.addRule(RelativeLayout.BELOW, curPhone.getId());
+
+                layout.removeView(plus2);
+                buttonParam2.addRule(RelativeLayout.BELOW, curEmail.getId());
+                newEmailParam.addRule(RelativeLayout.BELOW, curEmail.getId());
+                curEmail = newEmail;
+                layout.addView(newEmail, newEmailParam);
+                layout.addView(plus2, buttonParam2);
+
+            }
+        });
+
         setContentView(layout);
-
-//        RelativeLayout relativelayout = new RelativeLayout(this);
-//        Button btn = new Button(this);
-//        EditText nameEditText = new EditText(this);
-//        nameEditText.setId(0);
-//        nameEditText.setHint("Name");
-//
-//        LayoutParams layoutparams = new LayoutParams(
-//                RelativeLayout.LayoutParams.MATCH_PARENT,
-//                RelativeLayout.LayoutParams.MATCH_PARENT
-//        );
-//
-//        LayoutParams LayoutParamsEditText = new LayoutParams(
-//                RelativeLayout.LayoutParams.WRAP_CONTENT,
-//                RelativeLayout.LayoutParams.WRAP_CONTENT
-//        );
-//
-//        LayoutParams LayoutParamsButtons = new LayoutParams(
-//                LayoutParams.WRAP_CONTENT,
-//                LayoutParams.WRAP_CONTENT
-//        );
-//        relativelayout.setLayoutParams(layoutparams);
-//
-//        LayoutParamsEditText.addRule(RelativeLayout.CENTER_IN_PARENT);
-//        LayoutParamsButtons.addRule(RelativeLayout.CENTER_IN_PARENT);
-//
-////        nameEditText.setLayoutParams(LayoutParamsEditText);
-//        LayoutParamsButtons.addRule(RelativeLayout.BELOW, nameEditText.getId());
-//        btn.setLayoutParams(LayoutParamsButtons);
-//        btn.setText("Button Name");
-//        btn.setBackgroundColor(Color.BLUE);
-//        relativelayout.addView(nameEditText, LayoutParamsEditText);
-//
-//        relativelayout.addView(btn, LayoutParamsButtons);
-//        setContentView(relativelayout);
-
-
-
-
-//        setContentView(R.layout.activity_registration_information);
-//
-//        final ConstraintLayout constraintLayout = (ConstraintLayout) findViewById(R.id.activity_registration_information_layout);
-//
-//
-//
-//
-//        Button nextBtn = (Button) findViewById(R.id.nextBtn);
-//        nextBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
-//                startActivity(startIntent);
-//            }
-//        });
-//        //mLayout = (LinearLayout) findViewById(R.id.info);
-//        mEditText = (EditText) findViewById(R.id.emailEditText);
-//        addEmailBtn = (Button) findViewById(R.id.addEmaiBtn);
-//        addEmailBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                EditText textView = new EditText(RegistrationInformation.this);
-//                textView.setText("Email");
-//
-//
-//                constraintLayout.addView(textView);
-//
-//
-//                constraintSet = new ConstraintSet();
-//                constraintSet.clone(constraintLayout);
-//
-//                constraintSet.connect(mEditText.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(), ConstraintSet.RIGHT, 0);
-//                constraintSet.constrainDefaultHeight(mEditText.getId(), 200);
-//                constraintSet.applyTo(constraintLayout);
-//            }
-//        });
 
     }
 
