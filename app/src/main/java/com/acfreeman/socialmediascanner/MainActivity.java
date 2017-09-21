@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             int width = frameLayout.getWidth();
             int height = frameLayout.getHeight();
             MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-            BitMatrix bitMatrix = multiFormatWriter.encode("Twitter: " + user_id + ";", BarcodeFormat.QR_CODE, width, height);
+            BitMatrix bitMatrix = multiFormatWriter.encode("|" +"twitter" + "|" + user_id + "|", BarcodeFormat.QR_CODE, width, height);
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
             mImageView.setImageBitmap(bitmap);
@@ -242,16 +242,28 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 ", Format = " + rawResult.getBarcodeFormat().toString(), Toast.LENGTH_SHORT).show();
 
         String raw = rawResult.getText();
+        String[] rawArray = raw.split("\\|");   //pipe character must be escaped in regex
 
-        String[] rawArray = raw.split("Twitter: ");
-        String[] twitterId = rawArray[1].split(";");
-        String twitter_id = twitterId[0];
-        Log.i("TWITTERDEBUG",twitter_id);
+        for(int i = 0; i<rawArray.length; i++){
 
-        Intent i = new Intent(Intent.ACTION_VIEW,
-                Uri.parse("https://twitter.com/intent/follow?user_id="+twitter_id));
-        i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);   //Makes it so that a single back-button press brings you back to our app
-        startActivity(i);
+            String t = rawArray[i];
+
+            switch(t){
+
+                //when adding a new social media platform, simply copy this format
+                case "twitter":
+                    String twitter_id = rawArray[i+1];
+                    String uri = "https://twitter.com/intent/follow?user_id="+(twitter_id);
+                    socialAdd(uri);
+                    break;
+
+
+            }
+        }
+
+
+
+
 
         // Wait 2 seconds to resume the preview
         Handler handler = new Handler();
@@ -261,6 +273,13 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 mScannerView.resumeCameraPreview(MainActivity.this);
             }
         }, 2000);
+    }
+
+    public void socialAdd(String uri){
+        Intent i = new Intent(Intent.ACTION_VIEW,
+                Uri.parse(uri));
+        i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);   //Makes it so that a single back-button press brings you back to our app
+        startActivity(i);
     }
 
     @Override
