@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.twitter.sdk.android.core.Callback;
@@ -50,6 +51,8 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
 
 
 
+                Log.i("TWITTERTEST","user_id: " +session.getUserId());
+                Log.i("TWITTERTEST","username: " +session.getUserName());
 
                 Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
                  startActivity(startIntent);
