@@ -7,3 +7,5 @@
 /build
 /captures
 .externalNativeBuild
+app/src/main/java/com/acfreeman/socialmediascanner/LocalDatabase.java
+.idea/modules.xml

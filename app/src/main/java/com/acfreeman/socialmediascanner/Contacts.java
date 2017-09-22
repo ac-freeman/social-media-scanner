@@ -10,7 +10,7 @@ public class Contacts {
     public Contacts()
     {
     }
-    public Contacts(int id,String name,String address)
+    public Contacts(int id,String name)
     {
         this.id=id;
         this.name=name;

@@ -11,7 +11,7 @@ public class Owner {
     public Owner()
     {
     }
-    public Owner(int id,String name,String address)
+    public Owner(int id,String name)
     {
         this.id=id;
         this.name=name;
