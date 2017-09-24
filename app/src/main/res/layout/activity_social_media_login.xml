@@ -5,8 +5,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.acfreeman.socialmediascanner.SocialMediaLoginActivity">
-    <com.twitter.sdk.android.core.identity.TwitterLoginButton
-        android:id="@+id/login_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.twitter.sdk.android.core.identity.TwitterLoginButton
+            android:id="@+id/twitter_button"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/linkedin_button"
+            android:layout_width="300dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:layout_below="@+id/twitter_button"
+            android:background="@drawable/li_default"/>
+        <Button
+            android:id="@+id/next_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Next"
+            android:layout_below="@+id/linkedin_button" />
+
+    </RelativeLayout>
+
 </android.support.constraint.ConstraintLayout>

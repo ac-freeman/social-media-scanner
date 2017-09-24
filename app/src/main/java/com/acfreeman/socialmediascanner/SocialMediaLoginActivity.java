@@ -1,12 +1,21 @@
 package com.acfreeman.socialmediascanner;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.linkedin.platform.LISessionManager;
+import com.linkedin.platform.errors.LIAuthError;
+import com.linkedin.platform.listeners.AuthListener;
+
+import com.linkedin.platform.utils.Scope;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.Twitter;
@@ -27,6 +36,7 @@ import retrofit2.http.Query;
 public class SocialMediaLoginActivity extends AppCompatActivity {
 
     private TwitterLoginButton loginButton;
+    private ImageView liButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +46,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_social_media_login);
 
-        loginButton = (TwitterLoginButton) findViewById(R.id.login_button);
+        loginButton = (TwitterLoginButton) findViewById(R.id.twitter_button);
         loginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
@@ -54,7 +64,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
                 Log.i("TWITTERTEST","user_id: " +session.getUserId());
                 Log.i("TWITTERTEST","username: " +session.getUserName());
 
-                Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+                Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
                  startActivity(startIntent);
 
 
@@ -65,6 +75,44 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
                 // Do something on failure
             }
         });
+
+
+
+        Button linkedinButton = (Button) findViewById(R.id.linkedin_button);
+        linkedinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LISessionManager.getInstance(getApplicationContext()).init(SocialMediaLoginActivity.this,  buildScope(), new AuthListener() {
+                    @Override
+                    public void onAuthSuccess(){
+
+                    }
+
+                    @Override
+                    public void onAuthError(LIAuthError error) {
+
+                    }
+                }, true);
+            }
+        });
+
+
+        Button nextButton = findViewById(R.id.next_button);
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(startIntent);
+            }
+        });
+//        liButton = new ImageView();
+//        Drawable res = getResources().getDrawable(R.drawable.li_default);   //deprecated, but alternative requires API 21+
+//        liButton.setImageDrawable(res);
+
+        //LinkedIn
+//        LISessionManager.
+
+
     }
 
     @Override
@@ -74,7 +122,14 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
         // Pass the activity result to the login button.
         loginButton.onActivityResult(requestCode, resultCode, data);
 
+        //linkedin
+        LISessionManager.getInstance(getApplicationContext()).onActivityResult(this, requestCode, resultCode, data);
 
+    }
+
+    // Build the list of member permissions our LinkedIn session requires
+    private static Scope buildScope() {
+        return Scope.build(Scope.R_BASICPROFILE);
     }
 }
 
