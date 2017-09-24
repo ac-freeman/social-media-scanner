@@ -169,7 +169,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             socialSwitch = new Switch(this);
             if(j==0) {
                 socialSwitch.setText("Twitter");
-
                 socialSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -189,16 +188,9 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             tableRow.addView(socialSwitch);
             table.addView(tableRow);
         }
-
-
 //        frameLayout.requestLayout();
-
-
-
-
-
-
     }
+
 
     private void generateCode(FrameLayout frameLayout) {
 
@@ -224,10 +216,11 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
 
-            Double  dcrop = width*1.0*3/4;
-            int crop =  dcrop.intValue();
-            Bitmap bm = Bitmap.createBitmap(bitmap, width/8, width/8, crop, crop);  //crop the qrcode image obtained from bitmatrix
-            mImageView.setImageBitmap(bm);
+//            Double  dcrop = width*1.0*3/4;
+//            int crop =  dcrop.intValue();
+//            Bitmap bm = Bitmap.createBitmap(bitmap, width/8, width/8, crop, crop);  //crop the qrcode image obtained from bitmatrix
+//            mImageView.setImageBitmap(bm);
+            mImageView.setImageBitmap(bitmap);
         } catch (WriterException e) {
             e.printStackTrace();
         }
