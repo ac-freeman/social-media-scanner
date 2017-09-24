@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -23,9 +24,15 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.Switch;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.util.AttributeSet;
+import android.widget.ToggleButton;
+
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.Result;
@@ -70,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         setContentView(R.layout.activity_main);
 
         mTextMessage = findViewById(R.id.message);
-        mImageView = new ImageView(this);
+
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_friends);
@@ -118,6 +125,8 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         }
     };
 
+
+    private final int socialCount = 2;  //TODO: retrieve value dynamically?
     /**
      * Generating and displaying QR code
      * Uses ZXing
@@ -125,8 +134,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     private void showCode(){
         QRCodeWriter writer = new QRCodeWriter();
         FrameLayout frameLayout = findViewById(R.id.content);
-
-
+        mImageView = new ImageView(this);
 
         /////
         TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
@@ -135,24 +143,74 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         //////
 
 
+        ScrollView scroll = new ScrollView(this);
+        TableLayout table = new TableLayout(this);
+        table.setVerticalScrollBarEnabled(true);
+        TableRow tableRow;
+        TextView t1;
+        Switch t2;
+        Switch socialSwitch;
 
+        frameLayout.addView(scroll);
+        scroll.addView(table);
         try {
             int width = frameLayout.getWidth();
             int height = frameLayout.getHeight();
             MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-            BitMatrix bitMatrix = multiFormatWriter.encode("|" +"twitter" + "|" + user_id + "|", BarcodeFormat.QR_CODE, width, height);
+            BitMatrix bitMatrix = multiFormatWriter.encode("|" +"twitter" + "|" + user_id + "|", BarcodeFormat.QR_CODE, width, width);
+//            bitMatrix.
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
-            mImageView.setImageBitmap(bitmap);
+
+            Double  dcrop = width*1.0*3/4;
+            int crop =  dcrop.intValue();
+            Bitmap bm = Bitmap.createBitmap(bitmap, width/8, width/8, crop, crop);  //crop the qrcode image obtained from bitmatrix
+            mImageView.setImageBitmap(bm);
         } catch (WriterException e) {
             e.printStackTrace();
         }
-        //set image position
-        mImageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
+//        //set image position
+//        mImageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+//                LinearLayout.LayoutParams.WRAP_CONTENT));
 
         //add view to layout
-        frameLayout.addView(mImageView);
+//        frameLayout.addView(mImageView);
+
+        tableRow = new TableRow(this);
+        tableRow.addView(mImageView);
+        table.addView(tableRow);
+
+//        for (Integer j = 0; j < 50; j++) {
+//            tableRow = new TableRow(this);
+//            t1 = new TextView(this);
+//            t1.setText("test1");
+//
+//
+//            t2 = new Switch(this);
+//            t2.setText("test2");
+//            tableRow.addView(t1);
+//            tableRow.addView(t2);
+//            table.addView(tableRow);
+//        }
+
+        for(int j = 0; j < socialCount; j++){
+            tableRow = new TableRow(this);
+            socialSwitch = new Switch(this);
+            if(j==0)
+                socialSwitch.setText("Twitter");
+            if(j==1)
+                socialSwitch.setText("LinkedIn");
+            tableRow.addView(socialSwitch);
+            table.addView(tableRow);
+        }
+
+
+//        frameLayout.requestLayout();
+
+
+
+
+
 
     }
 
