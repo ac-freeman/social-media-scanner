@@ -43,8 +43,12 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterApiClient;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.internal.TwitterApi;
+import com.twitter.sdk.android.core.internal.TwitterApiConstants;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -190,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         }
 
         //////
-        
+
     }
 
 
@@ -310,6 +314,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     }
 
 
+    private boolean wait = true;
     /**
      * From https://github.com/dm77/barcodescanner
      * @param rawResult the raw data contained by the scanned QR code
@@ -335,9 +340,18 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     socialAdd(uri);
                     break;
                 case "linkedin":
+                    //TODO: remove and improve
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                        }
+                    }, 2000);
                     String linkedin_id = rawArray[i+1];
                     uri = linkedin_id;
                     socialAdd(uri);
+
                     break;
 
 
@@ -364,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         Intent i = new Intent(Intent.ACTION_VIEW,
                 Uri.parse(uri));
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);   //Makes it so that a single back-button press brings you back to our app
-        startActivity(i);
+        startActivityForResult(i, 1);
     }
 
     @Override
@@ -385,36 +399,14 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         }
     }
 
-
-    private String readFromFile() {
-
-        String ret = "";
-
-        try {
-            InputStream inputStream = this.openFileInput("ppl.txt");
-
-            if ( inputStream != null ) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
-
-                while ( (receiveString = bufferedReader.readLine()) != null ) {
-                    stringBuilder.append(receiveString);
-                }
-
-                inputStream.close();
-                ret = stringBuilder.toString();
-            }
-        }
-        catch (FileNotFoundException e) {
-            Log.e("login activity", "File not found: " + e.toString());
-        } catch (IOException e) {
-            Log.e("login activity", "Can not read file: " + e.toString());
-        }
-
-        return ret;
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        // Check which request we're responding to
+//        if (requestCode == 1) {
+//            // Make sure the request was successful
+//            wait = false;
+//        }
+//    }
 
 
     /**
