@@ -2,54 +2,51 @@ package com.acfreeman.socialmediascanner;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
-import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
 
 public class RegistrationInformation extends AppCompatActivity {
-    private LinearLayout mLayout;
-    private EditText mEditText;
-    private Button  addEmailBtn;
+   // private LinearLayout mLayout;
+   // private EditText mEditText;
+   // private Button  addEmailBtn;
     //FrameLayout frameLayout = findViewById(R.id.content);
     //mTextMessage = new TextView(this);
 
+
     private int width;
     private int height;
+    private int btnPress1 = 0;
+    private int btnPress2 = 0;
+    //Create view and view group objects
+
+    //initialize editText objects which are the text boxes that are displayed in the screen
     private EditText curPhone;
     private EditText curEmail;
-    private RelativeLayout layout;
+    private RelativeLayout layout;//initialize the relative layout object
 
+    //not sure what this does - does something when the app is first launched it think?
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     SharedPreferences mPrefs;
     final String firstLaunchPref= "firstLaunch";
 
+    //Not sure what this does?
     @Override
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    //
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -57,10 +54,13 @@ public class RegistrationInformation extends AppCompatActivity {
         //get screen dimensions in px
         Display display = getWindowManager().getDefaultDisplay(); Point size = new Point(); display.getSize(size); width = size.x; height = size.y;
 
-        layout = new RelativeLayout(this);
+        layout = new RelativeLayout(this);//initialzing the relative layout object
+
+        //Defining the layout programmatically
         final RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         layout.setLayoutParams(layoutParams);
 
+        //This is the dimensions for the view and view group objects
         RelativeLayout.LayoutParams nameParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         RelativeLayout.LayoutParams phoneParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         final RelativeLayout.LayoutParams emailParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -118,22 +118,26 @@ public class RegistrationInformation extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
             @Override
             public void onClick(View v) {
-                RelativeLayout.LayoutParams newPhoneParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                EditText newPhone = createEditText("Phone", newPhoneParam);
-                newPhoneParam.addRule(RelativeLayout.BELOW, curPhone.getId());
+                if (btnPress1 <= 1) {
+                    RelativeLayout.LayoutParams newPhoneParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                    int phoneCounter = btnPress1 + 2;
+                    EditText newPhone = createEditText("Phone " + phoneCounter, newPhoneParam);
+                    newPhoneParam.addRule(RelativeLayout.BELOW, curPhone.getId());
 
-                layout.removeView(plus1);
-                buttonParam1.addRule(RelativeLayout.BELOW, curPhone.getId());
-                curPhone = newPhone;
-                layout.addView(newPhone, newPhoneParam);
-                layout.addView(plus1, buttonParam1);
+                    layout.removeView(plus1);
+                    buttonParam1.addRule(RelativeLayout.BELOW, curPhone.getId());
+                    curPhone = newPhone;
+                    layout.addView(newPhone, newPhoneParam);
+                    layout.addView(plus1, buttonParam1);
 
-                layout.removeView(curEmail);
-                layout.removeView(plus2);
-                buttonParam2.addRule(RelativeLayout.BELOW, curPhone.getId());
-                emailParam.addRule(RelativeLayout.BELOW, curPhone.getId());
-                layout.addView(curEmail, emailParam);
-                layout.addView(plus2, buttonParam2);
+                    layout.removeView(curEmail);
+                    layout.removeView(plus2);
+                    buttonParam2.addRule(RelativeLayout.BELOW, curPhone.getId());
+                    emailParam.addRule(RelativeLayout.BELOW, curPhone.getId());
+                    layout.addView(curEmail, emailParam);
+                    layout.addView(plus2, buttonParam2);
+                    btnPress1++;
+                }
 
             }
         });
@@ -143,17 +147,20 @@ public class RegistrationInformation extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
             @Override
             public void onClick(View v) {
-                RelativeLayout.LayoutParams newEmailParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                EditText newEmail = createEditText("Email", newEmailParam);
-                newEmailParam.addRule(RelativeLayout.BELOW, curPhone.getId());
+                if (btnPress2 <= 1) {
+                    RelativeLayout.LayoutParams newEmailParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                    int emailCounter = btnPress2 + 2;
+                    EditText newEmail = createEditText("Email " + emailCounter, newEmailParam);
+                    newEmailParam.addRule(RelativeLayout.BELOW, curPhone.getId());
 
-                layout.removeView(plus2);
-                buttonParam2.addRule(RelativeLayout.BELOW, curEmail.getId());
-                newEmailParam.addRule(RelativeLayout.BELOW, curEmail.getId());
-                curEmail = newEmail;
-                layout.addView(newEmail, newEmailParam);
-                layout.addView(plus2, buttonParam2);
-
+                    layout.removeView(plus2);
+                    buttonParam2.addRule(RelativeLayout.BELOW, curEmail.getId());
+                    newEmailParam.addRule(RelativeLayout.BELOW, curEmail.getId());
+                    curEmail = newEmail;
+                    layout.addView(newEmail, newEmailParam);
+                    layout.addView(plus2, buttonParam2);
+                    btnPress2++;
+                }
             }
         });
 
