@@ -402,6 +402,26 @@ public class LocalDatabase extends SQLiteOpenHelper{
         return phones;
     }
 
+    public ArrayList<Social> getUserSocials(int id) {
+
+        String countQuery = "SELECT * FROM " + TABLE_SOCIAL +" WHERE " + KEY_ID + " = " + id;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+
+        Log.d("DATABASEDEBUG",String.valueOf(cursor.getCount()));
+
+        ArrayList<Social> socials = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                Social social = new Social(Integer.parseInt(cursor.getString(0)),
+                        cursor.getString(1),cursor.getString(2));
+                socials.add(social);
+            } while (cursor.moveToNext());
+        }
+        return socials;
+    }
+
 
 
 

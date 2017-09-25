@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.linkedin.platform.APIHelper;
+import com.linkedin.platform.LISession;
 import com.linkedin.platform.LISessionManager;
 import com.linkedin.platform.errors.LIApiError;
 import com.linkedin.platform.errors.LIAuthError;
@@ -135,7 +136,8 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
                     @Override
                     public void onAuthSuccess(){
 
-                        String url = "https://api.linkedin.com/v1/people/~:(id)?format=json";
+                        String url = "https://api.linkedin.com/v1/people/~?format=json";
+
 
                         APIHelper apiHelper = APIHelper.getInstance(getApplicationContext());
                         apiHelper.getRequest(getApplicationContext(), url, new ApiListener() {
@@ -143,11 +145,12 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
                             public void onApiSuccess(ApiResponse apiResponse) {
                                 // Success!
                                 Log.d("linkedin response", apiResponse.getResponseDataAsJson().toString());
-                                
+
                                 JSONObject obj = null;
                                 try {
                                     obj = new JSONObject( apiResponse.getResponseDataAsJson().toString());
-                                    String li_id = obj.getString("id");
+                                    JSONObject obj2 = obj.getJSONObject("siteStandardProfileRequest");
+                                    String li_id = obj2.getString("url");
                                     Log.i("LINKEDINDEBUG", li_id);
 
                                     /////add to database//////////

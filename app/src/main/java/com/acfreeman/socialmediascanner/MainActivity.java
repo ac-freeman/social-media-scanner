@@ -2,6 +2,7 @@ package com.acfreeman.socialmediascanner;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -132,7 +133,9 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
      * Generating and displaying QR code
      * Uses ZXing
      */
-    private boolean TWITTER, LINKEDIN;
+
+
+    private ArrayList<SocialSwitch> switchList = new ArrayList<>();
     private void showCode(){
         QRCodeWriter writer = new QRCodeWriter();
         final FrameLayout frameLayout = findViewById(R.id.content);
@@ -147,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         TableRow tableRow;
         TextView t1;
         Switch t2;
-        Switch socialSwitch;
+
 
         frameLayout.addView(scroll);
         scroll.addView(table);
@@ -163,36 +166,35 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         tableRow.addView(mImageView);
         table.addView(tableRow);
 
+        //////
+        List socials = new ArrayList();
+        LocalDatabase db = new LocalDatabase(getApplicationContext());
+        List<Owner> owner = db.getAllOwner();
 
-        for(int j = 0; j < socialCount; j++){
+        ArrayList<Social> sociallist = db.getUserSocials(owner.get(0).getId());
+        for(Social s : sociallist) {
             tableRow = new TableRow(this);
-            socialSwitch = new Switch(this);
-            if(j==0) {
-                socialSwitch.setText("Twitter");
-                socialSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                        if(b) {     //if the switch is in the on position
-                            TWITTER = true;
-                            generateCode(frameLayout);
-                        }
-                        else {
-                            TWITTER = false;
-                            generateCode(frameLayout);
-                        }
-                    }
-                });
-            }
-            if(j==1)
-                socialSwitch.setText("LinkedIn");
-            tableRow.addView(socialSwitch);
+            final SocialSwitch socialSwitch = new SocialSwitch(s.getType(), s.getUsername(), this);
+
+
+            socialSwitch.getSwitch().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    socialSwitch.toggleEnabled();
+                    generateCode(frameLayout);
+                }
+            });
+            switchList.add(socialSwitch);
+            tableRow.addView(socialSwitch.getSwitch());
             table.addView(tableRow);
         }
-//        frameLayout.requestLayout();
+
+        //////
+        
     }
 
 
-    private void generateCode(FrameLayout frameLayout) {
+    public void generateCode(FrameLayout frameLayout) {
 
         /////
         TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
@@ -206,9 +208,14 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             StringBuilder builder = new StringBuilder();
             builder.append("|");
 
-            if(TWITTER) {
-                builder.append("twitter" + "|" + user_id + "|");
+
+            for(SocialSwitch sw : switchList){
+                if(sw.getEnabled()){
+                    builder.append(sw.getType_db() + "|" + sw.getUser_id() + "|");
+                }
             }
+
+
             String encodeStr = builder.toString();
 
             BitMatrix bitMatrix = multiFormatWriter.encode(encodeStr, BarcodeFormat.QR_CODE, width, width);
@@ -256,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         mTextMessage = new TextView(this);
         mTextMessage.setText(R.string.title_friends);
 //        List data = readDB();
-        List data = readDatabase();
+        List data = readDatabaseTest();
         String text = "";
         for(int x = 0; x < data.size(); x++){
             text += data.get(x);
@@ -270,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
 
 
-    private List readDatabase(){
+    private List readDatabaseTest(){
 
         List res = new ArrayList();
         LocalDatabase db = new LocalDatabase(getApplicationContext());
@@ -290,6 +297,12 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         for(Emails e : emaillist) {
             res.add(e.getEmail());
             res.add(e.getType());
+        }
+
+        ArrayList<Social> sociallisttest = db.getUserSocials(owner.get(0).getId());
+        for(Social s : sociallisttest) {
+            res.add(s.getType());
+            res.add(s.getUsername());
         }
 
         return res;
@@ -312,15 +325,22 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         for(int i = 0; i<rawArray.length; i++){
 
             String t = rawArray[i];
-
+            String uri;
             switch(t){
 
                 //when adding a new social media platform, simply copy this format
                 case "twitter":
                     String twitter_id = rawArray[i+1];
-                    String uri = "https://twitter.com/intent/follow?user_id="+(twitter_id);
+                    uri = "https://twitter.com/intent/follow?user_id="+(twitter_id);
                     socialAdd(uri);
                     break;
+                case "linkedin":
+                    String linkedin_id = rawArray[i+1];
+                    uri = linkedin_id;
+                    socialAdd(uri);
+                    break;
+
+
 
 
             }
