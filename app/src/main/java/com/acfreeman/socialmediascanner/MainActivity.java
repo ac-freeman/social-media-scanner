@@ -263,18 +263,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         mTextMessage.setText(text);
         frameLayout.addView(mTextMessage);
 
-        Button addTwitterTest = new Button(this);
-        addTwitterTest.setText("add on twitter");
-        addTwitterTest.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_VIEW,
-                        Uri.parse("https://twitter.com/intent/follow?screen_name=nytimes"));
-                i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);   //Makes it so that a single back-button press brings you back to our app
-                startActivity(i);
-            }
-        });
-        frameLayout.addView(addTwitterTest);
+
 
     }
 
