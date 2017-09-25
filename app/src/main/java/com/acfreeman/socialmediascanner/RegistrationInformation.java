@@ -38,8 +38,8 @@ public class RegistrationInformation extends AppCompatActivity {
     private EditText curPhone;
     private EditText curEmail;
     private RelativeLayout layout;
-    public ArrayList PhoneList = new ArrayList<EditText>();
-    public ArrayList EmailList = new ArrayList<EditText>();
+    public ArrayList<EditText> PhoneList = new ArrayList<EditText>();
+    public ArrayList<EditText> EmailList = new ArrayList<EditText>();
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     SharedPreferences mPrefs;
@@ -106,46 +106,26 @@ public class RegistrationInformation extends AppCompatActivity {
         curEmail = editEmail;
 
 
-
-
-        final Context c = this;
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-//                EditText t1 = (EditText) findViewById(R.id.nameEditText);
-//                String name = (String) t1.getText().toString();
-//                EditText t2 = (EditText) findViewById(R.id.emailEditText);
-//                String email = (String) t2.getText().toString();
-//                EditText t3 = (EditText) findViewById(R.id.phoneEditText);
-//                String phone = (String) t3.getText().toString();
-//
-//
-//                //write to database
-//                DBHelper mDbHelper = new DBHelper(getApplicationContext());
-//                // Gets the data repository in write mode
-//                SQLiteDatabase db = mDbHelper.getWritableDatabase();
-//
-//// Create a new map of values, where column names are the keys
-//                ContentValues values = new ContentValues();
-//                values.put(DBContract.DBOwner.NAME, name);
-//
-//                values.put(DBContract.DBPhones.PHONE, phone);
-////        values.put(DBContract.DBOwner.EMAIL, email);
-////        values.put(DBContract.DBOwner.PHONE, phone);
-//
-//                // Insert the new row, returning the primary key value of the new row
-//                long newRowId = db.insert(DBContract.DBOwner.TABLE_NAME, null, values);
-
-
-
                 ////
-                LocalDatabase database = new LocalDatabase(c);
+                LocalDatabase database = new LocalDatabase(getApplicationContext());
                 Owner owner = new Owner(0, editName.getText().toString());
                 database.addOwner(owner);
-                Phones phone = new Phones(owner.getId(),Integer.parseInt(editPhone.getText().toString()),"Cell");
-                database.addPhones(phone);
 
+
+                for(EditText p : PhoneList) {
+                        Phones phone = new Phones(owner.getId(),Integer.parseInt(p.getText().toString()),"Cell");
+                        database.addPhones(phone);
+                }
+
+                for(EditText e : EmailList) {
+                        Emails email = new Emails(owner.getId(), e.getText().toString(),"Work");
+                        database.addEmails(email);
+                }
+                ////
 
 
 

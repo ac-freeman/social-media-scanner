@@ -298,6 +298,16 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         res.add(phones.getNumber());
         res.add(phones.getType());
 
+//        Emails emails = db.getEmail(owner.get(0).getId());
+//        res.add(emails.getEmail());
+//        res.add(emails.getType());
+
+        ArrayList<Emails> emailarray= db.getUserEmails(owner.get(0).getId());
+        for(Emails e : emailarray) {
+            res.add(e.getEmail());
+            res.add(e.getType());
+        }
+
         return res;
 
     }

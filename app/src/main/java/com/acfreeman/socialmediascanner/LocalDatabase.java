@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,18 +57,18 @@ public class LocalDatabase extends SQLiteOpenHelper{
         db.execSQL(CREATE_CONTACTS_TABLE);
 
         String CREATE_PHONES_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_PHONES + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_PH_NUMBER + " TEXT,"
+                + KEY_ID + " INTEGER," + KEY_PH_NUMBER + " TEXT,"
                 + KEY_PH_TYPE + " TEXT" + ")";
         db.execSQL(CREATE_PHONES_TABLE);
 
         String CREATE_EMAILS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_EMAILS + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_EM_ADDR + " TEXT,"
+                + KEY_ID + " INTEGER," + KEY_EM_ADDR + " TEXT,"
                 + KEY_EM_TYPE + " TEXT" + ")";
         db.execSQL(CREATE_EMAILS_TABLE);
 
 
         String CREATE_SOCIAL_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_SOCIAL + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_SO_TYPE + " TEXT,"
+                + KEY_ID + " INTEGER," + KEY_SO_TYPE + " TEXT,"
                 + KEY_USERNAME + " TEXT" + ")";
         db.execSQL(CREATE_SOCIAL_TABLE);
 
@@ -193,7 +195,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
         return phoneA;
     }
 
-    public Emails getEmails(int id) {
+    public Emails getEmail(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_EMAILS, new String[]{KEY_ID,
@@ -357,8 +359,53 @@ public class LocalDatabase extends SQLiteOpenHelper{
 // return contact list
         return socialList;
     }
+//******************************************************************
 
 
+    public ArrayList<Emails> getUserEmails(int id) {
+
+        String countQuery = "SELECT * FROM " + TABLE_EMAILS +" WHERE " + KEY_ID + " = " + id;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+
+        Log.i("DATABASEDEBUG",String.valueOf(cursor.getCount()));
+
+        ArrayList<Emails> emails = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                Emails email = new Emails(Integer.parseInt(cursor.getString(0)),
+                        cursor.getString(1), cursor.getString(2));
+                emails.add(email);
+            } while (cursor.moveToNext());
+        }
+        return emails;
+    }
+
+    public ArrayList<Phones> getUserPhones(int id) {
+
+        String countQuery = "SELECT * FROM " + TABLE_PHONES +" WHERE " + KEY_ID + " = " + id;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+
+        Log.i("DATABASEDEBUG",String.valueOf(cursor.getCount()));
+
+        ArrayList<Phones> phones = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                Phones phone = new Phones(Integer.parseInt(cursor.getString(0)),
+                        cursor.getInt(1), cursor.getString(2));
+                phones.add(phone);
+            } while (cursor.moveToNext());
+        }
+        return phones;
+    }
+
+
+
+
+//******************************************************************
     // Getting users Count
     public int getPhonesCount() {
         String countQuery = "SELECT * FROM " + TABLE_PHONES;
