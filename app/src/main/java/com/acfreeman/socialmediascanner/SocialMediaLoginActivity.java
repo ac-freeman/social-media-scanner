@@ -12,8 +12,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.linkedin.platform.APIHelper;
 import com.linkedin.platform.LISessionManager;
+import com.linkedin.platform.errors.LIApiError;
 import com.linkedin.platform.errors.LIAuthError;
+import com.linkedin.platform.listeners.ApiListener;
+import com.linkedin.platform.listeners.ApiResponse;
 import com.linkedin.platform.listeners.AuthListener;
 
 import com.linkedin.platform.utils.Scope;
@@ -28,6 +32,14 @@ import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 import com.twitter.sdk.android.core.models.User;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -41,13 +53,27 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
     private TwitterLoginButton loginButton;
     private ImageView liButton;
 
+    public LocalDatabase database;
+    public List<Owner> owners;
+    public Owner owner;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        database = new LocalDatabase(getApplicationContext());
+        owners = database.getAllOwner();
+        owner = owners.get(0);
+
         Twitter.initialize(this);
 
         setContentView(R.layout.activity_social_media_login);
+
+
+//        Owner owner = new Owner(0, editName.getText().toString());
+//        database.addOwner(owner);
+
+
 
         loginButton = (TwitterLoginButton) findViewById(R.id.twitter_button);
         loginButton.setCallback(new Callback<TwitterSession>() {
@@ -70,6 +96,11 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
                 Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
                  startActivity(startIntent);
 
+
+                /////add to database//////////
+                Social twitter = new Social(owner.getId(),"twitter",String.valueOf(session.getUserId()));
+                database.addSocial(twitter);
+                //////////////////////////////
 
             }
 
@@ -103,6 +134,40 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
                 LISessionManager.getInstance(getApplicationContext()).init(SocialMediaLoginActivity.this,  buildScope(), new AuthListener() {
                     @Override
                     public void onAuthSuccess(){
+
+                        String url = "https://api.linkedin.com/v1/people/~:(id)?format=json";
+
+                        APIHelper apiHelper = APIHelper.getInstance(getApplicationContext());
+                        apiHelper.getRequest(getApplicationContext(), url, new ApiListener() {
+                            @Override
+                            public void onApiSuccess(ApiResponse apiResponse) {
+                                // Success!
+                                Log.d("linkedin response", apiResponse.getResponseDataAsJson().toString());
+                                
+                                JSONObject obj = null;
+                                try {
+                                    obj = new JSONObject( apiResponse.getResponseDataAsJson().toString());
+                                    String li_id = obj.getString("id");
+                                    Log.i("LINKEDINDEBUG", li_id);
+
+                                    /////add to database//////////
+                                    Social linkedin = new Social(owner.getId(),"linkedin", li_id);
+                                    database.addSocial(linkedin);
+                                    //////////////////////////////
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+
+                                }
+
+                            @Override
+                            public void onApiError(LIApiError liApiError) {
+                                // Error making GET request!
+                            }
+                        });
+
+
 
                     }
 

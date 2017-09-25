@@ -272,21 +272,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
     private List readDatabase(){
 
-//        DBHelper mDbHelper = new DBHelper(getApplicationContext());
-        // Gets the data repository in write mode
-//        SQLiteDatabase db = mDbHelper.getReadableDatabase();
-
-
-//        Cursor  cursor = db.rawQuery("select * from owner",null);
-//        List res = new ArrayList<String>();
-//        if (cursor.moveToFirst()) {
-//            while (!cursor.isAfterLast()) {
-//                String name = cursor.getString(cursor.getColumnIndex(DBContract.DBOwner.NAME));
-//
-//                res.add(name);
-//                cursor.moveToNext();
-//            }
-//        }
         List res = new ArrayList();
         LocalDatabase db = new LocalDatabase(getApplicationContext());
 
@@ -294,16 +279,15 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         res.add(owner.get(0).getId());
         res.add(owner.get(0).getName());
 
-        Phones phones = db.getPhones(owner.get(0).getId());
-        res.add(phones.getNumber());
-        res.add(phones.getType());
 
-//        Emails emails = db.getEmail(owner.get(0).getId());
-//        res.add(emails.getEmail());
-//        res.add(emails.getType());
+        ArrayList<Phones> phonelist= db.getUserPhones(owner.get(0).getId());
+        for(Phones p : phonelist) {
+            res.add(p.getNumber());
+            res.add(p.getType());
+        }
 
-        ArrayList<Emails> emailarray= db.getUserEmails(owner.get(0).getId());
-        for(Emails e : emailarray) {
+        ArrayList<Emails> emaillist= db.getUserEmails(owner.get(0).getId());
+        for(Emails e : emaillist) {
             res.add(e.getEmail());
             res.add(e.getType());
         }
@@ -311,29 +295,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         return res;
 
     }
-
-    private List readDB(){
-
-        DBHelper mDbHelper = new DBHelper(getApplicationContext());
-        // Gets the data repository in write mode
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
-
-
-        Cursor  cursor = db.rawQuery("select * from owner",null);
-        List res = new ArrayList<String>();
-        if (cursor.moveToFirst()) {
-            while (!cursor.isAfterLast()) {
-                String name = cursor.getString(cursor.getColumnIndex(DBContract.DBOwner.NAME));
-
-                res.add(name);
-                cursor.moveToNext();
-            }
-        }
-
-        return res;
-
-    }
-
 
 
     /**
