@@ -17,8 +17,9 @@
             android:layout_width="300dp"
             android:layout_height="56dp"
             android:layout_weight="1"
-            android:layout_below="@+id/twitter_button"
-            android:background="@drawable/li_default"/>
+            android:layout_below="@+id/twitter_button"/>
+            <!--android:background="@drawable/li_default"-->
+
         <Button
             android:id="@+id/next_button"
             android:layout_width="wrap_content"

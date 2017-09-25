@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -32,6 +33,8 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
+
+import static android.view.MotionEvent.ACTION_BUTTON_PRESS;
 
 public class SocialMediaLoginActivity extends AppCompatActivity {
 
@@ -78,7 +81,22 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
 
 
 
-        Button linkedinButton = (Button) findViewById(R.id.linkedin_button);
+
+        final Button linkedinButton = (Button) findViewById(R.id.linkedin_button);
+        linkedinButton.setBackgroundResource(R.drawable.li_default);
+        linkedinButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                if(motionEvent.getAction() == ACTION_BUTTON_PRESS) {
+                    linkedinButton.setBackgroundResource(R.drawable.li_active);
+                }
+                else {
+                    linkedinButton.setBackgroundResource(R.drawable.li_default);
+                }
+                return false;
+            }
+        });
         linkedinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
