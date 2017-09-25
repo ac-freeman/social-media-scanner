@@ -8,8 +8,10 @@ import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -64,6 +66,7 @@ public class RegistrationInformation extends AppCompatActivity {
 
         //phone box
         EditText editPhone = createEditText("Phone", phoneParam);
+        editPhone.setInputType(InputType.TYPE_CLASS_PHONE);
         phoneParam.addRule(RelativeLayout.BELOW, editName.getId());
 
 
@@ -95,9 +98,35 @@ public class RegistrationInformation extends AppCompatActivity {
         curPhone = editPhone;
         curEmail = editEmail;
 
+
+
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+//                //write to database
+//                DBHelper mDbHelper = new DBHelper(getApplicationContext());
+//                Log.i("DATABASE","two");
+//                // Gets the data repository in write mode
+//                SQLiteDatabase db = mDbHelper.getWritableDatabase();
+//                Log.i("DATABASE","three");
+//
+//// Create a new map of values, where column names are the keys
+//                ContentValues values = new ContentValues();
+//                values.put(DBContract.DBOwner.NAME, name);
+////        values.put(DBContract.DBOwner.EMAIL, email);
+////        values.put(DBContract.DBOwner.PHONE, phone);
+//
+//                // Insert the new row, returning the primary key value of the new row
+//                long newRowId = db.insert(DBContract.DBOwner.TABLE_NAME, null, values);
+
+
+
+
+
+
+
+
                 Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
                 startActivity(startIntent);
             }
@@ -110,6 +139,7 @@ public class RegistrationInformation extends AppCompatActivity {
                 RelativeLayout.LayoutParams newPhoneParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 EditText newPhone = createEditText("Phone", newPhoneParam);
                 newPhoneParam.addRule(RelativeLayout.BELOW, curPhone.getId());
+                newPhone.setInputType(InputType.TYPE_CLASS_PHONE);
 
                 layout.removeView(plus1);
                 buttonParam1.addRule(RelativeLayout.BELOW, curPhone.getId());
