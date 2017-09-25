@@ -6,12 +6,12 @@ package com.acfreeman.socialmediascanner;
 
 public class Phones {
     private int id;
-    private String number;
+    private int number;
     private String type;
     public Phones()
     {
     }
-    public Phones(int id,String number,String type)
+    public Phones(int id,int number,String type)
     {
         this.id=id;
         this.number=number;
@@ -20,7 +20,7 @@ public class Phones {
     public void setId(int id) {
         this.id = id;
     }
-    public void setNumber(String number) {
+    public void setNumber(int number) {
         this.number = number;
     }
 
@@ -33,7 +33,7 @@ public class Phones {
     public String getType() {
         return type;
     }
-    public String getNumber() {
+    public int getNumber() {
         return number;
     }
 }

@@ -1,6 +1,8 @@
 package com.acfreeman.socialmediascanner;
 
+import android.app.Application;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,6 +23,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
+import java.util.ArrayList;
+
 
 public class RegistrationInformation extends AppCompatActivity {
     private LinearLayout mLayout;
@@ -34,6 +38,8 @@ public class RegistrationInformation extends AppCompatActivity {
     private EditText curPhone;
     private EditText curEmail;
     private RelativeLayout layout;
+    public ArrayList PhoneList = new ArrayList<EditText>();
+    public ArrayList EmailList = new ArrayList<EditText>();
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     SharedPreferences mPrefs;
@@ -60,19 +66,20 @@ public class RegistrationInformation extends AppCompatActivity {
         RelativeLayout.LayoutParams submitParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
         //name box
-        EditText editName = createEditText("Name", nameParam);
+        final EditText editName = createEditText("Name", nameParam);
         nameParam.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 
 
         //phone box
-        EditText editPhone = createEditText("Phone", phoneParam);
+        final EditText editPhone = createEditText("Phone", phoneParam);
         editPhone.setInputType(InputType.TYPE_CLASS_PHONE);
         phoneParam.addRule(RelativeLayout.BELOW, editName.getId());
-
+        PhoneList.add(editPhone);
 
 
         EditText editEmail = createEditText("Email", emailParam);
         emailParam.addRule(RelativeLayout.BELOW, editPhone.getId());
+        EmailList.add(editEmail);
 
         //first plus button
         final Button plus1 = createPlusButton(buttonParam1, editPhone);
@@ -100,20 +107,30 @@ public class RegistrationInformation extends AppCompatActivity {
 
 
 
+
+        final Context c = this;
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+//                EditText t1 = (EditText) findViewById(R.id.nameEditText);
+//                String name = (String) t1.getText().toString();
+//                EditText t2 = (EditText) findViewById(R.id.emailEditText);
+//                String email = (String) t2.getText().toString();
+//                EditText t3 = (EditText) findViewById(R.id.phoneEditText);
+//                String phone = (String) t3.getText().toString();
+//
+//
 //                //write to database
 //                DBHelper mDbHelper = new DBHelper(getApplicationContext());
-//                Log.i("DATABASE","two");
 //                // Gets the data repository in write mode
 //                SQLiteDatabase db = mDbHelper.getWritableDatabase();
-//                Log.i("DATABASE","three");
 //
 //// Create a new map of values, where column names are the keys
 //                ContentValues values = new ContentValues();
 //                values.put(DBContract.DBOwner.NAME, name);
+//
+//                values.put(DBContract.DBPhones.PHONE, phone);
 ////        values.put(DBContract.DBOwner.EMAIL, email);
 ////        values.put(DBContract.DBOwner.PHONE, phone);
 //
@@ -121,6 +138,13 @@ public class RegistrationInformation extends AppCompatActivity {
 //                long newRowId = db.insert(DBContract.DBOwner.TABLE_NAME, null, values);
 
 
+
+                ////
+                LocalDatabase database = new LocalDatabase(c);
+                Owner owner = new Owner(0, editName.getText().toString());
+                database.addOwner(owner);
+                Phones phone = new Phones(owner.getId(),Integer.parseInt(editPhone.getText().toString()),"Cell");
+                database.addPhones(phone);
 
 
 
@@ -138,6 +162,7 @@ public class RegistrationInformation extends AppCompatActivity {
             public void onClick(View v) {
                 RelativeLayout.LayoutParams newPhoneParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 EditText newPhone = createEditText("Phone", newPhoneParam);
+                PhoneList.add(newPhone);
                 newPhoneParam.addRule(RelativeLayout.BELOW, curPhone.getId());
                 newPhone.setInputType(InputType.TYPE_CLASS_PHONE);
 
@@ -164,6 +189,7 @@ public class RegistrationInformation extends AppCompatActivity {
             public void onClick(View v) {
                 RelativeLayout.LayoutParams newEmailParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 EditText newEmail = createEditText("Email", newEmailParam);
+                EmailList.add(newEmail);
                 newEmailParam.addRule(RelativeLayout.BELOW, curPhone.getId());
 
                 layout.removeView(plus2);

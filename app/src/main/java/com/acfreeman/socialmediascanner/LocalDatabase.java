@@ -44,25 +44,28 @@ public class LocalDatabase extends SQLiteOpenHelper{
  //               + KEY_EM_ADDR + " TEXT" + ")";
 //        db.execSQL(CREATE_CONTACTS_TABLE);
 
-        String CREATE_EMAILS_TABLE = "CREATE TABLE " + TABLE_EMAILS + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_EM_ADDR + " TEXT,"
-                + KEY_EM_TYPE + " TEXT" + ")";
-        db.execSQL(CREATE_EMAILS_TABLE);
 
-        String CREATE_OWNER_TABLE = "CREATE TABLE " + TABLE_OWNER + "("
+
+        String CREATE_OWNER_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_OWNER + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT" + ")";
         db.execSQL(CREATE_OWNER_TABLE);
 
-        String CREATE_PHONES_TABLE = "CREATE TABLE " + TABLE_PHONES + "("
+        String CREATE_CONTACTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_CONTACTS + "("
+                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT" + ")";
+        db.execSQL(CREATE_CONTACTS_TABLE);
+
+        String CREATE_PHONES_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_PHONES + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_PH_NUMBER + " TEXT,"
                 + KEY_PH_TYPE + " TEXT" + ")";
         db.execSQL(CREATE_PHONES_TABLE);
 
-        String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_CONTACTS + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT" + ")";
-        db.execSQL(CREATE_CONTACTS_TABLE);
+        String CREATE_EMAILS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_EMAILS + "("
+                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_EM_ADDR + " TEXT,"
+                + KEY_EM_TYPE + " TEXT" + ")";
+        db.execSQL(CREATE_EMAILS_TABLE);
 
-        String CREATE_SOCIAL_TABLE = "CREATE TABLE " + TABLE_SOCIAL + "("
+
+        String CREATE_SOCIAL_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_SOCIAL + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_SO_TYPE + " TEXT,"
                 + KEY_USERNAME + " TEXT" + ")";
         db.execSQL(CREATE_SOCIAL_TABLE);
@@ -185,7 +188,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
             cursor.moveToFirst();
 
         Phones phoneA = new Phones(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1), cursor.getString(2));
+                Integer.parseInt(cursor.getString(1)), cursor.getString(2));
 // return user
         return phoneA;
     }
@@ -250,7 +253,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
             do {
                 Phones phones = new Phones();
                 phones.setId(Integer.parseInt(cursor.getString(0)));
-                phones.setNumber(cursor.getString(1));
+                phones.setNumber(Integer.parseInt(cursor.getString(1)));
                 phones.setType(cursor.getString(2));
 // Adding contact to list
                 phonesList.add(phones);

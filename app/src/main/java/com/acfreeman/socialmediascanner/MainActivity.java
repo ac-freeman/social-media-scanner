@@ -255,7 +255,8 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         FrameLayout frameLayout = findViewById(R.id.content);
         mTextMessage = new TextView(this);
         mTextMessage.setText(R.string.title_friends);
-        List data = readDB();
+//        List data = readDB();
+        List data = readDatabase();
         String text = "";
         for(int x = 0; x < data.size(); x++){
             text += data.get(x);
@@ -264,6 +265,40 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         frameLayout.addView(mTextMessage);
 
 
+
+    }
+
+
+
+    private List readDatabase(){
+
+//        DBHelper mDbHelper = new DBHelper(getApplicationContext());
+        // Gets the data repository in write mode
+//        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+
+//        Cursor  cursor = db.rawQuery("select * from owner",null);
+//        List res = new ArrayList<String>();
+//        if (cursor.moveToFirst()) {
+//            while (!cursor.isAfterLast()) {
+//                String name = cursor.getString(cursor.getColumnIndex(DBContract.DBOwner.NAME));
+//
+//                res.add(name);
+//                cursor.moveToNext();
+//            }
+//        }
+        List res = new ArrayList();
+        LocalDatabase db = new LocalDatabase(getApplicationContext());
+
+        List<Owner> owner = db.getAllOwner();
+        res.add(owner.get(0).getId());
+        res.add(owner.get(0).getName());
+
+        Phones phones = db.getPhones(owner.get(0).getId());
+        res.add(phones.getNumber());
+        res.add(phones.getType());
+
+        return res;
 
     }
 
