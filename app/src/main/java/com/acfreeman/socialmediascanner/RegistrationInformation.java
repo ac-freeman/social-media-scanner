@@ -10,48 +10,47 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
 import com.acfreeman.socialmediascanner.db.DBContract;
 import com.acfreeman.socialmediascanner.db.DBHelper;
-import com.acfreeman.socialmediascanner.db.Emails;
-import com.acfreeman.socialmediascanner.db.LocalDatabase;
-import com.acfreeman.socialmediascanner.db.Owner;
-import com.acfreeman.socialmediascanner.db.Phones;
 import com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity;
-
-import java.util.ArrayList;
 
 
 public class RegistrationInformation extends AppCompatActivity {
-    private LinearLayout mLayout;
-    private EditText mEditText;
-    private Button  addEmailBtn;
+   // private LinearLayout mLayout;
+   // private EditText mEditText;
+   // private Button  addEmailBtn;
     //FrameLayout frameLayout = findViewById(R.id.content);
     //mTextMessage = new TextView(this);
 
+
     private int width;
     private int height;
+    private int btnPress1 = 0;
+    private int btnPress2 = 0;
+    //Create view and view group objects
+
+    //initialize editText objects which are the text boxes that are displayed in the screen
     private EditText curPhone;
     private EditText curEmail;
-    private RelativeLayout layout;
-    public ArrayList<EditText> PhoneList = new ArrayList<EditText>();
-    public ArrayList<EditText> EmailList = new ArrayList<EditText>();
+    private RelativeLayout layout;//initialize the relative layout object
 
+    //not sure what this does - does something when the app is first launched it think?
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     SharedPreferences mPrefs;
     final String firstLaunchPref= "firstLaunch";
 
+    //Not sure what this does?
     @Override
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    //
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -59,10 +58,13 @@ public class RegistrationInformation extends AppCompatActivity {
         //get screen dimensions in px
         Display display = getWindowManager().getDefaultDisplay(); Point size = new Point(); display.getSize(size); width = size.x; height = size.y;
 
-        layout = new RelativeLayout(this);
+        layout = new RelativeLayout(this);//initialzing the relative layout object
+
+        //Defining the layout programmatically
         final RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         layout.setLayoutParams(layoutParams);
 
+        //This is the dimensions for the view and view group objects
         RelativeLayout.LayoutParams nameParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         RelativeLayout.LayoutParams phoneParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         final RelativeLayout.LayoutParams emailParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -71,20 +73,18 @@ public class RegistrationInformation extends AppCompatActivity {
         RelativeLayout.LayoutParams submitParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
         //name box
-        final EditText editName = createEditText("Name", nameParam);
+        EditText editName = createEditText("Name", nameParam);
         nameParam.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 
 
         //phone box
-        final EditText editPhone = createEditText("Phone", phoneParam);
-        editPhone.setInputType(InputType.TYPE_CLASS_PHONE);
+        EditText editPhone = createEditText("Phone", phoneParam);
         phoneParam.addRule(RelativeLayout.BELOW, editName.getId());
-        PhoneList.add(editPhone);
+
 
 
         EditText editEmail = createEditText("Email", emailParam);
         emailParam.addRule(RelativeLayout.BELOW, editPhone.getId());
-        EmailList.add(editEmail);
 
         //first plus button
         final Button plus1 = createPlusButton(buttonParam1, editPhone);
@@ -110,32 +110,9 @@ public class RegistrationInformation extends AppCompatActivity {
         curPhone = editPhone;
         curEmail = editEmail;
 
-
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                ////
-                LocalDatabase database = new LocalDatabase(getApplicationContext());
-                Owner owner = new Owner(0, editName.getText().toString());
-                database.addOwner(owner);
-
-
-                for(EditText p : PhoneList) {
-                        Phones phone = new Phones(owner.getId(),Integer.parseInt(p.getText().toString()),"Cell");
-                        database.addPhones(phone);
-                }
-
-                for(EditText e : EmailList) {
-                        Emails email = new Emails(owner.getId(), e.getText().toString(),"Work");
-                        database.addEmails(email);
-                }
-                ////
-
-
-
-
-
                 Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
                 startActivity(startIntent);
             }
@@ -145,24 +122,26 @@ public class RegistrationInformation extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
             @Override
             public void onClick(View v) {
-                RelativeLayout.LayoutParams newPhoneParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                EditText newPhone = createEditText("Phone", newPhoneParam);
-                PhoneList.add(newPhone);
-                newPhoneParam.addRule(RelativeLayout.BELOW, curPhone.getId());
-                newPhone.setInputType(InputType.TYPE_CLASS_PHONE);
+                if (btnPress1 <= 1) {
+                    RelativeLayout.LayoutParams newPhoneParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                    int phoneCounter = btnPress1 + 2;
+                    EditText newPhone = createEditText("Phone " + phoneCounter, newPhoneParam);
+                    newPhoneParam.addRule(RelativeLayout.BELOW, curPhone.getId());
 
-                layout.removeView(plus1);
-                buttonParam1.addRule(RelativeLayout.BELOW, curPhone.getId());
-                curPhone = newPhone;
-                layout.addView(newPhone, newPhoneParam);
-                layout.addView(plus1, buttonParam1);
+                    layout.removeView(plus1);
+                    buttonParam1.addRule(RelativeLayout.BELOW, curPhone.getId());
+                    curPhone = newPhone;
+                    layout.addView(newPhone, newPhoneParam);
+                    layout.addView(plus1, buttonParam1);
 
-                layout.removeView(curEmail);
-                layout.removeView(plus2);
-                buttonParam2.addRule(RelativeLayout.BELOW, curPhone.getId());
-                emailParam.addRule(RelativeLayout.BELOW, curPhone.getId());
-                layout.addView(curEmail, emailParam);
-                layout.addView(plus2, buttonParam2);
+                    layout.removeView(curEmail);
+                    layout.removeView(plus2);
+                    buttonParam2.addRule(RelativeLayout.BELOW, curPhone.getId());
+                    emailParam.addRule(RelativeLayout.BELOW, curPhone.getId());
+                    layout.addView(curEmail, emailParam);
+                    layout.addView(plus2, buttonParam2);
+                    btnPress1++;
+                }
 
             }
         });
@@ -172,18 +151,20 @@ public class RegistrationInformation extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
             @Override
             public void onClick(View v) {
-                RelativeLayout.LayoutParams newEmailParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                EditText newEmail = createEditText("Email", newEmailParam);
-                EmailList.add(newEmail);
-                newEmailParam.addRule(RelativeLayout.BELOW, curPhone.getId());
+                if (btnPress2 <= 1) {
+                    RelativeLayout.LayoutParams newEmailParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                    int emailCounter = btnPress2 + 2;
+                    EditText newEmail = createEditText("Email " + emailCounter, newEmailParam);
+                    newEmailParam.addRule(RelativeLayout.BELOW, curPhone.getId());
 
-                layout.removeView(plus2);
-                buttonParam2.addRule(RelativeLayout.BELOW, curEmail.getId());
-                newEmailParam.addRule(RelativeLayout.BELOW, curEmail.getId());
-                curEmail = newEmail;
-                layout.addView(newEmail, newEmailParam);
-                layout.addView(plus2, buttonParam2);
-
+                    layout.removeView(plus2);
+                    buttonParam2.addRule(RelativeLayout.BELOW, curEmail.getId());
+                    newEmailParam.addRule(RelativeLayout.BELOW, curEmail.getId());
+                    curEmail = newEmail;
+                    layout.addView(newEmail, newEmailParam);
+                    layout.addView(plus2, buttonParam2);
+                    btnPress2++;
+                }
             }
         });
 
@@ -232,42 +213,5 @@ public class RegistrationInformation extends AppCompatActivity {
 
         return button;
     }
-
-
-
-
-
-
-
-
-
-
-    private void saveData(){
-
-        EditText t1 = (EditText) findViewById(R.id.nameEditText);
-        String name = (String) t1.getText().toString();
-        EditText t2 = (EditText) findViewById(R.id.emailEditText);
-        String email = (String) t2.getText().toString();
-        EditText t3 = (EditText) findViewById(R.id.phoneEditText);
-        String phone = (String) t3.getText().toString();
-
-        Log.i("DATABASE","one");
-        DBHelper mDbHelper = new DBHelper(getApplicationContext());
-        Log.i("DATABASE","two");
-        // Gets the data repository in write mode
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        Log.i("DATABASE","three");
-
-// Create a new map of values, where column names are the keys
-        ContentValues values = new ContentValues();
-        values.put(DBContract.DBOwner.NAME, name);
-//        values.put(DBContract.DBOwner.EMAIL, email);
-//        values.put(DBContract.DBOwner.PHONE, phone);
-
-        // Insert the new row, returning the primary key value of the new row
-        long newRowId = db.insert(DBContract.DBOwner.TABLE_NAME, null, values);
-    }
-
-
 
 }
