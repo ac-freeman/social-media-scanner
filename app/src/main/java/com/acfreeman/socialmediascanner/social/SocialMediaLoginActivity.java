@@ -90,7 +90,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
 
 
                 /////add to database//////////
-                Social twitter = new Social(owner.getId(),"twitter",String.valueOf(session.getUserId()));
+                Social twitter = new Social(owner.getId(),"tw",String.valueOf(session.getUserId()));
                 database.addSocial(twitter);
                 //////////////////////////////
 
@@ -141,11 +141,13 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
                                 try {
                                     obj = new JSONObject( apiResponse.getResponseDataAsJson().toString());
                                     JSONObject obj2 = obj.getJSONObject("siteStandardProfileRequest");
-                                    String li_id = obj2.getString("url");
+                                    String url = obj2.getString("url");
+                                    String li_id = url.substring(41);
+
                                     Log.i("LINKEDINDEBUG", li_id);
 
                                     /////add to database//////////
-                                    Social linkedin = new Social(owner.getId(),"linkedin", li_id);
+                                    Social linkedin = new Social(owner.getId(),"li", li_id);
                                     database.addSocial(linkedin);
                                     //////////////////////////////
                                 } catch (JSONException e) {

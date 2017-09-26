@@ -23,12 +23,14 @@ public class SocialDialogFragment extends DialogFragment {
 
     String title;
     String uri;
+    String name;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle mArgs = getArguments();
         title = mArgs.getString("dialog_title");
         uri = mArgs.getString("uri");
+        name = mArgs.getString("name");
 
     }
 

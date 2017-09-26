@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     private ImageView mImageView;
     private ZXingScannerView mScannerView;
     private boolean camera;
-
+    public boolean handleScan;
     /**
      * Called when activity begins
      * Creates basic layout with bottom navigation
@@ -113,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 case R.id.navigation_camera:
                     frameLayout.removeAllViews();
                     camera = true;
+                    handleScan = true;
                     scanCode();
 
                     return true;
@@ -319,51 +320,43 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
 //        showNoticeDialog("Would you like to add Andrew Freeman on Twitter?");
 
-        Toast.makeText(this, "Contents = " + rawResult.getText() +
-                ", Format = " + rawResult.getBarcodeFormat().toString(), Toast.LENGTH_SHORT).show();
+        if(handleScan) {    //if screen is not blocked by our dialog fragments
+            handleScan = false;
+            Toast.makeText(this, "Contents = " + rawResult.getText() +
+                    ", Format = " + rawResult.getBarcodeFormat().toString(), Toast.LENGTH_SHORT).show();
 
-        String raw = rawResult.getText();
-        String[] rawArray = raw.split("\\|");   //pipe character must be escaped in regex
+            String raw = rawResult.getText();
+            String[] rawArray = raw.split("\\|");   //pipe character must be escaped in regex
 
-        for(int i = 0; i<rawArray.length; i++){
+            for (int i = 0; i < rawArray.length; i++) {
 
-            String t = rawArray[i];
-            String uri;
-            switch(t){
+                String t = rawArray[i];
+                String uri;
+                switch (t) {
 
-                //when adding a new social media platform, simply copy this format
-                case "twitter":
-                    String twitter_id = rawArray[i+1];
-                    uri = "https://twitter.com/intent/follow?user_id="+(twitter_id);
+                    //when adding a new social media platform, simply copy this format
+                    case "tw":
+                        String twitter_id = rawArray[i + 1];
+                        uri = "https://twitter.com/intent/follow?user_id=" + (twitter_id);
 
-                    socialAdderArrayList.add(new SocialAdder(uri,"Twitter"));
+                        socialAdderArrayList.add(new SocialAdder(uri, "Twitter"));
 //                    showNoticeDialog("Would you like to add Andrew Freeman on Twitter?", uri);
-                    break;
-                case "linkedin":
+                        break;
+                    case "li":
 
-                    String linkedin_id = rawArray[i+1];
-                    uri = linkedin_id;
-                    socialAdderArrayList.add(new SocialAdder(uri,"LinkedIn"));
+                        String linkedin_id = rawArray[i + 1];
+                        uri = "https://www.linkedin.com/profile/view?id=" + (linkedin_id);
+                        socialAdderArrayList.add(new SocialAdder(uri, "LinkedIn"));
 //                    showNoticeDialog("Would you like to add Andrew Freeman on LinkedIn?", uri);
-                    break;
+                        break;
 
+                }
             }
+
+            showNoticeDialog("Andrew Freeman");
+
         }
-
-        showNoticeDialog("Would you like to add Andrew Freeman on ");
-
-
-
-
-
-        // Wait 2 seconds to resume the preview
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mScannerView.resumeCameraPreview(MainActivity.this);
-            }
-        }, 2000);
+        mScannerView.resumeCameraPreview(MainActivity.this);
     }
 
     public void socialAdd(String uri){
@@ -393,24 +386,29 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
 
 
-    public void showNoticeDialog(String title) {
-        // Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new SocialDialogFragment();
+    public void showNoticeDialog(String name) {
+        if(!socialAdderArrayList.isEmpty()) {
+            // Create an instance of the dialog fragment and show it
+            DialogFragment dialog = new SocialDialogFragment();
 
 
-        SocialAdder currentSocial = socialAdderArrayList.get(0);
-        String type = currentSocial.getType();
-        String uri = currentSocial.getUri();
+            SocialAdder currentSocial = socialAdderArrayList.get(0);
+            String type = currentSocial.getType();
+            String uri = currentSocial.getUri();
 
-        Bundle args = new Bundle();
-        args.putString("dialog_title", title + type + "?");
-        args.putString("uri", uri);
-//        args.putString("fav_name", clickedObj.getName());
+            Bundle args = new Bundle();
+            args.putString("dialog_title", "Would you like to add " + name + " on " + type + "?");
+            args.putString("name", name);
+            args.putString("uri", uri);
 
-        dialog.setArguments(args);
-        dialog.show(getFragmentManager(), "SocialDialogFragment");
+            dialog.setArguments(args);
+            dialog.show(getFragmentManager(), "SocialDialogFragment");
 
-        socialAdderArrayList.remove(0);
+            socialAdderArrayList.remove(0);
+        }
+        if(socialAdderArrayList.isEmpty()){
+            handleScan = true;
+        }
 
     }
 
@@ -420,16 +418,19 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         //Go to next social media dialog
 
         Bundle mArgs = dialog.getArguments();
+        String name = mArgs.getString("name");
         String uri = mArgs.getString("uri");
         socialAdd(uri);
 
-        showNoticeDialog("Would you like to add Andrew Freeman on ");
+        showNoticeDialog(name);
     }
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
         //Go to next social media dialog
-        showNoticeDialog("Would you like to add Andrew Freeman on ");
+        Bundle mArgs = dialog.getArguments();
+        String name = mArgs.getString("name");
+        showNoticeDialog(name);
     }
 
 //    @Override

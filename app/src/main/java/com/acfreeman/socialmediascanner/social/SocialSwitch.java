@@ -31,10 +31,10 @@ public class SocialSwitch {
     }
     private void setType_name(String type_db){
         switch (type_db){
-            case "twitter":
+            case "tw":
                 this.type_name = "Twitter";
                 break;
-            case "linkedin":
+            case "li":
                 this.type_name = "LinkedIn";
                 break;
             default:
