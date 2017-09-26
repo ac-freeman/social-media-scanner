@@ -1,4 +1,4 @@
-package com.acfreeman.socialmediascanner;
+package com.acfreeman.socialmediascanner.db;
 
 import android.content.ContentValues;
 import android.content.Context;

@@ -1,39 +1,39 @@
-package com.acfreeman.socialmediascanner;
+package com.acfreeman.socialmediascanner.db;
 
 /**
  * Created by jianziyu on 2017/9/19.
  */
 
-public class Emails {
+public class Social {
     private int id;
-    private String email;
     private String type;
-    public Emails()
+    private String username;
+    public Social()
     {
     }
-    public Emails(int id,String email,String type)
+    public Social(int id,String type,String username)
     {
         this.id=id;
-        this.email=email;
         this.type=type;
+        this.username=username;
     }
     public void setId(int id) {
         this.id = id;
     }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public void setType(String type) {
         this.type = type;
     }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public int getId() {
         return id;
     }
+    public String getUsername() {
+        return username;
+    }
     public String getType() {
         return type;
-    }
-    public String getEmail() {
-        return email;
     }
 }

@@ -1,8 +1,6 @@
 package com.acfreeman.socialmediascanner;
 
-import android.app.Application;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,7 +8,6 @@ import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -22,6 +19,13 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
+
+import com.acfreeman.socialmediascanner.db.DBContract;
+import com.acfreeman.socialmediascanner.db.DBHelper;
+import com.acfreeman.socialmediascanner.db.Emails;
+import com.acfreeman.socialmediascanner.db.LocalDatabase;
+import com.acfreeman.socialmediascanner.db.Owner;
+import com.acfreeman.socialmediascanner.db.Phones;
 
 import java.util.ArrayList;
 
