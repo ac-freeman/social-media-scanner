@@ -1,4 +1,4 @@
-package com.acfreeman.socialmediascanner;
+package com.acfreeman.socialmediascanner.social;
 
 /**
  * Created by Andrew on 9/26/2017.

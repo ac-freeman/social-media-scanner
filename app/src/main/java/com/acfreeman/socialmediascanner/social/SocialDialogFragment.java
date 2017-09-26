@@ -1,4 +1,4 @@
-package com.acfreeman.socialmediascanner;
+package com.acfreeman.socialmediascanner.social;
 
 import android.app.Activity;
 import android.app.AlertDialog;
