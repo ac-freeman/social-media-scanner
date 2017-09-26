@@ -313,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 //        FragmentManager manager = getFragmentManager();
 //        dialog.show(manager, "fragment_test");
 
-        showNoticeDialog("Would you like to add Andrew Freeman on Twitter?");
+//        showNoticeDialog("Would you like to add Andrew Freeman on Twitter?");
 
         Toast.makeText(this, "Contents = " + rawResult.getText() +
                 ", Format = " + rawResult.getBarcodeFormat().toString(), Toast.LENGTH_SHORT).show();
@@ -321,38 +321,30 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         String raw = rawResult.getText();
         String[] rawArray = raw.split("\\|");   //pipe character must be escaped in regex
 
-//        for(int i = 0; i<rawArray.length; i++){
-//
-//            String t = rawArray[i];
-//            String uri;
-//            switch(t){
-//
-//                //when adding a new social media platform, simply copy this format
-//                case "twitter":
-//                    String twitter_id = rawArray[i+1];
-//                    uri = "https://twitter.com/intent/follow?user_id="+(twitter_id);
-//                    socialAdd(uri);
-//                    break;
-//                case "linkedin":
-//                    //TODO: remove and improve
-//                    Handler handler = new Handler();
-//                    handler.postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//
-//                        }
-//                    }, 2000);
-//                    String linkedin_id = rawArray[i+1];
-//                    uri = linkedin_id;
-//                    socialAdd(uri);
-//
-//                    break;
-//
-//
-//
-//
-//            }
-//        }
+        for(int i = 0; i<rawArray.length; i++){
+
+            String t = rawArray[i];
+            String uri;
+            switch(t){
+
+                //when adding a new social media platform, simply copy this format
+                case "twitter":
+                    String twitter_id = rawArray[i+1];
+                    uri = "https://twitter.com/intent/follow?user_id="+(twitter_id);
+                    showNoticeDialog("Would you like to add Andrew Freeman on Twitter?", uri);
+                    break;
+                case "linkedin":
+
+                    String linkedin_id = rawArray[i+1];
+                    uri = linkedin_id;
+                    showNoticeDialog("Would you like to add Andrew Freeman on LinkedIn?", uri);
+                    break;
+
+
+
+
+            }
+        }
 
 
 
@@ -395,12 +387,13 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
 
 
-    public void showNoticeDialog(String title) {
+    public void showNoticeDialog(String title, String uri) {
         // Create an instance of the dialog fragment and show it
         DialogFragment dialog = new SocialDialogFragment();
 
         Bundle args = new Bundle();
         args.putString("dialog_title", title);
+        args.putString("uri", uri);
 //        args.putString("fav_name", clickedObj.getName());
 
         dialog.setArguments(args);
@@ -412,6 +405,10 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     public void onDialogPositiveClick(DialogFragment dialog) {
         //Add user intent
         //Go to next social media dialog
+
+        Bundle mArgs = dialog.getArguments();
+        String uri = mArgs.getString("uri");
+        socialAdd(uri);
     }
 
     @Override

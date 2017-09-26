@@ -22,11 +22,13 @@ public class SocialDialogFragment extends DialogFragment {
     }
 
     String title;
+    String uri;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle mArgs = getArguments();
         title = mArgs.getString("dialog_title");
+        uri = mArgs.getString("uri");
 
     }
 
@@ -56,12 +58,12 @@ public class SocialDialogFragment extends DialogFragment {
             builder.setMessage(title)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            // FIRE ZE MISSILES!
+                            mListener.onDialogPositiveClick(SocialDialogFragment.this);
                         }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            // User cancelled the dialog
+                            mListener.onDialogNegativeClick(SocialDialogFragment.this);
                         }
                     });
             // Create the AlertDialog object and return it
