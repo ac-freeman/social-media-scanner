@@ -302,6 +302,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
 
     private boolean wait = true;
+    public ArrayList<SocialAdder> socialAdderArrayList = new ArrayList<>();
     /**
      * From https://github.com/dm77/barcodescanner
      * @param rawResult the raw data contained by the scanned QR code
@@ -331,20 +332,22 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 case "twitter":
                     String twitter_id = rawArray[i+1];
                     uri = "https://twitter.com/intent/follow?user_id="+(twitter_id);
-                    showNoticeDialog("Would you like to add Andrew Freeman on Twitter?", uri);
+
+                    socialAdderArrayList.add(new SocialAdder(uri,"Twitter"));
+//                    showNoticeDialog("Would you like to add Andrew Freeman on Twitter?", uri);
                     break;
                 case "linkedin":
 
                     String linkedin_id = rawArray[i+1];
                     uri = linkedin_id;
-                    showNoticeDialog("Would you like to add Andrew Freeman on LinkedIn?", uri);
+                    socialAdderArrayList.add(new SocialAdder(uri,"LinkedIn"));
+//                    showNoticeDialog("Would you like to add Andrew Freeman on LinkedIn?", uri);
                     break;
-
-
-
 
             }
         }
+
+        showNoticeDialog("Would you like to add Andrew Freeman on ");
 
 
 
@@ -387,17 +390,24 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
 
 
-    public void showNoticeDialog(String title, String uri) {
+    public void showNoticeDialog(String title) {
         // Create an instance of the dialog fragment and show it
         DialogFragment dialog = new SocialDialogFragment();
 
+
+        SocialAdder currentSocial = socialAdderArrayList.get(0);
+        String type = currentSocial.getType();
+        String uri = currentSocial.getUri();
+
         Bundle args = new Bundle();
-        args.putString("dialog_title", title);
+        args.putString("dialog_title", title + type + "?");
         args.putString("uri", uri);
 //        args.putString("fav_name", clickedObj.getName());
 
         dialog.setArguments(args);
         dialog.show(getFragmentManager(), "SocialDialogFragment");
+
+        socialAdderArrayList.remove(0);
 
     }
 
@@ -409,11 +419,14 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         Bundle mArgs = dialog.getArguments();
         String uri = mArgs.getString("uri");
         socialAdd(uri);
+
+        showNoticeDialog("Would you like to add Andrew Freeman on ");
     }
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
         //Go to next social media dialog
+        showNoticeDialog("Would you like to add Andrew Freeman on ");
     }
 
 //    @Override
