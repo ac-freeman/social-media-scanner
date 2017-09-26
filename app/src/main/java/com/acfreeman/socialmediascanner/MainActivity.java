@@ -1,5 +1,7 @@
 package com.acfreeman.socialmediascanner;
 
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -64,7 +66,7 @@ import me.dm7.barcodescanner.core.IViewFinder;
 import me.dm7.barcodescanner.core.ViewFinderView;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
-public class MainActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler{
+public class MainActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler, SocialDialogFragment.NoticeDialogListener{
 
     private TextView mTextMessage;
     private ImageView mImageView;
@@ -321,44 +323,51 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
      */
     @Override
     public void handleResult(Result rawResult) {
+
+//        SocialDialogFragment dialog = new SocialDialogFragment();
+//        FragmentManager manager = getFragmentManager();
+//        dialog.show(manager, "fragment_test");
+
+        showNoticeDialog("Would you like to add Andrew Freeman on Twitter?");
+
         Toast.makeText(this, "Contents = " + rawResult.getText() +
                 ", Format = " + rawResult.getBarcodeFormat().toString(), Toast.LENGTH_SHORT).show();
 
         String raw = rawResult.getText();
         String[] rawArray = raw.split("\\|");   //pipe character must be escaped in regex
 
-        for(int i = 0; i<rawArray.length; i++){
-
-            String t = rawArray[i];
-            String uri;
-            switch(t){
-
-                //when adding a new social media platform, simply copy this format
-                case "twitter":
-                    String twitter_id = rawArray[i+1];
-                    uri = "https://twitter.com/intent/follow?user_id="+(twitter_id);
-                    socialAdd(uri);
-                    break;
-                case "linkedin":
-                    //TODO: remove and improve
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-
-                        }
-                    }, 2000);
-                    String linkedin_id = rawArray[i+1];
-                    uri = linkedin_id;
-                    socialAdd(uri);
-
-                    break;
-
-
-
-
-            }
-        }
+//        for(int i = 0; i<rawArray.length; i++){
+//
+//            String t = rawArray[i];
+//            String uri;
+//            switch(t){
+//
+//                //when adding a new social media platform, simply copy this format
+//                case "twitter":
+//                    String twitter_id = rawArray[i+1];
+//                    uri = "https://twitter.com/intent/follow?user_id="+(twitter_id);
+//                    socialAdd(uri);
+//                    break;
+//                case "linkedin":
+//                    //TODO: remove and improve
+//                    Handler handler = new Handler();
+//                    handler.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//
+//                        }
+//                    }, 2000);
+//                    String linkedin_id = rawArray[i+1];
+//                    uri = linkedin_id;
+//                    socialAdd(uri);
+//
+//                    break;
+//
+//
+//
+//
+//            }
+//        }
 
 
 
@@ -397,6 +406,32 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         if(camera) {
             mScannerView.stopCamera();
         }
+    }
+
+
+
+    public void showNoticeDialog(String title) {
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new SocialDialogFragment();
+
+        Bundle args = new Bundle();
+        args.putString("dialog_title", title);
+//        args.putString("fav_name", clickedObj.getName());
+
+        dialog.setArguments(args);
+        dialog.show(getFragmentManager(), "SocialDialogFragment");
+
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        //Add user intent
+        //Go to next social media dialog
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        //Go to next social media dialog
     }
 
 //    @Override
