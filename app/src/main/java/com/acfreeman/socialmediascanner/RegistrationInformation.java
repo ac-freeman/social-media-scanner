@@ -50,6 +50,9 @@ public class RegistrationInformation extends AppCompatActivity {
     SharedPreferences mPrefs;
     final String firstLaunchPref= "firstLaunch";
 
+    public int plus1count = 0;
+    public int plus2count = 0;
+
     @Override
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,33 +114,31 @@ public class RegistrationInformation extends AppCompatActivity {
         curEmail = editEmail;
 
 
+
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                ////
-                LocalDatabase database = new LocalDatabase(getApplicationContext());
-                Owner owner = new Owner(0, editName.getText().toString());
-                database.addOwner(owner);
+                    ////
+                    LocalDatabase database = new LocalDatabase(getApplicationContext());
+                    Owner owner = new Owner(0, editName.getText().toString());
+                    database.addOwner(owner);
 
 
-                for(EditText p : PhoneList) {
-                        Phones phone = new Phones(owner.getId(),Integer.parseInt(p.getText().toString()),"Cell");
+                    for (EditText p : PhoneList) {
+                        Phones phone = new Phones(owner.getId(), Integer.parseInt(p.getText().toString()), "Cell");
                         database.addPhones(phone);
-                }
+                    }
 
-                for(EditText e : EmailList) {
-                        Emails email = new Emails(owner.getId(), e.getText().toString(),"Work");
+                    for (EditText e : EmailList) {
+                        Emails email = new Emails(owner.getId(), e.getText().toString(), "Work");
                         database.addEmails(email);
-                }
-                ////
+                    }
+                    ////
 
 
-
-
-
-                Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
-                startActivity(startIntent);
+                    Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
+                    startActivity(startIntent);
             }
         });
 
@@ -145,25 +146,27 @@ public class RegistrationInformation extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
             @Override
             public void onClick(View v) {
-                RelativeLayout.LayoutParams newPhoneParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                EditText newPhone = createEditText("Phone", newPhoneParam);
-                PhoneList.add(newPhone);
-                newPhoneParam.addRule(RelativeLayout.BELOW, curPhone.getId());
-                newPhone.setInputType(InputType.TYPE_CLASS_PHONE);
+                if(plus1count < 2) {
+                    RelativeLayout.LayoutParams newPhoneParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                    EditText newPhone = createEditText("Phone", newPhoneParam);
+                    PhoneList.add(newPhone);
+                    newPhoneParam.addRule(RelativeLayout.BELOW, curPhone.getId());
+                    newPhone.setInputType(InputType.TYPE_CLASS_PHONE);
 
-                layout.removeView(plus1);
-                buttonParam1.addRule(RelativeLayout.BELOW, curPhone.getId());
-                curPhone = newPhone;
-                layout.addView(newPhone, newPhoneParam);
-                layout.addView(plus1, buttonParam1);
+                    layout.removeView(plus1);
+                    buttonParam1.addRule(RelativeLayout.BELOW, curPhone.getId());
+                    curPhone = newPhone;
+                    layout.addView(newPhone, newPhoneParam);
+                    layout.addView(plus1, buttonParam1);
 
-                layout.removeView(curEmail);
-                layout.removeView(plus2);
-                buttonParam2.addRule(RelativeLayout.BELOW, curPhone.getId());
-                emailParam.addRule(RelativeLayout.BELOW, curPhone.getId());
-                layout.addView(curEmail, emailParam);
-                layout.addView(plus2, buttonParam2);
-
+                    layout.removeView(curEmail);
+                    layout.removeView(plus2);
+                    buttonParam2.addRule(RelativeLayout.BELOW, curPhone.getId());
+                    emailParam.addRule(RelativeLayout.BELOW, curPhone.getId());
+                    layout.addView(curEmail, emailParam);
+                    layout.addView(plus2, buttonParam2);
+                plus1count++;
+                }
             }
         });
 
@@ -172,18 +175,20 @@ public class RegistrationInformation extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
             @Override
             public void onClick(View v) {
-                RelativeLayout.LayoutParams newEmailParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                EditText newEmail = createEditText("Email", newEmailParam);
-                EmailList.add(newEmail);
-                newEmailParam.addRule(RelativeLayout.BELOW, curPhone.getId());
+                if(plus2count < 2) {
+                    RelativeLayout.LayoutParams newEmailParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                    EditText newEmail = createEditText("Email", newEmailParam);
+                    EmailList.add(newEmail);
+                    newEmailParam.addRule(RelativeLayout.BELOW, curPhone.getId());
 
-                layout.removeView(plus2);
-                buttonParam2.addRule(RelativeLayout.BELOW, curEmail.getId());
-                newEmailParam.addRule(RelativeLayout.BELOW, curEmail.getId());
-                curEmail = newEmail;
-                layout.addView(newEmail, newEmailParam);
-                layout.addView(plus2, buttonParam2);
-
+                    layout.removeView(plus2);
+                    buttonParam2.addRule(RelativeLayout.BELOW, curEmail.getId());
+                    newEmailParam.addRule(RelativeLayout.BELOW, curEmail.getId());
+                    curEmail = newEmail;
+                    layout.addView(newEmail, newEmailParam);
+                    layout.addView(plus2, buttonParam2);
+                    plus2count++;
+                }
             }
         });
 
