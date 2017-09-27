@@ -12,18 +12,28 @@ import android.text.InputType;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.ScrollView;
+import android.widget.Switch;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.db.Emails;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Phones;
+import com.acfreeman.socialmediascanner.db.Social;
 import com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity;
+import com.acfreeman.socialmediascanner.social.SocialSwitch;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class RegistrationInformation extends AppCompatActivity {
@@ -47,7 +57,8 @@ public class RegistrationInformation extends AppCompatActivity {
     public ArrayList<EditText> PhoneList = new ArrayList<EditText>();
     public ArrayList<EditText> EmailList = new ArrayList<EditText>();
 
-
+    public int plusEmailCnt;
+    public int plusPhoneCnt;
 
     //not sure what this does - does something when the app is first launched it think?
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -63,80 +74,157 @@ public class RegistrationInformation extends AppCompatActivity {
     //
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_registration_information);
+        
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // second argument is the default to use if the preference can't be found
+        Boolean firstLaunch = mPrefs.getBoolean(firstLaunchPref, true);
+
+        if(firstLaunch) {
+
+        SharedPreferences.Editor editor = mPrefs.edit();
+        editor.putBoolean(firstLaunchPref, false);
+        editor.commit(); // Very important to save the preference
+        }
+
+        else {
+        Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+         startActivity(startIntent);
+        }
 
 
-        //get screen dimensions in px
+        final TableLayout table = (TableLayout) findViewById(R.id.table_main);
+
+
+        TableRow tableRow;
+        TextView t1;
+        Switch t2;
+
+
+        //////
+        List texts = new ArrayList();
+        LocalDatabase db = new LocalDatabase(getApplicationContext());
+
         Display display = getWindowManager().getDefaultDisplay(); Point size = new Point(); display.getSize(size); width = size.x; height = size.y;
-
-        layout = new RelativeLayout(this);//initialzing the relative layout object
-
-        //Defining the layout programmatically
-        final RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        layout.setLayoutParams(layoutParams);
-
-        //This is the dimensions for the view and view group objects
-        RelativeLayout.LayoutParams nameParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        RelativeLayout.LayoutParams phoneParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        final RelativeLayout.LayoutParams emailParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        final RelativeLayout.LayoutParams buttonParam1 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        final RelativeLayout.LayoutParams buttonParam2 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        RelativeLayout.LayoutParams submitParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-
-        //name box
-        final EditText editName = createEditText("Name", nameParam);
-
-        nameParam.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        final int textWidth = width/2;
 
 
-        //phone box
-        final EditText editPhone = createEditText("Phone", phoneParam);
-        editPhone.setInputType(InputType.TYPE_CLASS_PHONE);
-        phoneParam.addRule(RelativeLayout.BELOW, editName.getId());
-        PhoneList.add(editPhone);
+        final EditText nameEditText = new EditText(this);
+        nameEditText.setHint("Name");
+        nameEditText.setWidth(textWidth);
+        tableRow = new TableRow(this);
+        tableRow.addView(nameEditText);
+        table.addView(tableRow);
+
+        ////////phone/////////
+        final EditText phoneEditText = new EditText(this);
+        phoneEditText.setHint("Phone");
+        phoneEditText.setInputType(InputType.TYPE_CLASS_PHONE);
+        phoneEditText.setWidth(textWidth);
+
+        final Button plusPhone = new Button(this);
+        plusPhone.setText("+");
+        plusPhone.setWidth(LayoutParams.WRAP_CONTENT);  //Doesn't work
+        plusPhoneCnt = 0;
+
+        final TableRow phoneRow = new TableRow(this);
+        phoneRow.addView(phoneEditText);
+        phoneRow.addView(plusPhone);
+        table.addView(phoneRow);
+
+        PhoneList.add(phoneEditText);
+        ////////phone/////////
 
 
+        ////////email/////////
+        EditText emailEditText = new EditText(this);
+        emailEditText.setHint("Email");
+        emailEditText.setWidth(textWidth);
+
+        final Button plusEmail = new Button(this);
+        plusEmail.setText("+");
+        plusEmail.setWidth(LayoutParams.WRAP_CONTENT);  //Doesn't work
+        plusEmailCnt = 0;
+
+        TableRow emailRow = new TableRow(this);
+        emailRow.addView(emailEditText);
+        emailRow.addView(plusEmail);
+        table.addView(emailRow);
+
+        EmailList.add(emailEditText);
+        ////////email/////////
+
+        final Button submitButton = new Button(this);
+        submitButton.setText("Submit");
+        TableRow submitRow = new TableRow(this);
+        submitRow.addView(submitButton);
+        table.addView(submitRow);
 
 
-        final EditText editEmail = createEditText("Email", emailParam);
-        emailParam.addRule(RelativeLayout.BELOW, editPhone.getId());
-        EmailList.add(editEmail);
+        plusPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(plusPhoneCnt<2) {
+
+                    TableRow curRow = (TableRow) view.getParent();
+                    // It's index
+                    int index = table.indexOfChild(curRow);
+                    curRow.removeView(plusPhone);
+
+                    EditText phoneEditText = new EditText(getApplicationContext());
+                    phoneEditText.setHint("Phone");
+                    phoneEditText.setInputType(InputType.TYPE_CLASS_PHONE);
+                    phoneEditText.setWidth(textWidth);
 
 
-        //first plus button
-        final Button plus1 = createPlusButton(buttonParam1, editPhone);
-        buttonParam1.addRule(RelativeLayout.BELOW, editName.getId());
+                    TableRow newPhoneRow = new TableRow(getApplicationContext());
+                    newPhoneRow.addView(phoneEditText);
+                    newPhoneRow.addView(plusPhone);
 
-        //second plus button
-        final Button plus2 = createPlusButton(buttonParam2, editEmail);
-        buttonParam2.addRule(RelativeLayout.BELOW, editPhone.getId());
+                    table.addView(newPhoneRow, index + 1);
 
-        //submit button
-        Button submit = new Button(this);
-        submit.setText("Submit");
-        submitParam.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        submitParam.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                    plusPhoneCnt++;
+                }
+            }
+        });
 
-        layout.addView(editName, nameParam);
-        layout.addView(editPhone, phoneParam);
-        layout.addView(editEmail, emailParam);
-        layout.addView(plus1, buttonParam1);
-        layout.addView(plus2, buttonParam2);
-        layout.addView(submit, submitParam);
+        plusEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-        curPhone = editPhone;
-        curEmail = editEmail;
+                if(plusEmailCnt < 2) {
 
 
+                    TableRow curRow = (TableRow) view.getParent();
+                    // It's index
+                    int index = table.indexOfChild(curRow);
+                    curRow.removeView(plusEmail);
+
+                    EditText emailEditText = new EditText(getApplicationContext());
+                    emailEditText.setHint("Email");
+                    emailEditText.setWidth(textWidth);
 
 
-        submit.setOnClickListener(new View.OnClickListener() {
+                    TableRow newEmailRow = new TableRow(getApplicationContext());
+                    newEmailRow.addView(emailEditText);
+                    newEmailRow.addView(plusEmail);
+
+                    table.addView(newEmailRow, index + 1);
+
+                    plusEmailCnt++;
+                }
+            }
+        });
+
+        submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 boolean error = false;
 
-                if (editName.getText().toString().trim().equals("")) {
+                if (nameEditText.getText().toString().trim().equals("")) {
                     Toast.makeText(getApplicationContext(), "Name is required!", Toast.LENGTH_SHORT).show();
-                    editName.setError("Name is required!");
+                    nameEditText.setError("Name is required!");
                     error = true;
                 }
 
@@ -144,7 +232,7 @@ public class RegistrationInformation extends AppCompatActivity {
 
                 ////
                     LocalDatabase database = new LocalDatabase(getApplicationContext());
-                    Owner owner = new Owner(0, editName.getText().toString());
+                    Owner owner = new Owner(0, nameEditText.getText().toString());
                     database.addOwner(owner);
 
 
@@ -180,81 +268,6 @@ public class RegistrationInformation extends AppCompatActivity {
             }
         });
 
-        plus1.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-            @Override
-            public void onClick(View v) {
-
-                if(plus1count < 2) {
-                    RelativeLayout.LayoutParams newPhoneParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                    EditText newPhone = createEditText("Phone", newPhoneParam);
-                    PhoneList.add(newPhone);
-                    newPhoneParam.addRule(RelativeLayout.BELOW, curPhone.getId());
-                    newPhone.setInputType(InputType.TYPE_CLASS_PHONE);
-
-                    layout.removeView(plus1);
-                    buttonParam1.addRule(RelativeLayout.BELOW, curPhone.getId());
-                    curPhone = newPhone;
-                    layout.addView(newPhone, newPhoneParam);
-                    layout.addView(plus1, buttonParam1);
-
-                    layout.removeView(curEmail);
-                    layout.removeView(plus2);
-                    buttonParam2.addRule(RelativeLayout.BELOW, curPhone.getId());
-                    emailParam.addRule(RelativeLayout.BELOW, curPhone.getId());
-                    layout.addView(curEmail, emailParam);
-                    layout.addView(plus2, buttonParam2);
-
-                plus1count++;
-                }
-            }
-        });
-
-
-        plus2.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-            @Override
-            public void onClick(View v) {
-
-
-                if(plus2count < 2) {
-                    RelativeLayout.LayoutParams newEmailParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                    EditText newEmail = createEditText("Email", newEmailParam);
-                    EmailList.add(newEmail);
-
-                    newEmailParam.addRule(RelativeLayout.BELOW, curPhone.getId());
-
-                    layout.removeView(plus2);
-                    buttonParam2.addRule(RelativeLayout.BELOW, curEmail.getId());
-                    newEmailParam.addRule(RelativeLayout.BELOW, curEmail.getId());
-                    curEmail = newEmail;
-                    layout.addView(newEmail, newEmailParam);
-                    layout.addView(plus2, buttonParam2);
-
-                    plus2count++;
-
-                }
-            }
-        });
-
-        setContentView(layout);
-
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        // second argument is the default to use if the preference can't be found
-        Boolean firstLaunch = mPrefs.getBoolean(firstLaunchPref, true);
-
-        if(firstLaunch) {
-
-        SharedPreferences.Editor editor = mPrefs.edit();
-        editor.putBoolean(firstLaunchPref, false);
-        editor.commit(); // Very important to save the preference
-        }
-
-        else {
-        Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
-         startActivity(startIntent);
-        }
 
     }
 
