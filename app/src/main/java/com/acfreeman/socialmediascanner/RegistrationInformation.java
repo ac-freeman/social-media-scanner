@@ -1,9 +1,7 @@
 package com.acfreeman.socialmediascanner;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,16 +9,14 @@ import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
-import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.Toast;
 
-import com.acfreeman.socialmediascanner.db.DBContract;
-import com.acfreeman.socialmediascanner.db.DBHelper;
 import com.acfreeman.socialmediascanner.db.Emails;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
@@ -101,7 +97,7 @@ public class RegistrationInformation extends AppCompatActivity {
 
 
 
-        EditText editEmail = createEditText("Email", emailParam);
+        final EditText editEmail = createEditText("Email", emailParam);
         emailParam.addRule(RelativeLayout.BELOW, editPhone.getId());
         EmailList.add(editEmail);
 
@@ -136,27 +132,50 @@ public class RegistrationInformation extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                boolean error = false;
 
-                    ////
+                if (editName.getText().toString().trim().equals("")) {
+                    Toast.makeText(getApplicationContext(), "Name is required!", Toast.LENGTH_SHORT).show();
+                    editName.setError("Name is required!");
+                    error = true;
+                }
+
+
+
+                ////
                     LocalDatabase database = new LocalDatabase(getApplicationContext());
                     Owner owner = new Owner(0, editName.getText().toString());
                     database.addOwner(owner);
 
 
                     for (EditText p : PhoneList) {
-                        Phones phone = new Phones(owner.getId(), Integer.parseInt(p.getText().toString()), "Cell");
-                        database.addPhones(phone);
+                        if (p.getText().toString().trim().equals("")) {
+                            Toast.makeText(getApplicationContext(), "Phone number is required!", Toast.LENGTH_SHORT).show();
+                            p.setError("Phone number is required!");
+                            error = true;
+                        } else {
+                            Phones phone = new Phones(owner.getId(), Integer.parseInt(p.getText().toString()), "Cell");
+                            database.addPhones(phone);
+                        }
                     }
 
                     for (EditText e : EmailList) {
-                        Emails email = new Emails(owner.getId(), e.getText().toString(), "Work");
-                        database.addEmails(email);
+                        if (e.getText().toString().trim().equals("")) {
+                            Toast.makeText(getApplicationContext(), "Email is required!", Toast.LENGTH_SHORT).show();
+                            e.setError("Email is required!");
+                            error = true;
+                        } else {
+                            Emails email = new Emails(owner.getId(), e.getText().toString(), "Work");
+                            database.addEmails(email);
+                        }
                     }
                     ////
 
+                    if(!error) {
+                        Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
+                        startActivity(startIntent);
+                    }
 
-                    Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
-                    startActivity(startIntent);
 
             }
         });
