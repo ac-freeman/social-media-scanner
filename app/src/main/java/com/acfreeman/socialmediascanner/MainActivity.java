@@ -152,12 +152,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         frameLayout.addView(scroll);
         scroll.addView(table);
         generateCode(frameLayout);
-//        //set image position
-//        mImageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.WRAP_CONTENT));
 
-        //add view to layout
-//        frameLayout.addView(mImageView);
 
         tableRow = new TableRow(this);
         tableRow.addView(mImageView);
@@ -216,18 +211,12 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             tableRow.addView(socialSwitch.getSwitch());
             table.addView(tableRow);
         }
-
         //////
 
     }
 
 
     public void generateCode(FrameLayout frameLayout) {
-
-        /////
-        TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
-        long user_id = session.getUserId();
-        //////
 
         try {
             int width = frameLayout.getWidth();

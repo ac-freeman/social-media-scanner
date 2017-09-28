@@ -1,6 +1,10 @@
 package com.acfreeman.socialmediascanner.social;
 
+import android.app.DialogFragment;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -40,7 +44,7 @@ import java.util.List;
 
 import static android.view.MotionEvent.ACTION_BUTTON_PRESS;
 
-public class SocialMediaLoginActivity extends AppCompatActivity {
+public class SocialMediaLoginActivity extends AppCompatActivity implements DownloadDialogFragment.NoticeDialogListener {
 
     private TwitterLoginButton loginButton;
     private ImageView liButton;
@@ -98,7 +102,15 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
 
             @Override
             public void failure(TwitterException exception) {
-                Toast.makeText(getApplicationContext(), "ERROR: Could not login to Twitter", Toast.LENGTH_LONG);
+                Toast.makeText(getApplicationContext(), "ERROR: Could not login to Twitter", Toast.LENGTH_LONG).show();
+                try{
+                    ApplicationInfo info = getPackageManager().
+                            getApplicationInfo("com.twitter.android", 0 );
+                } catch( PackageManager.NameNotFoundException e ){
+                    // Ask if user would like to install the Twitter app
+                    showNoticeDialog("Twitter", "https://play.google.com/store/apps/details?id=com.twitter.android");
+
+                }
             }
         });
 
@@ -151,7 +163,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
                                     database.addSocial(linkedin);
                                     //////////////////////////////
                                 } catch (JSONException e) {
-                                    Toast.makeText(getApplicationContext(), "ERROR: Could not login to LinkedIn", Toast.LENGTH_LONG);
+                                    Toast.makeText(getApplicationContext(), "ERROR: Could not login to LinkedIn", Toast.LENGTH_LONG).show();
                                     e.printStackTrace();
                                 }
 
@@ -160,7 +172,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
 
                             @Override
                             public void onApiError(LIApiError liApiError) {
-                                Toast.makeText(getApplicationContext(), "ERROR: Could not login to LinkedIn", Toast.LENGTH_LONG);
+                                Toast.makeText(getApplicationContext(), "ERROR: Could not login to LinkedIn", Toast.LENGTH_LONG).show();
                             }
                         });
 
@@ -206,6 +218,43 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
         LISessionManager.getInstance(getApplicationContext()).onActivityResult(this, requestCode, resultCode, data);
 
     }
+
+    public void showNoticeDialog(String social_title, String uri) {
+        DialogFragment dialog = new DownloadDialogFragment();
+
+
+
+        Bundle args = new Bundle();
+        args.putString("dialog_title", "You must install the " + social_title + " app in order to login");
+        args.putString("uri", uri);
+
+        dialog.setArguments(args);
+        dialog.show(getFragmentManager(), "DownloadDialogFragment");
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        //Add user intent
+        //Go to next social media dialog
+
+        Bundle mArgs = dialog.getArguments();
+        String uri = mArgs.getString("uri");
+
+        Intent startIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        startActivity(startIntent);
+
+
+
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        //Go to next social media dialog
+//        Bundle mArgs = dialog.getArguments();
+//        String name = mArgs.getString("name");
+
+    }
+
 
     // Build the list of member permissions our LinkedIn session requires
     private static Scope buildScope() {
