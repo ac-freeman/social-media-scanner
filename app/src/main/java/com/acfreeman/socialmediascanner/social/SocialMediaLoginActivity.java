@@ -98,7 +98,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
 
             @Override
             public void failure(TwitterException exception) {
-                // Do something on failure
+                Toast.makeText(getApplicationContext(), "ERROR: Could not login to Twitter", Toast.LENGTH_LONG);
             }
         });
 
@@ -151,6 +151,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
                                     database.addSocial(linkedin);
                                     //////////////////////////////
                                 } catch (JSONException e) {
+                                    Toast.makeText(getApplicationContext(), "ERROR: Could not login to LinkedIn", Toast.LENGTH_LONG);
                                     e.printStackTrace();
                                 }
 
@@ -159,7 +160,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity {
 
                             @Override
                             public void onApiError(LIApiError liApiError) {
-                                // Error making GET request!
+                                Toast.makeText(getApplicationContext(), "ERROR: Could not login to LinkedIn", Toast.LENGTH_LONG);
                             }
                         });
 
