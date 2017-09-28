@@ -131,7 +131,9 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
 
     private ArrayList<SocialSwitch> switchList = new ArrayList<>();
+    public Switch phonesSwitch, emailsSwitch;
     private void showCode(){
+        switchList = new ArrayList<>();
         QRCodeWriter writer = new QRCodeWriter();
         final FrameLayout frameLayout = findViewById(R.id.content);
         mImageView = new ImageView(this);
@@ -160,6 +162,37 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         tableRow = new TableRow(this);
         tableRow.addView(mImageView);
         table.addView(tableRow);
+
+        //phone switch
+        TableRow phonesRow = new TableRow(this);
+        phonesSwitch = new Switch(this);
+
+        phonesSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                generateCode(frameLayout);
+            }
+        });
+
+        phonesSwitch.setText("Phone number(s)");
+        phonesRow.addView(phonesSwitch);
+        table.addView(phonesRow);
+
+
+        //email switch
+        TableRow emailsRow = new TableRow(this);
+        emailsSwitch = new Switch(this);
+
+        emailsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                generateCode(frameLayout);
+            }
+        });
+
+        emailsSwitch.setText("Email address(es)");
+        emailsRow.addView(emailsSwitch);
+        table.addView(emailsRow);
 
         //////
         List socials = new ArrayList();
@@ -203,7 +236,32 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             StringBuilder builder = new StringBuilder();
             builder.append("|");
 
+            // personal information
+            LocalDatabase database = new LocalDatabase(getApplicationContext());
+            Owner owner = database.getOwner(0);
+            String ownerName = owner.getName();
+            ArrayList<Phones> ownerPhones = database.getUserPhones(owner.getId());
+            ArrayList<Emails> ownerEmails = database.getUserEmails(owner.getId());
 
+
+            if(phonesSwitch != null) {
+                if (phonesSwitch.isChecked()) {
+                    builder.append(ownerName + "|");
+                    for (Phones p : ownerPhones) {
+                        builder.append("ph" + "|" + p.getNumber() + "|" + p.getType() + "|");
+                    }
+                }
+            }
+
+            if(emailsSwitch != null) {
+                if (emailsSwitch.isChecked()) {
+                    for (Emails e : ownerEmails) {
+                        builder.append("em" + "|" + e.getEmail() + "|" + e.getType() + "|");
+                    }
+                }
+            }
+
+            // social accounts
             for(SocialSwitch sw : switchList){
                 if(sw.getEnabled()){
                     builder.append(sw.getType_db() + "|" + sw.getUser_id() + "|");
@@ -332,24 +390,40 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
                 String t = rawArray[i];
                 String uri;
-                switch (t) {
 
-                    //when adding a new social media platform, simply copy this format
-                    case "tw":
-                        String twitter_id = rawArray[i + 1];
-                        uri = "https://twitter.com/intent/follow?user_id=" + (twitter_id);
+                if (i == 1) { //get name
+                    String userName = t;
+                    Toast.makeText(this, "Name: " + userName, Toast.LENGTH_SHORT).show();
+                } else {
+                    switch (t) {
 
-                        socialAdderArrayList.add(new SocialAdder(uri, "Twitter"));
-//                    showNoticeDialog("Would you like to add Andrew Freeman on Twitter?", uri);
-                        break;
-                    case "li":
+                        case "ph":
+                            String phoneNumber = rawArray[i +1];
+                            Toast.makeText(this, "Phone: " + phoneNumber, Toast.LENGTH_SHORT).show();
+                            break;
 
-                        String linkedin_id = rawArray[i + 1];
-                        uri = "https://www.linkedin.com/profile/view?id=" + (linkedin_id);
-                        socialAdderArrayList.add(new SocialAdder(uri, "LinkedIn"));
-//                    showNoticeDialog("Would you like to add Andrew Freeman on LinkedIn?", uri);
-                        break;
+                        case "em":
+                            String email = rawArray[i + 1];
+                            Toast.makeText(this, "Email: " + email, Toast.LENGTH_SHORT).show();
+                            break;
 
+
+
+
+                        //when adding a new social media platform, simply copy this format
+                        case "tw":
+                            String twitter_id = rawArray[i + 1];
+                            uri = "https://twitter.com/intent/follow?user_id=" + (twitter_id);
+                            socialAdderArrayList.add(new SocialAdder(uri, "Twitter"));
+                            break;
+                        case "li":
+
+                            String linkedin_id = rawArray[i + 1];
+                            uri = "https://www.linkedin.com/profile/view?id=" + (linkedin_id);
+                            socialAdderArrayList.add(new SocialAdder(uri, "LinkedIn"));
+                            break;
+
+                    }
                 }
             }
 
@@ -432,15 +506,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         String name = mArgs.getString("name");
         showNoticeDialog(name);
     }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        // Check which request we're responding to
-//        if (requestCode == 1) {
-//            // Make sure the request was successful
-//            wait = false;
-//        }
-//    }
 
 
     /**

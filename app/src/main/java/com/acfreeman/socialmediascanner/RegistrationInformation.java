@@ -75,7 +75,7 @@ public class RegistrationInformation extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration_information);
-        
+
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         // second argument is the default to use if the preference can't be found
@@ -172,10 +172,26 @@ public class RegistrationInformation extends AppCompatActivity {
                     int index = table.indexOfChild(curRow);
                     curRow.removeView(plusPhone);
 
+
+//                    Button minusPhone = new Button(getApplicationContext());
+//                    minusPhone.setText("-");
+//                    minusPhone.setWidth(LayoutParams.WRAP_CONTENT);  //Doesn't work
+//                    curRow.addView(minusPhone);
+//
+//                    minusPhone.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View view) {
+//
+//                        }
+//                    });
+
+
                     EditText phoneEditText = new EditText(getApplicationContext());
                     phoneEditText.setHint("Phone");
                     phoneEditText.setInputType(InputType.TYPE_CLASS_PHONE);
                     phoneEditText.setWidth(textWidth);
+
+
 
 
                     TableRow newPhoneRow = new TableRow(getApplicationContext());
