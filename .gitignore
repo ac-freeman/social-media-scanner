@@ -9,6 +9,4 @@
 .externalNativeBuild
 eventsapp/*
 sampleapp/*
-linkedin-sdk/build/tmp/expandedArchives/internal_impl-21.0.3.jar_61oonvdt3lx5666ngfnps8eim/android/support/v4/view/accessibility/AccessibilityNodeProviderCompatJellyBean$AccessibilityNodeInfoBridge.class
-linkedin-sdk/build/tmp/expandedArchives/internal_impl-21.0.3.jar_61oonvdt3lx5666ngfnps8eim/android/support/v4/view/accessibility/AccessibilityManagerCompatIcs$AccessibilityStateChangeListenerBridge.class
-linkedin-sdk/build/intermediates/transforms/stripDebugSymbol/release/jars/2000/10/ec3a3868f435666f841bfab8df9187570773c701.jar
+linkedin-sdk/build/*
