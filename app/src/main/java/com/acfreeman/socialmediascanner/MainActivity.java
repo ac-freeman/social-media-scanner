@@ -8,12 +8,15 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableStringBuilder;
+import android.text.style.StyleSpan;
+import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
@@ -26,7 +29,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.util.AttributeSet;
 
 import com.acfreeman.socialmediascanner.db.Emails;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
@@ -49,6 +51,7 @@ import com.twitter.sdk.android.core.TwitterSession;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import me.dm7.barcodescanner.core.IViewFinder;
 import me.dm7.barcodescanner.core.ViewFinderView;
@@ -309,12 +312,41 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         String text = "";
         for(int x = 0; x < data.size(); x++){
             text += data.get(x);
+            text += "\n";
         }
-        mTextMessage.setText(text);
+        mTextMessage.setText(makeSectionOfTextBold(text, data.get(1).toString())); //1 because that returns the name from the List, which needs to be bolded
         frameLayout.addView(mTextMessage);
 
 
 
+    }
+
+    //from https://stackoverflow.com/questions/14371092/how-to-make-a-specific-text-on-textview-bold
+    public static SpannableStringBuilder makeSectionOfTextBold(String text, String textToBold) {
+
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+
+        if (textToBold.length() > 0 && !textToBold.trim().equals("")) {
+
+            //for counting start/end indexes
+            String testText = text.toLowerCase(Locale.US);
+            String testTextToBold = textToBold.toLowerCase(Locale.US);
+            int startingIndex = testText.indexOf(testTextToBold);
+            int endingIndex = startingIndex + testTextToBold.length();
+            //for counting start/end indexes
+
+            if (startingIndex < 0 || endingIndex < 0) {
+                return builder.append(text);
+            } else if (startingIndex >= 0 && endingIndex >= 0) {
+
+                builder.append(text);
+                builder.setSpan(new StyleSpan(Typeface.BOLD), startingIndex, endingIndex, 0);
+            }
+        } else {
+            return builder.append(text);
+        }
+
+        return builder;
     }
 
 
