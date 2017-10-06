@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableStringBuilder;
 import android.text.style.StyleSpan;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
@@ -34,6 +35,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.acfreeman.socialmediascanner.db.Contacts;
 import com.acfreeman.socialmediascanner.db.Emails;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
@@ -53,6 +55,7 @@ import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterSession;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -406,6 +409,19 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             res.add(s.getUsername());
         }
 
+        List<Contacts> contactstest = db.getAllContacts();
+        for(Contacts c : contactstest){
+            res.add(c.getName());
+
+            ArrayList<Phones> userphoneslist = db.getUserPhones(c.getId());
+            for(Phones p : userphoneslist) {
+                res.add(p.getNumber());
+                res.add(p.getType());
+            }
+        }
+
+        res.add("CONTACTS SIZE: " + contactstest.size());
+
         return res;
 
     }
@@ -420,11 +436,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     @Override
     public void handleResult(Result rawResult) {
 
-//        SocialDialogFragment dialog = new SocialDialogFragment();
-//        FragmentManager manager = getFragmentManager();
-//        dialog.show(manager, "fragment_test");
 
-//        showNoticeDialog("Would you like to add Andrew Freeman on Twitter?");
 
         if(handleScan) {    //if screen is not blocked by our dialog fragments
             handleScan = false;
@@ -434,20 +446,39 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             String raw = rawResult.getText();
             String[] rawArray = raw.split("\\|");   //pipe character must be escaped in regex
 
-            for (int i = 0; i < rawArray.length; i++) {
+            LocalDatabase database = new LocalDatabase(getApplicationContext());
+            List<Contacts> allContacts = database.getAllContacts();
+            int contactId;
+//            if(allContacts.isEmpty()){
+//                contactId = 0;
+//            } else {
+//                contactId = allContacts.get(allContacts.size()-1);
+//            }
 
-                String t = rawArray[i];
+//            Owner owner = new Owner(0, nameEditText.getText().toString());
+//            database.addOwner(owner);
+
+            String t = rawArray[1];
+            String userName = t;
+            Toast.makeText(this, "Name: " + userName, Toast.LENGTH_SHORT).show();
+            Contacts contact = new Contacts(userName);
+            database.addContacts(contact);
+
+            for (int i = 2; i < rawArray.length; i++) {
+
+                t = rawArray[i];
                 String uri;
 
-                if (i == 1) { //get name
-                    String userName = t;
-                    Toast.makeText(this, "Name: " + userName, Toast.LENGTH_SHORT).show();
-                } else {
+
                     switch (t) {
 
                         case "ph":
                             String phoneNumber = rawArray[i +1];
                             Toast.makeText(this, "Phone: " + phoneNumber, Toast.LENGTH_SHORT).show();
+                            String type = rawArray[i+2];
+                            Log.i("PHONEDEBUG","Contact id: " +contact.getId());
+                            Phones phone = new Phones(contact.getId(),Integer.parseInt(phoneNumber), type);
+                            database.addPhones(phone);
                             break;
 
                         case "em":
@@ -472,7 +503,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                             break;
 
                     }
-                }
+
             }
 
             showNoticeDialog("Andrew Freeman");

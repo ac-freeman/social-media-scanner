@@ -5,19 +5,19 @@ package com.acfreeman.socialmediascanner.db;
  */
 
 public class Phones {
-    private int id;
+    private long id;
     private int number;
     private String type;
     public Phones()
     {
     }
-    public Phones(int id,int number,String type)
+    public Phones(long id,int number,String type)
     {
         this.id=id;
         this.number=number;
         this.type=type;
     }
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
     public void setNumber(int number) {
@@ -27,7 +27,7 @@ public class Phones {
     public void setType(String type) {
         this.type = type;
     }
-    public int getId() {
+    public long getId() {
         return id;
     }
     public String getType() {

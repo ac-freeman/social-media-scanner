@@ -5,7 +5,7 @@ package com.acfreeman.socialmediascanner.db;
  */
 
 public class Contacts {
-    private int id;
+    private long id;
     private String name;
     public Contacts()
     {
@@ -16,7 +16,10 @@ public class Contacts {
         this.name=name;
 
     }
-    public void setId(int id) {
+    public Contacts(String name){
+        this.name = name;
+    }
+    public void setId(long id) {
         this.id = id;
     }
     public void setName(String name) {
@@ -24,7 +27,7 @@ public class Contacts {
     }
 
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

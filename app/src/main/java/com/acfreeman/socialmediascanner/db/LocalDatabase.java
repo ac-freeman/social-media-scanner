@@ -53,7 +53,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
         db.execSQL(CREATE_OWNER_TABLE);
 
         String CREATE_CONTACTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_CONTACTS + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT" + ")";
+                 + KEY_NAME + " TEXT" + ")";
         db.execSQL(CREATE_CONTACTS_TABLE);
 
         String CREATE_PHONES_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_PHONES + "("
@@ -141,12 +141,33 @@ public class LocalDatabase extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_ID, contacts.getId()); // Owner ID
+//        values.put(KEY_ID, contacts.getId()); // Owner ID
         values.put(KEY_NAME, contacts.getName()); // Owner Name
 
 // Inserting Row
         db.insert(TABLE_CONTACTS, null, values);
+        long lastId;
+        String selectQuery = "SELECT ROWID from "+ TABLE_CONTACTS + " order by ROWID DESC limit 1";
+
+
+
+
+        Cursor c = db.rawQuery(selectQuery, null);
+        if (c != null && c.moveToFirst()) {
+            lastId = c.getLong(0); //The 0 is the column index, we only have 1 column, so the index is 0
+            contacts.setId(lastId);
+        }
+
+
+
         db.close(); // Closing database connection
+
+    }
+
+    ///////////
+    public void getContactId(Contacts contacts) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
     }
 
     public void addSocial(Social social) {
@@ -316,7 +337,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
     public List<Contacts> getAllContacts() {
         List<Contacts> contactsList = new ArrayList<Contacts>();
 // Select All Query
-        String selectQuery = "SELECT * FROM " + TABLE_CONTACTS;
+        String selectQuery = "SELECT rowid, * FROM " + TABLE_CONTACTS;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -325,7 +346,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
         if (cursor.moveToFirst()) {
             do {
                 Contacts contacts = new Contacts();
-                contacts.setId(Integer.parseInt(cursor.getString(0)));
+                contacts.setId(Long.parseLong(cursor.getString(0)));
                 contacts.setName(cursor.getString(1));
 // Adding contact to list
                 contactsList.add(contacts);
@@ -382,7 +403,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
         return emails;
     }
 
-    public ArrayList<Phones> getUserPhones(int id) {
+    public ArrayList<Phones> getUserPhones(long id) {
 
         String countQuery = "SELECT * FROM " + TABLE_PHONES +" WHERE " + KEY_ID + " = " + id;
         SQLiteDatabase db = this.getReadableDatabase();
