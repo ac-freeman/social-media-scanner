@@ -5,19 +5,19 @@ package com.acfreeman.socialmediascanner.db;
  */
 
 public class Emails {
-    private int id;
+    private long id;
     private String email;
     private String type;
     public Emails()
     {
     }
-    public Emails(int id,String email,String type)
+    public Emails(Long id, String email,String type)
     {
-        this.id=id;
+        this.id = id;
         this.email=email;
         this.type=type;
     }
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
     public void setEmail(String email) {
@@ -27,7 +27,7 @@ public class Emails {
     public void setType(String type) {
         this.type = type;
     }
-    public int getId() {
+    public long getId() {
         return id;
     }
     public String getType() {

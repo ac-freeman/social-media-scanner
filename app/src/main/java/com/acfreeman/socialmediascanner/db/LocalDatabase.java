@@ -210,7 +210,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
         if (cursor != null)
             cursor.moveToFirst();
 
-        Phones phoneA = new Phones(Integer.parseInt(cursor.getString(0)),
+        Phones phoneA = new Phones(Long.parseLong(cursor.getString(0)),
                 Integer.parseInt(cursor.getString(1)), cursor.getString(2));
 // return user
         return phoneA;
@@ -225,7 +225,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
         if (cursor != null)
             cursor.moveToFirst();
 
-        Emails emailsA = new Emails(Integer.parseInt(cursor.getString(0)),
+        Emails emailsA = new Emails(Long.parseLong(cursor.getString(0)),
                 cursor.getString(1), cursor.getString(2));
 // return user
         return emailsA;
@@ -383,7 +383,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
 //******************************************************************
 
 
-    public ArrayList<Emails> getUserEmails(int id) {
+    public ArrayList<Emails> getUserEmails(long id) {
 
         String countQuery = "SELECT * FROM " + TABLE_EMAILS +" WHERE " + KEY_ID + " = " + id;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -395,7 +395,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
         if (cursor.moveToFirst()) {
             do {
-                Emails email = new Emails(Integer.parseInt(cursor.getString(0)),
+                Emails email = new Emails(Long.parseLong(cursor.getString(0)),
                         cursor.getString(1), cursor.getString(2));
                 emails.add(email);
             } while (cursor.moveToNext());
@@ -415,7 +415,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
         if (cursor.moveToFirst()) {
             do {
-                Phones phone = new Phones(Integer.parseInt(cursor.getString(0)),
+                Phones phone = new Phones(Long.parseLong(cursor.getString(0)),
                         cursor.getInt(1), cursor.getString(2));
                 phones.add(phone);
             } while (cursor.moveToNext());

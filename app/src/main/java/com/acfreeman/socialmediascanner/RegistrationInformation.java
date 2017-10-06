@@ -269,7 +269,7 @@ public class RegistrationInformation extends AppCompatActivity {
                             e.setError("Email is required!");
                             error = true;
                         } else {
-                            Emails email = new Emails(owner.getId(), e.getText().toString(), "Work");
+                            Emails email = new Emails((long)owner.getId(), e.getText().toString(), "Work");
                             database.addEmails(email);
                         }
                     }

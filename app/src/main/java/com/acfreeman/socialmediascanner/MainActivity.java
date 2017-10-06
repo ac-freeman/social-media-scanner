@@ -418,6 +418,13 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 res.add(p.getNumber());
                 res.add(p.getType());
             }
+
+            ArrayList<Emails> useremailslist = db.getUserEmails(c.getId());
+            for(Emails em : useremailslist) {
+                res.add(em.getEmail());
+                res.add(em.getType());
+            }
+
         }
 
         res.add("CONTACTS SIZE: " + contactstest.size());
@@ -475,15 +482,18 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                         case "ph":
                             String phoneNumber = rawArray[i +1];
                             Toast.makeText(this, "Phone: " + phoneNumber, Toast.LENGTH_SHORT).show();
-                            String type = rawArray[i+2];
+                            String typePhone = rawArray[i+2];
                             Log.i("PHONEDEBUG","Contact id: " +contact.getId());
-                            Phones phone = new Phones(contact.getId(),Integer.parseInt(phoneNumber), type);
+                            Phones phone = new Phones(contact.getId(),Integer.parseInt(phoneNumber), typePhone);
                             database.addPhones(phone);
                             break;
 
                         case "em":
-                            String email = rawArray[i + 1];
-                            Toast.makeText(this, "Email: " + email, Toast.LENGTH_SHORT).show();
+                            String emailStr = rawArray[i + 1];
+                            Toast.makeText(this, "Email: " + emailStr, Toast.LENGTH_SHORT).show();
+                            String typeEmail = rawArray[i+2];
+                            Emails email = new Emails(contact.getId(), emailStr, typeEmail);
+                            database.addEmails(email);
                             break;
 
 
