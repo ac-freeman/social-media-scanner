@@ -7,3 +7,6 @@
 /build
 /captures
 .externalNativeBuild
+eventsapp/*
+sampleapp/*
+linkedin-sdk/build/*
