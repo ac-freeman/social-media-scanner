@@ -38,5 +38,6 @@ dependencies {
     compile 'com.twitter.sdk.android:twitter:3.1.1'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile project(':linkedin-sdk')
+    compile project(':auth-lib')
     testCompile 'junit:junit:4.12'
 }
