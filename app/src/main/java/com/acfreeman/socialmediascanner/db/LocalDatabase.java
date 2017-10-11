@@ -423,7 +423,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
         return phones;
     }
 
-    public ArrayList<Social> getUserSocials(int id) {
+    public ArrayList<Social> getUserSocials(long id) {
 
         String countQuery = "SELECT * FROM " + TABLE_SOCIAL +" WHERE " + KEY_ID + " = " + id;
         SQLiteDatabase db = this.getReadableDatabase();

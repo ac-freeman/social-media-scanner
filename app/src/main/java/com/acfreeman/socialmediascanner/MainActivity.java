@@ -425,6 +425,14 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 res.add(em.getType());
             }
 
+            ArrayList<Social> sociallist = db.getUserSocials(c.getId());
+            for(Social s : sociallist) {
+                res.add(s.getType());
+                res.add(s.getUsername());
+            }
+
+
+
         }
 
         res.add("CONTACTS SIZE: " + contactstest.size());
@@ -504,12 +512,16 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                             String twitter_id = rawArray[i + 1];
                             uri = "https://twitter.com/intent/follow?user_id=" + (twitter_id);
                             socialAdderArrayList.add(new SocialAdder(uri, "Twitter"));
+                            Social twitterSocial = new Social(contact.getId(), "Twitter", twitter_id);
+                            database.addSocial(twitterSocial);
                             break;
                         case "li":
 
                             String linkedin_id = rawArray[i + 1];
                             uri = "https://www.linkedin.com/profile/view?id=" + (linkedin_id);
                             socialAdderArrayList.add(new SocialAdder(uri, "LinkedIn"));
+                            Social linkedinSocial = new Social(contact.getId(), "LinkedIn", linkedin_id);
+                            database.addSocial(linkedinSocial);
                             break;
 
                     }
