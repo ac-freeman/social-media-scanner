@@ -305,7 +305,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 != PackageManager.PERMISSION_GRANTED) {
 
 <<<<<<< HEAD
-<<<<<<< HEAD
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                     Manifest.permission.READ_CONTACTS)) {
@@ -317,8 +316,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             } else {
                 Log.i("aaaa","bbbb");
 =======
-=======
->>>>>>> d32f2a3196c1e34630e7446e5d4ed55b65ee78c7
 
 
 >>>>>>> d32f2a3196c1e34630e7446e5d4ed55b65ee78c7
