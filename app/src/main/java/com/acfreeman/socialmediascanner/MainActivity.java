@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -25,10 +26,13 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Switch;
@@ -363,21 +367,56 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
     }
 
+    private static CustomAdapter adapter;
+    ArrayList<DataModel> dataModels;
+    ListView listView;
     private void showFriends(){
         //TODO: Add scrollable friends page
+//        FrameLayout frameLayout = findViewById(R.id.content);
+//        mTextMessage = new TextView(this);
+//        mTextMessage.setText(R.string.title_friends);
+////        List data = readDB();
+//        List data = readDatabaseTest();
+//        String text = "";
+//        for(int x = 0; x < data.size(); x++){
+//            text += data.get(x);
+//            text += "\n";
+//        }
+//        mTextMessage.setText(makeSectionOfTextBold(text, data.get(1).toString())); //1 because that returns the name from the List, which needs to be bolded
+//        frameLayout.addView(mTextMessage);
         FrameLayout frameLayout = findViewById(R.id.content);
-        mTextMessage = new TextView(this);
-        mTextMessage.setText(R.string.title_friends);
-//        List data = readDB();
-        List data = readDatabaseTest();
-        String text = "";
-        for(int x = 0; x < data.size(); x++){
-            text += data.get(x);
-            text += "\n";
-        }
-        mTextMessage.setText(makeSectionOfTextBold(text, data.get(1).toString())); //1 because that returns the name from the List, which needs to be bolded
-        frameLayout.addView(mTextMessage);
+        listView= new ListView(this);
+        dataModels= new ArrayList<>();
 
+
+        LocalDatabase db = new LocalDatabase(getApplicationContext());
+        List<Contacts> contactslist = db.getAllContacts();
+        for(Contacts c : contactslist){
+            ArrayList<Phones> userphoneslist = db.getUserPhones(c.getId());
+            ArrayList<Emails> useremailslist = db.getUserEmails(c.getId());
+            ArrayList<Social> sociallist = db.getUserSocials(c.getId());
+            dataModels.add(new DataModel(c.getName(),userphoneslist, useremailslist, sociallist));
+        }
+
+
+
+//        dataModels.add(new DataModel("Apple Pie", "Android 1.0", "1","September 23, 2008"));
+//        dataModels.add(new DataModel("Banana Bread", "Android 1.1", "2","February 9, 2009"));
+
+        adapter= new CustomAdapter(dataModels,getApplicationContext());
+
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                DataModel dataModel= dataModels.get(position);
+
+                Snackbar.make(view, dataModel.getName()+"\n"+dataModel.getPhones().get(0).getNumber()+"\n"+dataModel.getEmails().get(0).getEmail()+"\n"+dataModel.getSocials().get(0).getType(), Snackbar.LENGTH_LONG)
+                        .setAction("No action", null).show();
+            }
+        });
+        frameLayout.addView(listView);
 
 
     }
