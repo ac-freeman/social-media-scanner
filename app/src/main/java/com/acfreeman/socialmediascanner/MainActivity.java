@@ -23,11 +23,13 @@ import android.text.style.StyleSpan;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TableLayout;
@@ -147,27 +149,46 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         switchList = new ArrayList<>();
         QRCodeWriter writer = new QRCodeWriter();
         final FrameLayout frameLayout = findViewById(R.id.content);
+        RelativeLayout relativeLayout = new RelativeLayout(this);
         mImageView = new ImageView(this);
+        mImageView.setId(1);
+
+        RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        params1.addRule(RelativeLayout.BELOW, mImageView.getId());
+        params1.addRule(RelativeLayout.CENTER_IN_PARENT);
 
 
+        Display display = getWindowManager().getDefaultDisplay();
+        int width = display.getWidth()*3/4;
+        RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(width, width);
+        params2.addRule(RelativeLayout.CENTER_IN_PARENT);
+        params2.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 
 
         ScrollView scroll = new ScrollView(this);
         TableLayout table = new TableLayout(this);
+        TableLayout table0 = new TableLayout(this);
+        TableLayout table00 = new TableLayout(this);
+
         table.setVerticalScrollBarEnabled(true);
+        scroll.addView(table);
         TableRow tableRow;
         TextView t1;
         Switch t2;
 
 
-        frameLayout.addView(scroll);
-        scroll.addView(table);
+        relativeLayout.addView(mImageView, params2);
+        relativeLayout.addView(scroll, params1);
+        frameLayout.addView(relativeLayout);
+
+//        table00.addView(table0);
+//        table00.addView(table);
         generateCode(frameLayout);
 
 
-        tableRow = new TableRow(this);
-        tableRow.addView(mImageView);
-        table.addView(tableRow);
+//        tableRow = new TableRow(this);
+//        tableRow.addView(mImageView);
+//        table0.addView(tableRow);
 
         //phone switch
         TableRow phonesRow = new TableRow(this);
@@ -187,6 +208,9 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
         //email switch
         TableRow emailsRow = new TableRow(this);
+        emailsRow.setLayoutParams(new TableLayout.LayoutParams(
+                TableLayout.LayoutParams.WRAP_CONTENT,
+                TableLayout.LayoutParams.WRAP_CONTENT, 1.0f));
         emailsSwitch = new Switch(this);
 
         emailsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -219,7 +243,14 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 }
             });
             switchList.add(socialSwitch);
+
+//            ImageView socialImage = new ImageView(this);
+
+
+
+
             tableRow.addView(socialSwitch.getSwitch());
+
             table.addView(tableRow);
         }
         //////

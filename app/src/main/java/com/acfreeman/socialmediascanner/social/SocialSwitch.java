@@ -1,7 +1,10 @@
 package com.acfreeman.socialmediascanner.social;
 
 import android.content.Context;
+import android.widget.ImageView;
 import android.widget.Switch;
+
+import com.acfreeman.socialmediascanner.R;
 
 /**
  * Created by Andrew on 9/25/2017.
@@ -11,6 +14,7 @@ public class SocialSwitch {
     private String type_db; //name in the database
     private String type_name;   //official name ("WhatsApp","LinkedIn")
     private String user_id;
+    private int image_res;
     private Switch sw;
     private boolean enabled;
 
@@ -33,6 +37,7 @@ public class SocialSwitch {
         switch (type_db){
             case "tw":
                 this.type_name = "Twitter";
+                this.image_res = R.drawable.twitter_logo_blue;
                 break;
             case "li":
                 this.type_name = "LinkedIn";
@@ -49,7 +54,13 @@ public class SocialSwitch {
     public String getType_db() {return type_db;}
     public String getType_name() {return type_name;}
     public String getUser_id() {return user_id;}
+    public int getImage_res() {return image_res;}
     public boolean getEnabled() {return enabled;}
 
     public Switch getSwitch() {return sw;}
+    public Switch setSwitch(Switch sw) {
+        this.sw = sw;
+        sw.setText(getType_name());
+        return sw;
+    }
 }
