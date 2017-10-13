@@ -1,53 +1,48 @@
 package com.acfreeman.socialmediascanner;
 
 import android.content.Context;
-import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.Switch;
+import android.widget.TextView;
+
+import com.acfreeman.socialmediascanner.social.SocialSwitch;
 
 import java.util.ArrayList;
-
-import static java.security.AccessController.getContext;
 
 /**
  * Created by Andrew on 10/13/2017.
  */
 
-public class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnClickListener{
+public class CustomShowcodeAdapter extends ArrayAdapter<SwitchModel> implements View.OnClickListener{
 
-    private ArrayList<DataModel> dataSet;
+    private ArrayList<SwitchModel> switchSet;
     Context mContext;
 
     // View lookup cache
     private static class ViewHolder {
-        TextView txtName;
-        TextView txtType;
+        Switch swName;
         ImageView info;
     }
 
-    public CustomAdapter(ArrayList<DataModel> data, Context context) {
-        super(context, R.layout.row_item, data);
-        this.dataSet = data;
+    public CustomShowcodeAdapter(ArrayList<SwitchModel> data, Context context) {
+        super(context, R.layout.row_item_showcode, data);
+        this.switchSet = data;
         this.mContext=context;
 
     }
 
-    public void clearData(){
-        this.dataSet = null;
-    }
+
 
     @Override
     public void onClick(View v) {
 
         int position=(Integer) v.getTag();
         Object object= getItem(position);
-        DataModel dataModel=(DataModel)object;
+        SwitchModel switchModel=(SwitchModel)object;
 
         switch (v.getId())
         {
@@ -63,19 +58,19 @@ public class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnCli
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
-        DataModel dataModel = getItem(position);
+        SwitchModel switchModel = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
-        ViewHolder viewHolder; // view lookup cache stored in tag
+        CustomShowcodeAdapter.ViewHolder viewHolder; // view lookup cache stored in tag
 
         final View result;
 
         if (convertView == null) {
 
-            viewHolder = new ViewHolder();
+            viewHolder = new CustomShowcodeAdapter.ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.row_item, parent, false);
-            viewHolder.info = (ImageView) convertView.findViewById(R.id.item_info);
-            viewHolder.txtName = (TextView) convertView.findViewById(R.id.name);
+            convertView = inflater.inflate(R.layout.row_item_showcode, parent, false);
+            viewHolder.info = (ImageView) convertView.findViewById(R.id.item_image);
+            viewHolder.swName = (Switch) convertView.findViewById(R.id.name);
 //            viewHolder.txtType = (TextView) convertView.findViewById(R.id.type);
 
 
@@ -83,7 +78,7 @@ public class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnCli
 
             convertView.setTag(viewHolder);
         } else {
-            viewHolder = (ViewHolder) convertView.getTag();
+            viewHolder = (CustomShowcodeAdapter.ViewHolder) convertView.getTag();
             result=convertView;
         }
 
@@ -91,7 +86,7 @@ public class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnCli
 //        result.startAnimation(animation);
         lastPosition = position;
 
-        viewHolder.txtName.setText(dataModel.getName());
+        viewHolder.swName.setText(switchModel.getSwitch().getText());
 //        viewHolder.txtType.setText(dataModel.getType());
         viewHolder.info.setOnClickListener(this);
         viewHolder.info.setTag(position);

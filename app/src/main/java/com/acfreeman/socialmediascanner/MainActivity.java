@@ -58,10 +58,7 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.twitter.sdk.android.core.Twitter;
-import com.twitter.sdk.android.core.TwitterCore;
-import com.twitter.sdk.android.core.TwitterSession;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -169,6 +166,10 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         params2.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 
 
+
+
+
+        /////////////////////////////
         ScrollView scroll = new ScrollView(this);
         TableLayout table = new TableLayout(this);
         TableLayout table0 = new TableLayout(this);
@@ -355,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 // app-defined int constant. The callback method gets the
                 // result of the request.
 
-            }
+            }}
 
 
             FrameLayout frameLayout = findViewById(R.id.content);
@@ -374,26 +375,14 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             mScannerView.startCamera();
 
 
-        }
+
     }
 
-    private static CustomAdapter adapter;
+    private static CustomContactsAdapter adapter;
     ArrayList<DataModel> dataModels;
     ListView listView;
     private void showFriends(){
-        //TODO: Add scrollable friends page
-//        FrameLayout frameLayout = findViewById(R.id.content);
-//        mTextMessage = new TextView(this);
-//        mTextMessage.setText(R.string.title_friends);
-////        List data = readDB();
-//        List data = readDatabaseTest();
-//        String text = "";
-//        for(int x = 0; x < data.size(); x++){
-//            text += data.get(x);
-//            text += "\n";
-//        }
-//        mTextMessage.setText(makeSectionOfTextBold(text, data.get(1).toString())); //1 because that returns the name from the List, which needs to be bolded
-//        frameLayout.addView(mTextMessage);
+
         FrameLayout frameLayout = findViewById(R.id.content);
         listView= new ListView(this);
         dataModels= new ArrayList<>();
@@ -413,7 +402,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 //        dataModels.add(new DataModel("Apple Pie", "Android 1.0", "1","September 23, 2008"));
 //        dataModels.add(new DataModel("Banana Bread", "Android 1.1", "2","February 9, 2009"));
 
-        adapter= new CustomAdapter(dataModels,getApplicationContext());
+        adapter= new CustomContactsAdapter(dataModels,getApplicationContext());
 
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
