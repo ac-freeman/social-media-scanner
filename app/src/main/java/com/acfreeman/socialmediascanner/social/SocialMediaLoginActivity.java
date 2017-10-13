@@ -26,8 +26,10 @@ import com.linkedin.platform.errors.LIAuthError;
 import com.linkedin.platform.listeners.ApiListener;
 import com.linkedin.platform.listeners.ApiResponse;
 import com.linkedin.platform.listeners.AuthListener;
-
 import com.linkedin.platform.utils.Scope;
+import com.spotify.sdk.android.authentication.AuthenticationClient;
+import com.spotify.sdk.android.authentication.AuthenticationRequest;
+import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.Twitter;
@@ -48,6 +50,9 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Downl
 
     private TwitterLoginButton loginButton;
     private ImageView liButton;
+    private static final String SPOTIFY_CLIENT_ID = "b8d2cf358e334542837ba4ae37e09d4b";
+    private static final int SPOTIFY_REQUEST_CODE = 1337;
+    private static final String SPOTIFY_REDIRECT_URI = "scanner://callback";
 
     public LocalDatabase database;
     public List<Owner> owners;
@@ -185,6 +190,20 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Downl
 
                     }
                 }, true);
+            }
+        });
+
+        Button spotifyButton = findViewById(R.id.com_spotify_sdk_login_webview_button);
+        spotifyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AuthenticationRequest.Builder builder =
+                        new AuthenticationRequest.Builder(SPOTIFY_CLIENT_ID, AuthenticationResponse.Type.TOKEN, SPOTIFY_REDIRECT_URI);
+
+                builder.setScopes(new String[]{"streaming"});
+                AuthenticationRequest request = builder.build();
+
+                AuthenticationClient.openLoginActivity(SocialMediaLoginActivity.this, SPOTIFY_REQUEST_CODE, request);
             }
         });
 
