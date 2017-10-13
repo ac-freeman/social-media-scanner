@@ -327,13 +327,23 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
      * Requires camera permission in settings
      */
      private final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
-    private void scanCode(){
+    private void scanCode() {
 
         if (ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
 
 
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                    Manifest.permission.READ_CONTACTS)) {
+                Log.i("Ask Camera Permission", "succeed");
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+                Log.i("aaaa", "bbbb");
 
                 // No explanation needed, we can request the permission.
 
@@ -341,30 +351,30 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                         new String[]{Manifest.permission.CAMERA},
                         MY_PERMISSIONS_REQUEST_CAMERA);
 
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // MY_PERMISSIONS_REQUEST is an
                 // app-defined int constant. The callback method gets the
                 // result of the request.
 
-        }
-
-
-        FrameLayout frameLayout = findViewById(R.id.content);
-        mScannerView = new ZXingScannerView(this) {
-            @Override
-            protected IViewFinder createViewFinderView(Context context) {
-                return new CustomViewFinderView(context);
             }
-        };
-        mScannerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
-        frameLayout.addView(mScannerView);
 
 
+            FrameLayout frameLayout = findViewById(R.id.content);
+            mScannerView = new ZXingScannerView(this) {
+                @Override
+                protected IViewFinder createViewFinderView(Context context) {
+                    return new CustomViewFinderView(context);
+                }
+            };
+            mScannerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
+            frameLayout.addView(mScannerView);
 
-        mScannerView.setResultHandler(this);
-        mScannerView.startCamera();
+
+            mScannerView.setResultHandler(this);
+            mScannerView.startCamera();
 
 
+        }
     }
 
     private static CustomAdapter adapter;
