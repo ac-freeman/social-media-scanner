@@ -10,4 +10,4 @@
 eventsapp/*
 sampleapp/*
 linkedin-sdk/build/*
-auth-lib/*
+auth-lib/build/*
