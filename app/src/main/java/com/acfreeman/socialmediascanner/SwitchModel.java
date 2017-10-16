@@ -28,12 +28,26 @@ public class SwitchModel {
         this.switchImage = switchImage;
         this.state = false;
     }
-    public SwitchModel(String switchName, String tag, int switchImage, String user_id) {
-        this.switchName = switchName;
+    public SwitchModel(String tag, String user_id) {
         this.tag = tag;
-        this.switchImage = switchImage;
         this.state = false;
         this.user_id = user_id;
+        setSwitchNAttribs_fromTag(tag);
+    }
+
+    private void setSwitchNAttribs_fromTag(String tag){
+        switch (tag){
+            case "tw":
+                this.switchName = "Twitter";
+                this.switchImage = R.drawable.icons8_twitter;
+                break;
+            case "li":
+                this.switchName = "LinkedIn";
+                this.switchImage = R.drawable.icons8_linkedin;
+                break;
+            default:
+                this.switchName = "ERR.";
+        }
     }
 
     public void toggleState(){

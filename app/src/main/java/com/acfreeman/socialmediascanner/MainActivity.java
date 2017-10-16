@@ -28,16 +28,12 @@ import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.Switch;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +45,6 @@ import com.acfreeman.socialmediascanner.db.Phones;
 import com.acfreeman.socialmediascanner.db.Social;
 import com.acfreeman.socialmediascanner.social.SocialAdder;
 import com.acfreeman.socialmediascanner.social.SocialDialogFragment;
-import com.acfreeman.socialmediascanner.social.SocialSwitch;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.Result;
@@ -58,7 +53,6 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.twitter.sdk.android.core.Twitter;
-import com.twitter.sdk.android.core.models.Image;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,13 +102,14 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             FrameLayout frameLayout = findViewById(R.id.content);
             switch (item.getItemId()) {
                 case R.id.navigation_show:
-                    frameLayout.removeAllViews();
-                    if (camera) {
-                        camera = false;
-                        mScannerView.stopCamera();
+                    if(!showCode) {
+                        frameLayout.removeAllViews();
+                        if (camera) {
+                            camera = false;
+                            mScannerView.stopCamera();
+                        }
+                        showCode();
                     }
-                    showCode();
-
                     return true;
 
                 case R.id.navigation_friends:
@@ -123,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                         camera = false;
                         mScannerView.stopCamera();
                     }
+                    showCode = false;
                     showFriends();
 
                     return true;
@@ -131,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     frameLayout.removeAllViews();
                     camera = true;
                     handleScan = true;
+                    showCode = false;
                     scanCode();
 
                     return true;
@@ -147,16 +144,15 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
      */
 
 
-    private ArrayList<SocialSwitch> switchList = new ArrayList<>();
     public Switch phonesSwitch, emailsSwitch;
 
     ArrayList<SwitchModel> switchModels;
     private static CustomShowcodeAdapter showcodeAdapter;
 
     ListView codeListView;
-
+    Boolean showCode;
     private void showCode() {
-        switchList = new ArrayList<>();
+        showCode = true;
         QRCodeWriter writer = new QRCodeWriter();
         final FrameLayout frameLayout = findViewById(R.id.content);
         RelativeLayout relativeLayout = new RelativeLayout(this);
@@ -175,13 +171,12 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         params2.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 
 
-//////////////////////////////////////////////////
         switchModels = new ArrayList<>();
         codeListView = new ListView(this);
 
 
-        switchModels.add(new SwitchModel("Phone number(s)", "ph", R.drawable.tw__ic_logo_default));
-        switchModels.add(new SwitchModel("Email address(es)", "em", R.drawable.tw__ic_logo_default));
+        switchModels.add(new SwitchModel("Phone number(s)", "ph", R.drawable.icons8_phone));
+        switchModels.add(new SwitchModel("Email address(es)", "em", R.drawable.icons8_gmail));
 
         List socials = new ArrayList();
         LocalDatabase db = new LocalDatabase(getApplicationContext());
@@ -189,10 +184,9 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         ArrayList<Social> sociallist = db.getUserSocials(owner.get(0).getId());
         for(Social s : sociallist) {
 
-            final SocialSwitch socialSwitch = new SocialSwitch(s.getType(), s.getUsername(), this);//TODO: fix
-            switchModels.add(new SwitchModel(socialSwitch.getType_name(), s.getType(),  R.drawable.tw__ic_logo_default, s.getUsername()));
 
-            switchList.add(socialSwitch);
+            switchModels.add(new SwitchModel(s.getType(), s.getUsername()));
+
         }
 
 
@@ -217,101 +211,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         relativeLayout.addView(codeListView, params1);
         frameLayout.addView(relativeLayout);
 
-
         generateCode(frameLayout, switchModels);
-
-
-        /////////////////////////////
-//        ScrollView scroll = new ScrollView(this);
-//        TableLayout table = new TableLayout(this);
-//        TableLayout table0 = new TableLayout(this);
-//        TableLayout table00 = new TableLayout(this);
-//
-//        table.setVerticalScrollBarEnabled(true);
-//        scroll.addView(table);
-//        TableRow tableRow;
-//        TextView t1;
-//        Switch t2;
-//
-//
-//        relativeLayout.addView(mImageView, params2);
-//        relativeLayout.addView(scroll, params1);
-//        frameLayout.addView(relativeLayout);
-//
-////        table00.addView(table0);
-////        table00.addView(table);
-//        generateCode(frameLayout);
-//
-//
-////        tableRow = new TableRow(this);
-////        tableRow.addView(mImageView);
-////        table0.addView(tableRow);
-//
-//        //phone switch
-//        TableRow phonesRow = new TableRow(this);
-//        phonesSwitch = new Switch(this);
-//
-//        phonesSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//                generateCode(frameLayout);
-//            }
-//        });
-//
-//        phonesSwitch.setText("Phone number(s)");
-//        phonesRow.addView(phonesSwitch);
-//        table.addView(phonesRow);
-//
-//
-//        //email switch
-//        TableRow emailsRow = new TableRow(this);
-//        emailsRow.setLayoutParams(new TableLayout.LayoutParams(
-//                TableLayout.LayoutParams.WRAP_CONTENT,
-//                TableLayout.LayoutParams.WRAP_CONTENT, 1.0f));
-//        emailsSwitch = new Switch(this);
-//
-//        emailsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//                generateCode(frameLayout);
-//            }
-//        });
-//
-//        emailsSwitch.setText("Email address(es)");
-//        emailsRow.addView(emailsSwitch);
-//        table.addView(emailsRow);
-//
-//        //////
-//        List socials = new ArrayList();
-//        LocalDatabase db = new LocalDatabase(getApplicationContext());
-//        List<Owner> owner = db.getAllOwner();
-//
-//        ArrayList<Social> sociallist = db.getUserSocials(owner.get(0).getId());
-//        for(Social s : sociallist) {
-//            tableRow = new TableRow(this);
-//            final SocialSwitch socialSwitch = new SocialSwitch(s.getType(), s.getUsername(), this);
-//
-//
-//            socialSwitch.getSwitch().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//                @Override
-//                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//                    socialSwitch.toggleEnabled();
-//                    generateCode(frameLayout);
-//                }
-//            });
-//            switchList.add(socialSwitch);
-//
-////            ImageView socialImage = new ImageView(this);
-//
-//
-//
-//
-//            tableRow.addView(socialSwitch.getSwitch());
-//
-//            table.addView(tableRow);
-//        }
-//        //////
-
     }
 
 
@@ -355,33 +255,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     }
                 }
             }
-
-
-//
-//            if(phonesSwitch != null) {
-//                if (phonesSwitch.isChecked()) {
-//                    builder.append(ownerName + "|");
-//                    for (Phones p : ownerPhones) {
-//                        builder.append("ph" + "|" + p.getNumber() + "|" + p.getType() + "|");
-//                    }
-//                }
-//            }
-//
-//            if(emailsSwitch != null) {
-//                if (emailsSwitch.isChecked()) {
-//                    for (Emails e : ownerEmails) {
-//                        builder.append("em" + "|" + e.getEmail() + "|" + e.getType() + "|");
-//                    }
-//                }
-//            }
-//
-//            // social accounts
-//            for(SocialSwitch sw : switchList){
-//                if(sw.getEnabled()){
-//                    builder.append(sw.getType_db() + "|" + sw.getUser_id() + "|");
-//                }
-//            }
-
 
             String encodeStr = builder.toString();
 

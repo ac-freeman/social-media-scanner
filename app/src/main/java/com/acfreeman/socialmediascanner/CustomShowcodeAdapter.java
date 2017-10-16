@@ -39,16 +39,8 @@ public class CustomShowcodeAdapter extends ArrayAdapter<SwitchModel> implements 
     public void onClick(View v) {
 
         int position=(Integer) v.getTag();
-//        ViewGroup parent = v.getvi();
         Object object= getItem(position);
         SwitchModel switchModel=(SwitchModel)object;
-
-//        CustomShowcodeAdapter.ViewHolder viewHolder; // view lookup cache stored in tag
-//        viewHolder = new CustomShowcodeAdapter.ViewHolder();
-////        LayoutInflater inflater = LayoutInflater.from(getContext());
-////        v = inflater.inflate(R.layout.row_item_showcode, parent, false);
-//        viewHolder.switcher = (Switch) v.findViewById(R.id.switcher);
-//        viewHolder.switcher.setChecked(!switchModel.getState());
 
     }
 
@@ -82,13 +74,12 @@ public class CustomShowcodeAdapter extends ArrayAdapter<SwitchModel> implements 
             result=convertView;
         }
 
-//        Animation animation = AnimationUtils.loadAnimation(mContext, (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
-//        result.startAnimation(animation);
         lastPosition = position;
 
-        viewHolder.switcher.setText(switchModel.getSwitchName());
+        viewHolder.switcher.setText("");
         viewHolder.switcher.setFocusable(false);
         viewHolder.switcher.setClickable(false);
+        viewHolder.switcherText.setText(switchModel.getSwitchName());
         viewHolder.switcherText.setFocusable(false);
         viewHolder.switcherText.setClickable(false);
         switchModel.setSwitcher(viewHolder.switcher);
@@ -96,14 +87,6 @@ public class CustomShowcodeAdapter extends ArrayAdapter<SwitchModel> implements 
         viewHolder.info.setImageResource(switchModel.getSwitchImage());
         viewHolder.info.setFocusable(false);
         viewHolder.info.setClickable(false);
-
-
-        viewHolder.switcher.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//                switchModel.setState(b);
-            }
-        });
 
         // Return the completed view to render on screen
         return convertView;

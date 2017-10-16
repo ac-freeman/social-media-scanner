@@ -22,26 +22,31 @@
 
     <TextView
         android:id="@+id/switcher_text"
+        android:text="Text view"
+        android:textColor="@android:color/black"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/item_image"
         android:clickable="false"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        />
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/item_image"
+        android:layout_toEndOf="@+id/item_image" />
 
     <Switch
         android:id="@+id/switcher"
+        android:theme="@style/SwitchTheme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/switcher_text"
         android:text="Contact Name"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@android:color/black"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:clickable="false"/>
+        android:clickable="false"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 
 
