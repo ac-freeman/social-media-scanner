@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_friends);
-        showFriends();
     }
 
     /**
@@ -137,15 +136,11 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     };
 
 
-    private final int socialCount = 2;  //TODO: retrieve value dynamically?
+
     /**
      * Generating and displaying QR code
      * Uses ZXing
      */
-
-
-    public Switch phonesSwitch, emailsSwitch;
-
     ArrayList<SwitchModel> switchModels;
     private static CustomShowcodeAdapter showcodeAdapter;
 
@@ -230,7 +225,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             String ownerName = owner.getName();
             ArrayList<Phones> ownerPhones = database.getUserPhones(owner.getId());
             ArrayList<Emails> ownerEmails = database.getUserEmails(owner.getId());
-            ArrayList<Social> sociallist = database.getUserSocials(owner.getId());
 
             builder.append(ownerName + "|");
             for (SwitchModel sw : switchSet) {
@@ -262,12 +256,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
-
-//            Double  dcrop = width*1.0*3/4;
-//            int crop =  dcrop.intValue();
-//            Bitmap bm = Bitmap.createBitmap(bitmap, width/8, width/8, crop, crop);  //crop the qrcode image obtained from bitmatrix
-//            mImageView.setImageBitmap(bm);
-
 
             mImageView.setImageBitmap(bitmap);
 
@@ -353,10 +341,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             ArrayList<Social> sociallist = db.getUserSocials(c.getId());
             dataModels.add(new DataModel(c.getName(), userphoneslist, useremailslist, sociallist));
         }
-
-
-//        dataModels.add(new DataModel("Apple Pie", "Android 1.0", "1","September 23, 2008"));
-//        dataModels.add(new DataModel("Banana Bread", "Android 1.1", "2","February 9, 2009"));
 
         adapter = new CustomContactsAdapter(dataModels, getApplicationContext());
 
@@ -487,15 +471,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
             LocalDatabase database = new LocalDatabase(getApplicationContext());
             List<Contacts> allContacts = database.getAllContacts();
-            int contactId;
-//            if(allContacts.isEmpty()){
-//                contactId = 0;
-//            } else {
-//                contactId = allContacts.get(allContacts.size()-1);
-//            }
-
-//            Owner owner = new Owner(0, nameEditText.getText().toString());
-//            database.addOwner(owner);
 
             String t = rawArray[1];
             String userName = t;
@@ -587,10 +562,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         if (camera) {
             mScannerView.stopCamera();
         }
-        listView.setAdapter(null);
-        FrameLayout frameLayout = findViewById(R.id.content);
-        frameLayout.removeAllViews();
-
     }
 
 
