@@ -5,7 +5,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
+        <item name="colorAccent">@color/secondary</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -18,7 +18,7 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="SwitchTheme" parent="Theme.AppCompat.Light">
-        <item name="android:colorControlActivated" tools:targetApi="lollipop">@color/accent</item>
+        <item name="android:colorControlActivated" tools:targetApi="lollipop">@color/secondary</item>
     </style>
 
 </resources>
