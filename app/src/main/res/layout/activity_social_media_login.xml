@@ -22,19 +22,21 @@
             android:layout_below="@+id/twitter_button"/>
             <!--android:background="@drawable/li_default"-->
 
-        <Button
-            android:id="@+id/com_spotify_sdk_login_webview_button"
+        <ImageView
+            android:id="@+id/spotify_button"
             android:layout_width="300dp"
             android:layout_height="56dp"
-            android:layout_weight="1"
-            android:layout_below="@+id/linkedin_button"/>
+            android:layout_below="@+id/linkedin_button"
+            android:layout_weight="1" />
+
+
         <Button
             android:id="@+id/next_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Next"
-            android:layout_below="@+id/com_spotify_sdk_login_webview_button" />
+            android:layout_below="@+id/spotify_button" />
 
     </RelativeLayout>
 

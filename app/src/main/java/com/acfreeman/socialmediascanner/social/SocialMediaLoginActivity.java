@@ -193,7 +193,8 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Downl
             }
         });
 
-        Button spotifyButton = findViewById(R.id.com_spotify_sdk_login_webview_button);
+        ImageView spotifyButton = findViewById(R.id.spotify_button);
+        spotifyButton.setBackgroundResource(R.drawable.spotify_login);
         spotifyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
