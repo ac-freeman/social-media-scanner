@@ -333,14 +333,15 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
     }
 
-    private static CustomContactsAdapter adapter;
+    private CustomContactsAdapter adapter;
     ArrayList<DataModel> dataModels;
     ListView listView;
 
     private void showFriends() {
 
         FrameLayout frameLayout = findViewById(R.id.content);
-        listView = new ListView(this);
+        listView = new ListView(getApplicationContext());
+
         dataModels = new ArrayList<>();
 
 
@@ -478,8 +479,8 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
         if (handleScan) {    //if screen is not blocked by our dialog fragments
             handleScan = false;
-            Toast.makeText(this, "Contents = " + rawResult.getText() +
-                    ", Format = " + rawResult.getBarcodeFormat().toString(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Contents = " + rawResult.getText() +
+//                    ", Format = " + rawResult.getBarcodeFormat().toString(), Toast.LENGTH_SHORT).show();
 
             String raw = rawResult.getText();
             String[] rawArray = raw.split("\\|");   //pipe character must be escaped in regex
@@ -498,7 +499,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
             String t = rawArray[1];
             String userName = t;
-            Toast.makeText(this, "Name: " + userName, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Name: " + userName, Toast.LENGTH_SHORT).show();
             Contacts contact = new Contacts(userName);
             database.addContacts(contact);
 
@@ -512,7 +513,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
                     case "ph":
                         String phoneNumber = rawArray[i + 1];
-                        Toast.makeText(this, "Phone: " + phoneNumber, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(this, "Phone: " + phoneNumber, Toast.LENGTH_SHORT).show();
                         String typePhone = rawArray[i + 2];
                         Log.i("PHONEDEBUG", "Contact id: " + contact.getId());
                         Phones phone = new Phones(contact.getId(), Integer.parseInt(phoneNumber), typePhone);
@@ -521,7 +522,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
                     case "em":
                         String emailStr = rawArray[i + 1];
-                        Toast.makeText(this, "Email: " + emailStr, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(this, "Email: " + emailStr, Toast.LENGTH_SHORT).show();
                         String typeEmail = rawArray[i + 2];
                         Emails email = new Emails(contact.getId(), emailStr, typeEmail);
                         database.addEmails(email);
@@ -578,6 +579,18 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         if (camera) {
             mScannerView.stopCamera();
         }
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if (camera) {
+            mScannerView.stopCamera();
+        }
+        listView.setAdapter(null);
+        FrameLayout frameLayout = findViewById(R.id.content);
+        frameLayout.removeAllViews();
+
     }
 
 

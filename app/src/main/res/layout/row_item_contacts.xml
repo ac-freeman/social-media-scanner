@@ -14,7 +14,7 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:src="@android:drawable/ic_dialog_info" />
+        android:src="@drawable/icons8_user" />
 
     <TextView
         android:id="@+id/name"
