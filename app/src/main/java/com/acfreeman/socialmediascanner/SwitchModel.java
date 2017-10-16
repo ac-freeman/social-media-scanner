@@ -15,20 +15,57 @@ import java.util.ArrayList;
 
 public class SwitchModel {
 
-    Switch sw;
-    ImageView switchImage;
+    String switchName;
+    String tag;
+    int switchImage;
+    Boolean state;
+    Switch switcher;
+    String user_id; //not used for phones/emails switches
 
-    public SwitchModel(Switch sw, ImageView switchImage) {
-        this.sw = sw;
+    public SwitchModel(String switchName, String tag, int switchImage) {
+        this.switchName = switchName;
+        this.tag = tag;
         this.switchImage = switchImage;
+        this.state = false;
+    }
+    public SwitchModel(String switchName, String tag, int switchImage, String user_id) {
+        this.switchName = switchName;
+        this.tag = tag;
+        this.switchImage = switchImage;
+        this.state = false;
+        this.user_id = user_id;
     }
 
-    public Switch getSwitch() {
-        return sw;
+    public void toggleState(){
+        this.state = !state;
+    }
+    public void setSwitcher(Switch switcher) {
+        this.switcher = switcher;
+    }
+    public Switch getSwitcher() {return switcher;}
+
+    public void setState(Boolean state){
+        this.state = state;
     }
 
-    public ImageView getSwitchImage(){
+    public boolean getState(){
+        return state;
+    }
+
+    public void setSwitchName(String switchName) {this.switchName = switchName;}
+
+    public String getSwitchName() {
+        return switchName;
+    }
+
+    public int getSwitchImage(){
         return switchImage;
     }
+
+    public String getTag() {return tag;}
+
+    public String getUser_id() {return user_id;}
+
+
 
 }

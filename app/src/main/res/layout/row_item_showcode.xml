@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:descendantFocusability="blocksDescendants">
 
 
     <ImageView
@@ -14,17 +15,33 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:paddingRight="@dimen/activity_horizontal_margin"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:src="@android:drawable/ic_dialog_info" />
 
+    <TextView
+        android:id="@+id/switcher_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/item_image"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        />
+
     <Switch
-        android:id="@+id/name"
+        android:id="@+id/switcher"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/item_image"
+        android:layout_toRightOf="@+id/switcher_text"
         android:text="Contact Name"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:clickable="false"/>
 
 
 
