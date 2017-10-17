@@ -1,9 +1,11 @@
 package com.acfreeman.socialmediascanner;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ArrayAdapter;
@@ -22,8 +24,8 @@ public class CustomContactsAdapter extends ArrayAdapter<DataModel> implements Vi
     // View lookup cache
     private static class ViewHolder {
         TextView txtName;
-        TextView txtType;
         ImageView info;
+        CheckBox checkBox;
     }
 
     public CustomContactsAdapter(ArrayList<DataModel> data, Context context) {
@@ -35,6 +37,10 @@ public class CustomContactsAdapter extends ArrayAdapter<DataModel> implements Vi
 
     public void clearData(){
         this.dataSet = null;
+    }
+
+    public void toggleEditMode() {
+        this.inEditmode = !this.inEditmode;
     }
 
     @Override
@@ -54,9 +60,10 @@ public class CustomContactsAdapter extends ArrayAdapter<DataModel> implements Vi
     }
 
     private int lastPosition = -1;
+    public Boolean inEditmode = false;
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, final ViewGroup parent) {
         // Get the data item for this position
         DataModel dataModel = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
@@ -64,23 +71,32 @@ public class CustomContactsAdapter extends ArrayAdapter<DataModel> implements Vi
 
         final View result;
 
+        viewHolder = new ViewHolder();
         if (convertView == null) {
-
-            viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.row_item_contacts, parent, false);
-            viewHolder.info = (ImageView) convertView.findViewById(R.id.item_info);
-            viewHolder.txtName = (TextView) convertView.findViewById(R.id.name);
-//            viewHolder.txtType = (TextView) convertView.findViewById(R.id.type);
-
-
             result=convertView;
-
-            convertView.setTag(viewHolder);
-        } else {
+        }
+        else {
             viewHolder = (ViewHolder) convertView.getTag();
             result=convertView;
         }
+            viewHolder.info = (ImageView) convertView.findViewById(R.id.item_info);
+            viewHolder.txtName = (TextView) convertView.findViewById(R.id.name);
+            viewHolder.checkBox = (CheckBox) convertView.findViewById(R.id.checkbox);
+//            viewHolder.txtType = (TextView) convertView.findViewById(R.id.type);
+            Log.i("CONTACTDEBUG", "In edit mode? " + inEditmode);
+            if(inEditmode){
+                viewHolder.checkBox.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.checkBox.setVisibility(View.INVISIBLE);
+            }
+
+
+
+            convertView.setTag(viewHolder);
+
+            final CheckBox checker = viewHolder.checkBox;
 
 //        Animation animation = AnimationUtils.loadAnimation(mContext, (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
 //        result.startAnimation(animation);

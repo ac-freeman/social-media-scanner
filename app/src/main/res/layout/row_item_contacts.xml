@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:descendantFocusability="blocksDescendants">
 
 
     <ImageView
@@ -26,6 +27,17 @@
         android:text="Contact Name"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@android:color/black" />
+
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:visibility="gone"
+
+        />
 
 
     <!--<TextView-->

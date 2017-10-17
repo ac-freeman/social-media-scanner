@@ -345,6 +345,23 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         adapter = new CustomContactsAdapter(dataModels, getApplicationContext());
 
         listView.setAdapter(adapter);
+        listView.setLongClickable(true);
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.i("CONTACTDEBUG", "Long click");
+                adapter.toggleEditMode();
+
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+                
+                return false;
+            }
+
+        });
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -355,6 +372,11 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                         .setAction("No action", null).show();
             }
         });
+
+
+
+
+
         frameLayout.addView(listView);
 
 
