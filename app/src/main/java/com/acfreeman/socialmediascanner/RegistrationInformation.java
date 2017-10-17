@@ -55,7 +55,6 @@ public class RegistrationInformation extends AppCompatActivity {
     public int plusEmailCnt;
     public int plusPhoneCnt;
 
-    //not sure what this does - does something when the app is first launched it think?
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     SharedPreferences mPrefs;
     final String firstLaunchPref= "firstLaunch";

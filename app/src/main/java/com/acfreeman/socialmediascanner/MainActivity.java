@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -12,8 +13,11 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -54,6 +58,8 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.twitter.sdk.android.core.Twitter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -70,6 +76,11 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     public boolean handleScan;
     private static Toolbar myToolbar;
     private static final int MY_PERMISSIONS_REQUEST = 101;
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    SharedPreferences mPrefs;
+    final String firstMainActivityPref= "firstMainActivity";
+    Boolean firstMainActivity;
 
     /**
      * Called when activity begins
@@ -213,12 +224,12 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         params1.addRule(RelativeLayout.CENTER_IN_PARENT);
 
 
+
         Display display = getWindowManager().getDefaultDisplay();
         int width = display.getWidth() * 3 / 4;
         RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(width, width);
         params2.addRule(RelativeLayout.CENTER_IN_PARENT);
         params2.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-
 
         switchModels = new ArrayList<>();
         codeListView = new ListView(this);
@@ -232,10 +243,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         List<Owner> owner = db.getAllOwner();
         ArrayList<Social> sociallist = db.getUserSocials(owner.get(0).getId());
         for (Social s : sociallist) {
-
-
             switchModels.add(new SwitchModel(s.getType(), s.getUsername()));
-
         }
 
 
@@ -380,15 +388,34 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     ListView listView;
 
     private void showFriends() {
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        firstMainActivity= mPrefs.getBoolean(firstMainActivityPref, true);
 
         FrameLayout frameLayout = findViewById(R.id.content);
         listView = new ListView(getApplicationContext());
 
         dataModels = new ArrayList<>();
 
-
+        if(firstMainActivity) {
+            addDummyData();
+            SharedPreferences.Editor editor = mPrefs.edit();
+            editor.putBoolean(firstMainActivityPref, false);
+            editor.commit(); // Very important to save the preference
+        }
         LocalDatabase db = new LocalDatabase(getApplicationContext());
         List<Contacts> contactslist = db.getAllContacts();
+
+
+        //sort contacts alphabetically
+        if (contactslist.size() > 0) {
+            Collections.sort(contactslist, new Comparator<Contacts>() {
+                @Override
+                public int compare(final Contacts object1, final Contacts object2) {
+                    return object1.getName().compareTo(object2.getName());
+                }
+            });
+        }
+
         for (Contacts c : contactslist) {
             ArrayList<Phones> userphoneslist = db.getUserPhones(c.getId());
             ArrayList<Emails> useremailslist = db.getUserEmails(c.getId());
@@ -477,6 +504,45 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         return builder;
     }
 
+    private void addDummyData(){
+        Contacts contact;
+        LocalDatabase db = new LocalDatabase(getApplicationContext());
+
+        contact = new Contacts("Chad Jones");
+        db.addContacts(contact);
+        contact = new Contacts("Alex Beck");
+        db.addContacts(contact);
+        contact = new Contacts("Chris Da");
+        db.addContacts(contact);
+        contact = new Contacts("Eric Frederickson");
+        db.addContacts(contact);
+        contact = new Contacts("Gina Halpert");
+        db.addContacts(contact);
+        contact = new Contacts("Isaac Jones");
+        db.addContacts(contact);
+        contact = new Contacts("Katherine Lopez");
+        db.addContacts(contact);
+        contact = new Contacts("Marina Nunez");
+        db.addContacts(contact);
+        contact = new Contacts("Opal Patricks");
+        db.addContacts(contact);
+        contact = new Contacts("Queen Rita");
+        db.addContacts(contact);
+        contact = new Contacts("Sam Terry");
+        db.addContacts(contact);
+        contact = new Contacts("Ur Very");
+        db.addContacts(contact);
+        contact = new Contacts("William Xavier");
+        db.addContacts(contact);
+        contact = new Contacts("Yorgos Zechariah");
+        db.addContacts(contact);
+        contact = new Contacts("Andrew Zepp");
+        db.addContacts(contact);
+        contact = new Contacts("Bert Yusef");
+        db.addContacts(contact);
+        contact = new Contacts("Chad Xylophone");
+        db.addContacts(contact);
+    }
 
     private List readDatabaseTest() {
 
