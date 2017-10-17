@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     private ZXingScannerView mScannerView;
     private boolean camera;
     public boolean handleScan;
+    private static Toolbar myToolbar;
     private static final int MY_PERMISSIONS_REQUEST = 101;
 
     /**
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         super.onCreate(savedInstanceState);
         Twitter.initialize(this);
         setContentView(R.layout.activity_main);
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
         mTextMessage = findViewById(R.id.message);
@@ -104,6 +105,24 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()) {
             case R.id.action_delete:
+                for (int i = 0; i < adapter.checks.size(); i++) {
+                    if(adapter.checks.get(i)==1){
+                        adapter.checks.remove(i);
+                        //TODO: remove from listview
+                        DataModel model = adapter.getItem(i);
+                        long contactId = model.getId();
+                        adapter.remove(model);
+                        Log.i("CONTACTDEBUG", "Removing item from list at position " + i);
+                        LocalDatabase db = new LocalDatabase(getApplicationContext());
+                        db.deleteContactsById(contactId);
+
+                        adapter.inEditmode = false;
+                        adapter.notifyDataSetChanged();
+                        i--;
+                    }
+
+                }
+                item.setVisible(false);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -162,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
      * Generating and displaying QR code
      * Uses ZXing
      */
-    ArrayList<SwitchModel> switchModels;
+    ArrayList<SwitchModel> switchModels = new ArrayList<>();
     private static CustomShowcodeAdapter showcodeAdapter;
 
     ListView codeListView;
@@ -360,7 +379,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             ArrayList<Phones> userphoneslist = db.getUserPhones(c.getId());
             ArrayList<Emails> useremailslist = db.getUserEmails(c.getId());
             ArrayList<Social> sociallist = db.getUserSocials(c.getId());
-            dataModels.add(new DataModel(c.getName(), userphoneslist, useremailslist, sociallist));
+            dataModels.add(new DataModel(c.getName(), c.getId(), userphoneslist, useremailslist, sociallist));
         }
 
         adapter = new CustomContactsAdapter(dataModels, getApplicationContext());
@@ -370,8 +389,12 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
+                deleteButton.setVisible(true);
+
                 Log.i("CONTACTDEBUG", "Long click");
                 adapter.toggleEditMode();
+                adapter.checks.set(i,1);
 
                 runOnUiThread(new Runnable() {
                     public void run() {

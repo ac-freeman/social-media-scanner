@@ -157,11 +157,16 @@ public class LocalDatabase extends SQLiteOpenHelper{
             lastId = c.getLong(0); //The 0 is the column index, we only have 1 column, so the index is 0
             contacts.setId(lastId);
         }
-
-
-
         db.close(); // Closing database connection
 
+    }
+
+    public void deleteContactsById(long id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        db.execSQL("DELETE FROM " +TABLE_CONTACTS + " WHERE rowid="+id);
+        db.execSQL("DELETE FROM " + TABLE_EMAILS + " WHERE " + KEY_ID +" ="+id);
+        db.execSQL("DELETE FROM " + TABLE_PHONES + " WHERE " + KEY_ID +" ="+id);
+        db.execSQL("DELETE FROM " + TABLE_SOCIAL + " WHERE " + KEY_ID +" ="+id);
     }
 
     ///////////

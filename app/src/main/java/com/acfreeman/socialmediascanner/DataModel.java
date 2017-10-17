@@ -14,6 +14,7 @@ import java.util.List;
 public class DataModel {
 
     String name;
+    long id;
     String type;
     String version_number;
     String feature;
@@ -21,8 +22,9 @@ public class DataModel {
     ArrayList<Emails> emails;
     ArrayList<Social> socials;
 
-    public DataModel(String name, ArrayList<Phones> phones, ArrayList<Emails> emails, ArrayList<Social> socials) {
+    public DataModel(String name, long id,  ArrayList<Phones> phones, ArrayList<Emails> emails, ArrayList<Social> socials) {
         this.name=name;
+        this.id=id;
         this.phones=phones;
         this.emails=emails;
         this.socials=socials;
@@ -32,6 +34,8 @@ public class DataModel {
     public String getName() {
         return name;
     }
+
+    public long getId() {return id;}
 
     public ArrayList<Phones> getPhones() {
         return phones;
