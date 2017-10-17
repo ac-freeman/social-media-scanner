@@ -35,9 +35,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.db.Contacts;
 import com.acfreeman.socialmediascanner.db.Emails;
@@ -46,7 +44,6 @@ import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Phones;
 import com.acfreeman.socialmediascanner.db.Social;
 import com.acfreeman.socialmediascanner.social.SocialAdder;
-import com.acfreeman.socialmediascanner.social.SocialDialogFragment;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.Result;
@@ -64,7 +61,7 @@ import me.dm7.barcodescanner.core.IViewFinder;
 import me.dm7.barcodescanner.core.ViewFinderView;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
-public class MainActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler, SocialDialogFragment.NoticeDialogListener {
+public class MainActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler, CustomDialogFragment.NoticeDialogListener {
 
     private TextView mTextMessage;
     private static ImageView mImageView;
@@ -107,15 +104,17 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         if (deleteButton != null)
             deleteButton.setVisible(false);
     }
+
     public void showDeleteButton() {
         MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
         if (deleteButton != null)
             deleteButton.setVisible(true);
     }
-    public void toggleDeleteButton(){
+
+    public void toggleDeleteButton() {
         MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
-        if(deleteButton!=null){
-            if(deleteButton.isVisible())
+        if (deleteButton != null) {
+            if (deleteButton.isVisible())
                 hideDeleteButton();
             else
                 showDeleteButton();
@@ -126,24 +125,15 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete:
-                for (int i = 0; i < adapter.checks.size(); i++) {
-                    if (adapter.checks.get(i) == 1) {
-                        adapter.checks.remove(i);
-                        //TODO: remove from listview
-                        DataModel model = adapter.getItem(i);
-                        long contactId = model.getId();
-                        adapter.remove(model);
-                        Log.i("CONTACTDEBUG", "Removing item from list at position " + i);
-                        LocalDatabase db = new LocalDatabase(getApplicationContext());
-                        db.deleteContactsById(contactId);
+                DialogFragment dialog = new CustomDialogFragment();
 
-                        adapter.inEditmode = false;
-                        adapter.notifyDataSetChanged();
-                        i--;
-                    }
+                Bundle args = new Bundle();
+                args.putString("dialog_title", "Delete selected contacts?");
+                args.putString("action", "delete");
 
-                }
-                item.setVisible(false);
+                dialog.setArguments(args);
+                dialog.show(getFragmentManager(), "CustomDialogFragment");
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -438,6 +428,19 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
                 Snackbar.make(view, dataModel.getName() + "\n" + dataModel.getPhones().get(0).getNumber() + "\n" + dataModel.getEmails().get(0).getEmail() + "\n" + dataModel.getSocials().get(0).getType(), Snackbar.LENGTH_LONG)
                         .setAction("No action", null).show();
+
+                if(adapter.inEditmode){
+                    if(adapter.checks.get(position)==1)
+                        adapter.checks.set(position, 0);
+                    else
+                        adapter.checks.set(position, 1);
+                }
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+                Log.i("CONTACTDEBUG","Item clicked!");
             }
         });
 
@@ -654,7 +657,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     public void showNoticeDialog(String name) {
         if (!socialAdderArrayList.isEmpty()) {
             // Create an instance of the dialog fragment and show it
-            DialogFragment dialog = new SocialDialogFragment();
+            DialogFragment dialog = new CustomDialogFragment();
 
 
             SocialAdder currentSocial = socialAdderArrayList.get(0);
@@ -665,9 +668,10 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             args.putString("dialog_title", "Would you like to add " + name + " on " + type + "?");
             args.putString("name", name);
             args.putString("uri", uri);
+            args.putString("action", "socialAdd");
 
             dialog.setArguments(args);
-            dialog.show(getFragmentManager(), "SocialDialogFragment");
+            dialog.show(getFragmentManager(), "CustomDialogFragment");
 
             socialAdderArrayList.remove(0);
         }
@@ -684,10 +688,35 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
         Bundle mArgs = dialog.getArguments();
         String name = mArgs.getString("name");
-        String uri = mArgs.getString("uri");
-        socialAdd(uri);
+        String action = mArgs.getString("action");
+        switch (action) {
+            case "socialAdd":
+                String uri = mArgs.getString("uri");
+                socialAdd(uri);
 
-        showNoticeDialog(name);
+                showNoticeDialog(name);
+                break;
+            case "delete":
+                for (int i = 0; i < adapter.checks.size(); i++) {
+                    if (adapter.checks.get(i) == 1) {
+                        adapter.checks.remove(i);
+                        //TODO: remove from listview
+                        DataModel model = adapter.getItem(i);
+                        long contactId = model.getId();
+                        adapter.remove(model);
+                        Log.i("CONTACTDEBUG", "Removing item from list at position " + i);
+                        LocalDatabase db = new LocalDatabase(getApplicationContext());
+                        db.deleteContactsById(contactId);
+
+                        adapter.inEditmode = false;
+                        adapter.notifyDataSetChanged();
+                        i--;
+                    }
+
+                }
+                hideDeleteButton();
+                break;
+        }
     }
 
     @Override
@@ -695,7 +724,15 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         //Go to next social media dialog
         Bundle mArgs = dialog.getArguments();
         String name = mArgs.getString("name");
-        showNoticeDialog(name);
+        String action = mArgs.getString("action");
+        switch (action) {
+            case "socialAdd":
+                showNoticeDialog(name);
+                break;
+            case "delete":
+                break;
+        }
+
     }
 
     @Override

@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.acfreeman.socialmediascanner.CustomDialogFragment;
 import com.acfreeman.socialmediascanner.MainActivity;
 import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
@@ -46,7 +47,7 @@ import java.util.List;
 
 import static android.view.MotionEvent.ACTION_BUTTON_PRESS;
 
-public class SocialMediaLoginActivity extends AppCompatActivity implements DownloadDialogFragment.NoticeDialogListener {
+public class SocialMediaLoginActivity extends AppCompatActivity implements CustomDialogFragment.NoticeDialogListener {
 
     private TwitterLoginButton loginButton;
     private ImageView liButton;
@@ -240,16 +241,18 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Downl
     }
 
     public void showNoticeDialog(String social_title, String uri) {
-        DialogFragment dialog = new DownloadDialogFragment();
+        DialogFragment dialog = new CustomDialogFragment();
 
 
 
         Bundle args = new Bundle();
         args.putString("dialog_title", "You must install the " + social_title + " app in order to login");
         args.putString("uri", uri);
+        args.putString("action","appInstall");
+
 
         dialog.setArguments(args);
-        dialog.show(getFragmentManager(), "DownloadDialogFragment");
+        dialog.show(getFragmentManager(), "CustomDialogFragment");
     }
 
     @Override

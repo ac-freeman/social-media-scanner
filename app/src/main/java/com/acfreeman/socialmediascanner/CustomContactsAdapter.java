@@ -48,18 +48,19 @@ public class CustomContactsAdapter extends ArrayAdapter<DataModel> implements Vi
 
     @Override
     public void onClick(View v) {
-
-        int position=(Integer) v.getTag();
-        Object object= getItem(position);
-        DataModel dataModel=(DataModel)object;
-
-//        switch (v.getId())
-//        {
-//            case R.id.item_info:
-////                Snackbar.make(v, "Release date " +dataModel.getFeature(), Snackbar.LENGTH_LONG)
-////                        .setAction("No action", null).show();
-//                break;
-//        }
+        //WE OVERRIDE THIS LISTENER IN MAINACTIVITY
+//        int position=(Integer) v.getTag();
+//        Object object= getItem(position);
+//        DataModel dataModel=(DataModel)object;
+//        Log.i("CONTACTDEBUG", "Item clicked!");
+//
+////        switch (v.getId())
+////        {
+////            case R.id.item_info:
+//////                Snackbar.make(v, "Release date " +dataModel.getFeature(), Snackbar.LENGTH_LONG)
+//////                        .setAction("No action", null).show();
+////                break;
+////        }
     }
 
     private int lastPosition = -1;
@@ -85,12 +86,18 @@ public class CustomContactsAdapter extends ArrayAdapter<DataModel> implements Vi
             viewHolder = (ViewHolder) convertView.getTag();
             result=convertView;
         }
-            viewHolder.info = (ImageView) convertView.findViewById(R.id.item_info);
-            viewHolder.txtName = (TextView) convertView.findViewById(R.id.name);
-            viewHolder.checkBox = (CheckBox) convertView.findViewById(R.id.checkbox);
+            viewHolder.info = (ImageView) result.findViewById(R.id.item_info);
+            viewHolder.txtName = (TextView) result.findViewById(R.id.name);
+            viewHolder.checkBox = (CheckBox) result.findViewById(R.id.checkbox);
 //            viewHolder.txtType = (TextView) convertView.findViewById(R.id.type);
             Log.i("CONTACTDEBUG", "In edit mode? " + inEditmode);
             if(inEditmode){
+                if(checks.get(position)==1) {
+                    Log.i("CONTACTDEBUG","Position = " + position);
+                    viewHolder.checkBox.setChecked(true);
+                } else {
+                    viewHolder.checkBox.setChecked(false);
+                }
                 viewHolder.checkBox.setVisibility(View.VISIBLE);
             } else {
                 viewHolder.checkBox.setVisibility(View.INVISIBLE);
@@ -109,7 +116,7 @@ public class CustomContactsAdapter extends ArrayAdapter<DataModel> implements Vi
             });
 
 
-            convertView.setTag(viewHolder);
+            result.setTag(viewHolder);
 
 
 
