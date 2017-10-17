@@ -253,7 +253,7 @@ public class RegistrationInformation extends AppCompatActivity {
                             p.setError("Phone number is required!");
                             error = true;
                         } else {
-                            Phones phone = new Phones(owner.getId(), Integer.parseInt(p.getText().toString()), "Cell");
+                            Phones phone = new Phones(owner.getId(), Long.parseLong(p.getText().toString()), "Cell");
                             database.addPhones(phone);
                         }
                     }
