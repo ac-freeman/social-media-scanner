@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_friends);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -101,12 +102,23 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         return true;
     }
 
+    public void hideDeleteButton() {
+        MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
+        if (deleteButton != null)
+            deleteButton.setVisible(false);
+    }
+    public void showDeleteButton() {
+        MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
+        if (deleteButton != null)
+            deleteButton.setVisible(true);
+    }
+
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete:
                 for (int i = 0; i < adapter.checks.size(); i++) {
-                    if(adapter.checks.get(i)==1){
+                    if (adapter.checks.get(i) == 1) {
                         adapter.checks.remove(i);
                         //TODO: remove from listview
                         DataModel model = adapter.getItem(i);
@@ -141,13 +153,14 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             FrameLayout frameLayout = findViewById(R.id.content);
             switch (item.getItemId()) {
                 case R.id.navigation_show:
-                    if(!showCode) {
+                    if (!showCode) {
                         frameLayout.removeAllViews();
                         if (camera) {
                             camera = false;
                             mScannerView.stopCamera();
                         }
                         showCode();
+                        hideDeleteButton();
                     }
                     return true;
 
@@ -159,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     }
                     showCode = false;
                     showFriends();
+                    hideDeleteButton();
 
                     return true;
 
@@ -168,13 +182,13 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     handleScan = true;
                     showCode = false;
                     scanCode();
+                    hideDeleteButton();
 
                     return true;
             }
             return false;
         }
     };
-
 
 
     /**
@@ -186,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
     ListView codeListView;
     Boolean showCode;
+
     private void showCode() {
         showCode = true;
         QRCodeWriter writer = new QRCodeWriter();
@@ -210,14 +225,14 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         codeListView = new ListView(this);
 
 
-        switchModels.add(new SwitchModel("Phone number(s)", "ph", R.drawable.icons8_phone));
-        switchModels.add(new SwitchModel("Email address(es)", "em", R.drawable.icons8_gmail));
+        switchModels.add(new SwitchModel("Phone number(s)", "ph", R.drawable.ic_phone_black_24dp));
+        switchModels.add(new SwitchModel("Email address(es)", "em", R.drawable.ic_email_black_24dp));
 
         List socials = new ArrayList();
         LocalDatabase db = new LocalDatabase(getApplicationContext());
         List<Owner> owner = db.getAllOwner();
         ArrayList<Social> sociallist = db.getUserSocials(owner.get(0).getId());
-        for(Social s : sociallist) {
+        for (Social s : sociallist) {
 
 
             switchModels.add(new SwitchModel(s.getType(), s.getUsername()));
@@ -269,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             builder.append(ownerName + "|");
             for (SwitchModel sw : switchSet) {
                 Log.i("SWITCHERDEBUG", sw.getSwitchName() + ", " + sw.getState());
-                if(sw.getState()) {
+                if (sw.getState()) {
                     switch (sw.getTag()) {
                         case "ph":
 
@@ -389,12 +404,11 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
-                deleteButton.setVisible(true);
+                showDeleteButton();
 
                 Log.i("CONTACTDEBUG", "Long click");
                 adapter.toggleEditMode();
-                adapter.checks.set(i,1);
+                adapter.checks.set(i, 1);
 
                 runOnUiThread(new Runnable() {
                     public void run() {
@@ -619,7 +633,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
         if (camera) {
             mScannerView.stopCamera();
