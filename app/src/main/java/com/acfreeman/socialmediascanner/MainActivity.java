@@ -112,6 +112,15 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         if (deleteButton != null)
             deleteButton.setVisible(true);
     }
+    public void toggleDeleteButton(){
+        MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
+        if(deleteButton!=null){
+            if(deleteButton.isVisible())
+                hideDeleteButton();
+            else
+                showDeleteButton();
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -404,7 +413,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                showDeleteButton();
+                toggleDeleteButton();
 
                 Log.i("CONTACTDEBUG", "Long click");
                 adapter.toggleEditMode();
@@ -416,7 +425,8 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     }
                 });
 
-                return false;
+                //tells system to stop listening for another click in same action
+                return true;
             }
 
         });
