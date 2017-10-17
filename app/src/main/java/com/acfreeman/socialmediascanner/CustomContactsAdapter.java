@@ -32,6 +32,9 @@ public class CustomContactsAdapter extends ArrayAdapter<DataModel> implements Vi
         super(context, R.layout.row_item_contacts, data);
         this.dataSet = data;
         this.mContext=context;
+        for(int b=0;b<dataSet.size();b++){
+            checks.add(b,0);  //assign 0 by default in each position of ArrayList
+        }
 
     }
 
@@ -61,9 +64,10 @@ public class CustomContactsAdapter extends ArrayAdapter<DataModel> implements Vi
 
     private int lastPosition = -1;
     public Boolean inEditmode = false;
+    ArrayList<Integer> checks=new ArrayList<Integer>();
 
     @Override
-    public View getView(int position, View convertView, final ViewGroup parent) {
+    public View getView(final int position, View convertView, final ViewGroup parent) {
         // Get the data item for this position
         DataModel dataModel = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
@@ -92,11 +96,22 @@ public class CustomContactsAdapter extends ArrayAdapter<DataModel> implements Vi
                 viewHolder.checkBox.setVisibility(View.INVISIBLE);
             }
 
+            viewHolder.checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(((CheckBox)view).isChecked()){
+                        checks.set(position,1);
+                        Log.i("CONTACTDEBUG", "CheckBox at  " +position+ " is 1");
+                    } else {
+                        checks.set(position, 0);
+                    }
+                }
+            });
 
 
             convertView.setTag(viewHolder);
 
-            final CheckBox checker = viewHolder.checkBox;
+
 
 //        Animation animation = AnimationUtils.loadAnimation(mContext, (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
 //        result.startAnimation(animation);
