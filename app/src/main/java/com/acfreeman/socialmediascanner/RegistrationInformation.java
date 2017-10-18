@@ -9,10 +9,13 @@ import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Switch;
@@ -117,9 +120,13 @@ public class RegistrationInformation extends AppCompatActivity {
         phoneEditText.setInputType(InputType.TYPE_CLASS_PHONE);
         phoneEditText.setWidth(textWidth);
 
-        final Button plusPhone = new Button(this);
-        plusPhone.setText("+");
-        plusPhone.setWidth(LayoutParams.WRAP_CONTENT);  //Doesn't work
+        final ImageButton plusPhone = new ImageButton(this);
+//        final Button plusPhone = new Button(this);
+//        plusPhone.setText("+");
+        plusPhone.setImageResource(R.drawable.ic_add_circle_green_24px);
+        TypedValue typedValue = new TypedValue();
+        getTheme().resolveAttribute(R.attr.selectableItemBackground, typedValue, true);
+        plusPhone.setBackgroundResource(typedValue.resourceId);
         plusPhoneCnt = 0;
 
         final TableRow phoneRow = new TableRow(this);
@@ -136,9 +143,11 @@ public class RegistrationInformation extends AppCompatActivity {
         emailEditText.setHint("Email");
         emailEditText.setWidth(textWidth);
 
-        final Button plusEmail = new Button(this);
-        plusEmail.setText("+");
-        plusEmail.setWidth(LayoutParams.WRAP_CONTENT);  //Doesn't work
+//        final Button plusEmail = new Button(this);
+//        plusEmail.setText("+");
+        final ImageButton plusEmail = new ImageButton(this);
+        plusEmail.setImageResource(R.drawable.ic_add_circle_green_24px);
+        plusEmail.setBackgroundResource(typedValue.resourceId);
         plusEmailCnt = 0;
 
         TableRow emailRow = new TableRow(this);
