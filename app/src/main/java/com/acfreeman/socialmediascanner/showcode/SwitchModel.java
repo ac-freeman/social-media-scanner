@@ -1,13 +1,8 @@
-package com.acfreeman.socialmediascanner;
+package com.acfreeman.socialmediascanner.showcode;
 
-import android.widget.ImageView;
 import android.widget.Switch;
 
-import com.acfreeman.socialmediascanner.db.Emails;
-import com.acfreeman.socialmediascanner.db.Phones;
-import com.acfreeman.socialmediascanner.db.Social;
-
-import java.util.ArrayList;
+import com.acfreeman.socialmediascanner.R;
 
 /**
  * Created by Andrew on 10/13/2017.
@@ -49,6 +44,7 @@ public class SwitchModel {
                 this.switchName = "Facebook";
                 this.switchImage = R.drawable.fb_24dp;
                 break;
+
             default:
                 this.switchName = "ERR.";
                 break;

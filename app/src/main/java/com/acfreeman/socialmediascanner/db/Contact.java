@@ -4,19 +4,19 @@ package com.acfreeman.socialmediascanner.db;
  * Created by jianziyu on 2017/9/19.
  */
 
-public class Contacts {
+public class Contact {
     private long id;
     private String name;
-    public Contacts()
+    public Contact()
     {
     }
-    public Contacts(int id,String name)
+    public Contact(int id, String name)
     {
         this.id=id;
         this.name=name;
 
     }
-    public Contacts(String name){
+    public Contact(String name){
         this.name = name;
     }
     public void setId(long id) {

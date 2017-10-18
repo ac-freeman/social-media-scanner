@@ -1,14 +1,15 @@
-package com.acfreeman.socialmediascanner;
+package com.acfreeman.socialmediascanner.showcode;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import com.acfreeman.socialmediascanner.R;
 
 import java.util.ArrayList;
 
@@ -16,7 +17,7 @@ import java.util.ArrayList;
  * Created by Andrew on 10/13/2017.
  */
 
-public class CustomShowcodeAdapter extends ArrayAdapter<SwitchModel> implements View.OnClickListener{
+public class ShowcodeAdapter extends ArrayAdapter<SwitchModel> implements View.OnClickListener{
 
     private ArrayList<SwitchModel> switchSet;
     Context mContext;
@@ -28,7 +29,7 @@ public class CustomShowcodeAdapter extends ArrayAdapter<SwitchModel> implements 
         TextView switcherText;
     }
 
-    public CustomShowcodeAdapter(ArrayList<SwitchModel> data, Context context) {
+    public ShowcodeAdapter(ArrayList<SwitchModel> data, Context context) {
         super(context, R.layout.row_item_showcode, data);
         this.switchSet = data;
         this.mContext=context;
@@ -51,13 +52,13 @@ public class CustomShowcodeAdapter extends ArrayAdapter<SwitchModel> implements 
         // Get the data item for this position
         final SwitchModel switchModel = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
-        final CustomShowcodeAdapter.ViewHolder viewHolder; // view lookup cache stored in tag
+        final ShowcodeAdapter.ViewHolder viewHolder; // view lookup cache stored in tag
 
         final View result;
 
         if (convertView == null) {
 
-            viewHolder = new CustomShowcodeAdapter.ViewHolder();
+            viewHolder = new ShowcodeAdapter.ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.row_item_showcode, parent, false);
             viewHolder.info = (ImageView) convertView.findViewById(R.id.item_image);
@@ -70,7 +71,7 @@ public class CustomShowcodeAdapter extends ArrayAdapter<SwitchModel> implements 
 
             convertView.setTag(viewHolder);
         } else {
-            viewHolder = (CustomShowcodeAdapter.ViewHolder) convertView.getTag();
+            viewHolder = (ShowcodeAdapter.ViewHolder) convertView.getTag();
             result=convertView;
         }
 

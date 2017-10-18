@@ -19,7 +19,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -41,12 +40,16 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.acfreeman.socialmediascanner.db.Contacts;
-import com.acfreeman.socialmediascanner.db.Emails;
+import com.acfreeman.socialmediascanner.db.Contact;
+import com.acfreeman.socialmediascanner.db.Email;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
-import com.acfreeman.socialmediascanner.db.Phones;
+import com.acfreeman.socialmediascanner.db.Phone;
 import com.acfreeman.socialmediascanner.db.Social;
+import com.acfreeman.socialmediascanner.showcode.ShowcodeAdapter;
+import com.acfreeman.socialmediascanner.showcode.SwitchModel;
+import com.acfreeman.socialmediascanner.showfriends.ContactsAdapter;
+import com.acfreeman.socialmediascanner.showfriends.DataModel;
 import com.acfreeman.socialmediascanner.social.SocialAdder;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -206,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
      * Uses ZXing
      */
     ArrayList<SwitchModel> switchModels = new ArrayList<>();
-    private static CustomShowcodeAdapter showcodeAdapter;
+    private static ShowcodeAdapter showcodeAdapter;
 
     ListView codeListView;
     Boolean showCode;
@@ -247,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         }
 
 
-        showcodeAdapter = new CustomShowcodeAdapter(switchModels, getApplicationContext());
+        showcodeAdapter = new ShowcodeAdapter(switchModels, getApplicationContext());
         codeListView.setAdapter(showcodeAdapter);
 
 
@@ -285,8 +288,8 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             LocalDatabase database = new LocalDatabase(this);
             Owner owner = database.getOwner(0);
             String ownerName = owner.getName();
-            ArrayList<Phones> ownerPhones = database.getUserPhones(owner.getId());
-            ArrayList<Emails> ownerEmails = database.getUserEmails(owner.getId());
+            ArrayList<Phone> ownerPhones = database.getUserPhones(owner.getId());
+            ArrayList<Email> ownerEmails = database.getUserEmails(owner.getId());
 
             builder.append(ownerName + "|");
             for (SwitchModel sw : switchSet) {
@@ -295,12 +298,12 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     switch (sw.getTag()) {
                         case "ph":
 
-                            for (Phones p : ownerPhones) {
+                            for (Phone p : ownerPhones) {
                                 builder.append("ph" + "|" + p.getNumber() + "|" + p.getType() + "|");
                             }
                             break;
                         case "em":
-                            for (Emails e : ownerEmails) {
+                            for (Email e : ownerEmails) {
                                 builder.append("em" + "|" + e.getEmail() + "|" + e.getType() + "|");
                             }
                             break;
@@ -383,7 +386,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
     }
 
-    private CustomContactsAdapter adapter;
+    private ContactsAdapter adapter;
     ArrayList<DataModel> dataModels;
     ListView listView;
 
@@ -403,27 +406,27 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             editor.commit(); // Very important to save the preference
         }
         LocalDatabase db = new LocalDatabase(getApplicationContext());
-        List<Contacts> contactslist = db.getAllContacts();
+        List<Contact> contactslist = db.getAllContacts();
 
 
         //sort contacts alphabetically
         if (contactslist.size() > 0) {
-            Collections.sort(contactslist, new Comparator<Contacts>() {
+            Collections.sort(contactslist, new Comparator<Contact>() {
                 @Override
-                public int compare(final Contacts object1, final Contacts object2) {
+                public int compare(final Contact object1, final Contact object2) {
                     return object1.getName().compareTo(object2.getName());
                 }
             });
         }
 
-        for (Contacts c : contactslist) {
-            ArrayList<Phones> userphoneslist = db.getUserPhones(c.getId());
-            ArrayList<Emails> useremailslist = db.getUserEmails(c.getId());
+        for (Contact c : contactslist) {
+            ArrayList<Phone> userphoneslist = db.getUserPhones(c.getId());
+            ArrayList<Email> useremailslist = db.getUserEmails(c.getId());
             ArrayList<Social> sociallist = db.getUserSocials(c.getId());
             dataModels.add(new DataModel(c.getName(), c.getId(), userphoneslist, useremailslist, sociallist));
         }
 
-        adapter = new CustomContactsAdapter(dataModels, getApplicationContext());
+        adapter = new ContactsAdapter(dataModels, getApplicationContext());
 
         listView.setAdapter(adapter);
         listView.setLongClickable(true);
@@ -505,43 +508,43 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     }
 
     private void addDummyData(){
-        Contacts contact;
+        Contact contact;
         LocalDatabase db = new LocalDatabase(getApplicationContext());
 
-        contact = new Contacts("Chad Jones");
-        db.addContacts(contact);
-        contact = new Contacts("Alex Beck");
-        db.addContacts(contact);
-        contact = new Contacts("Chris Da");
-        db.addContacts(contact);
-        contact = new Contacts("Eric Frederickson");
-        db.addContacts(contact);
-        contact = new Contacts("Gina Halpert");
-        db.addContacts(contact);
-        contact = new Contacts("Isaac Jones");
-        db.addContacts(contact);
-        contact = new Contacts("Katherine Lopez");
-        db.addContacts(contact);
-        contact = new Contacts("Marina Nunez");
-        db.addContacts(contact);
-        contact = new Contacts("Opal Patricks");
-        db.addContacts(contact);
-        contact = new Contacts("Queen Rita");
-        db.addContacts(contact);
-        contact = new Contacts("Sam Terry");
-        db.addContacts(contact);
-        contact = new Contacts("Ur Very");
-        db.addContacts(contact);
-        contact = new Contacts("William Xavier");
-        db.addContacts(contact);
-        contact = new Contacts("Yorgos Zechariah");
-        db.addContacts(contact);
-        contact = new Contacts("Andrew Zepp");
-        db.addContacts(contact);
-        contact = new Contacts("Bert Yusef");
-        db.addContacts(contact);
-        contact = new Contacts("Chad Xylophone");
-        db.addContacts(contact);
+        contact = new Contact("Chad Jones");
+        db.addContact(contact);
+        contact = new Contact("Alex Beck");
+        db.addContact(contact);
+        contact = new Contact("Chris Da");
+        db.addContact(contact);
+        contact = new Contact("Eric Frederickson");
+        db.addContact(contact);
+        contact = new Contact("Gina Halpert");
+        db.addContact(contact);
+        contact = new Contact("Isaac Jones");
+        db.addContact(contact);
+        contact = new Contact("Katherine Lopez");
+        db.addContact(contact);
+        contact = new Contact("Marina Nunez");
+        db.addContact(contact);
+        contact = new Contact("Opal Patricks");
+        db.addContact(contact);
+        contact = new Contact("Queen Rita");
+        db.addContact(contact);
+        contact = new Contact("Sam Terry");
+        db.addContact(contact);
+        contact = new Contact("Ur Very");
+        db.addContact(contact);
+        contact = new Contact("William Xavier");
+        db.addContact(contact);
+        contact = new Contact("Yorgos Zechariah");
+        db.addContact(contact);
+        contact = new Contact("Andrew Zepp");
+        db.addContact(contact);
+        contact = new Contact("Bert Yusef");
+        db.addContact(contact);
+        contact = new Contact("Chad Xylophone");
+        db.addContact(contact);
     }
 
     private List readDatabaseTest() {
@@ -554,14 +557,14 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         res.add(owner.get(0).getName());
 
 
-        ArrayList<Phones> phonelist = db.getUserPhones(owner.get(0).getId());
-        for (Phones p : phonelist) {
+        ArrayList<Phone> phonelist = db.getUserPhones(owner.get(0).getId());
+        for (Phone p : phonelist) {
             res.add(p.getNumber());
             res.add(p.getType());
         }
 
-        ArrayList<Emails> emaillist = db.getUserEmails(owner.get(0).getId());
-        for (Emails e : emaillist) {
+        ArrayList<Email> emaillist = db.getUserEmails(owner.get(0).getId());
+        for (Email e : emaillist) {
             res.add(e.getEmail());
             res.add(e.getType());
         }
@@ -572,18 +575,18 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             res.add(s.getUsername());
         }
 
-        List<Contacts> contactstest = db.getAllContacts();
-        for (Contacts c : contactstest) {
+        List<Contact> contactstest = db.getAllContacts();
+        for (Contact c : contactstest) {
             res.add(c.getName());
 
-            ArrayList<Phones> userphoneslist = db.getUserPhones(c.getId());
-            for (Phones p : userphoneslist) {
+            ArrayList<Phone> userphoneslist = db.getUserPhones(c.getId());
+            for (Phone p : userphoneslist) {
                 res.add(p.getNumber());
                 res.add(p.getType());
             }
 
-            ArrayList<Emails> useremailslist = db.getUserEmails(c.getId());
-            for (Emails em : useremailslist) {
+            ArrayList<Email> useremailslist = db.getUserEmails(c.getId());
+            for (Email em : useremailslist) {
                 res.add(em.getEmail());
                 res.add(em.getType());
             }
@@ -625,13 +628,13 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             String[] rawArray = raw.split("\\|");   //pipe character must be escaped in regex
 
             LocalDatabase database = new LocalDatabase(getApplicationContext());
-            List<Contacts> allContacts = database.getAllContacts();
+            List<Contact> allContacts = database.getAllContacts();
 
             String t = rawArray[1];
             String userName = t;
 //            Toast.makeText(this, "Name: " + userName, Toast.LENGTH_SHORT).show();
-            Contacts contact = new Contacts(userName);
-            database.addContacts(contact);
+            Contact contact = new Contact(userName);
+            database.addContact(contact);
 
             for (int i = 2; i < rawArray.length; i++) {
 
@@ -646,16 +649,16 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 //                        Toast.makeText(this, "Phone: " + phoneNumber, Toast.LENGTH_SHORT).show();
                         String typePhone = rawArray[i + 2];
                         Log.i("PHONEDEBUG", "Contact id: " + contact.getId());
-                        Phones phone = new Phones(contact.getId(), Integer.parseInt(phoneNumber), typePhone);
-                        database.addPhones(phone);
+                        Phone phone = new Phone(contact.getId(), Integer.parseInt(phoneNumber), typePhone);
+                        database.addPhone(phone);
                         break;
 
                     case "em":
                         String emailStr = rawArray[i + 1];
 //                        Toast.makeText(this, "Email: " + emailStr, Toast.LENGTH_SHORT).show();
                         String typeEmail = rawArray[i + 2];
-                        Emails email = new Emails(contact.getId(), emailStr, typeEmail);
-                        database.addEmails(email);
+                        Email email = new Email(contact.getId(), emailStr, typeEmail);
+                        database.addEmail(email);
                         break;
 
 
@@ -790,7 +793,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                         adapter.remove(model);
                         Log.i("CONTACTDEBUG", "Removing item from list at position " + i);
                         LocalDatabase db = new LocalDatabase(getApplicationContext());
-                        db.deleteContactsById(contactId);
+                        db.deleteContactById(contactId);
 
                         adapter.inEditmode = false;
                         adapter.notifyDataSetChanged();

@@ -1,11 +1,10 @@
-package com.acfreeman.socialmediascanner;
+package com.acfreeman.socialmediascanner.showfriends;
 
-import com.acfreeman.socialmediascanner.db.Emails;
-import com.acfreeman.socialmediascanner.db.Phones;
+import com.acfreeman.socialmediascanner.db.Email;
+import com.acfreeman.socialmediascanner.db.Phone;
 import com.acfreeman.socialmediascanner.db.Social;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Andrew on 10/13/2017.
@@ -18,11 +17,11 @@ public class DataModel {
     String type;
     String version_number;
     String feature;
-    ArrayList<Phones> phones;
-    ArrayList<Emails> emails;
+    ArrayList<Phone> phones;
+    ArrayList<Email> emails;
     ArrayList<Social> socials;
 
-    public DataModel(String name, long id,  ArrayList<Phones> phones, ArrayList<Emails> emails, ArrayList<Social> socials) {
+    public DataModel(String name, long id, ArrayList<Phone> phones, ArrayList<Email> emails, ArrayList<Social> socials) {
         this.name=name;
         this.id=id;
         this.phones=phones;
@@ -37,11 +36,11 @@ public class DataModel {
 
     public long getId() {return id;}
 
-    public ArrayList<Phones> getPhones() {
+    public ArrayList<Phone> getPhones() {
         return phones;
     }
 
-    public ArrayList<Emails> getEmails() {
+    public ArrayList<Email> getEmails() {
         return emails;
     }
 

@@ -1,4 +1,4 @@
-package com.acfreeman.socialmediascanner;
+package com.acfreeman.socialmediascanner.showfriends;
 
 import android.content.Context;
 import android.util.Log;
@@ -10,13 +10,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ArrayAdapter;
 
+import com.acfreeman.socialmediascanner.R;
+
 import java.util.ArrayList;
 
 /**
  * Created by Andrew on 10/13/2017.
  */
 
-public class CustomContactsAdapter extends ArrayAdapter<DataModel> implements View.OnClickListener{
+public class ContactsAdapter extends ArrayAdapter<DataModel> implements View.OnClickListener{
 
     private ArrayList<DataModel> dataSet;
     Context mContext;
@@ -28,7 +30,7 @@ public class CustomContactsAdapter extends ArrayAdapter<DataModel> implements Vi
         CheckBox checkBox;
     }
 
-    public CustomContactsAdapter(ArrayList<DataModel> data, Context context) {
+    public ContactsAdapter(ArrayList<DataModel> data, Context context) {
         super(context, R.layout.row_item_contacts, data);
         this.dataSet = data;
         this.mContext=context;
@@ -65,7 +67,7 @@ public class CustomContactsAdapter extends ArrayAdapter<DataModel> implements Vi
 
     private int lastPosition = -1;
     public Boolean inEditmode = false;
-    ArrayList<Integer> checks=new ArrayList<Integer>();
+    public ArrayList<Integer> checks=new ArrayList<Integer>();
 
     @Override
     public View getView(final int position, View convertView, final ViewGroup parent) {

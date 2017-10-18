@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Switch;
@@ -24,10 +23,10 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.acfreeman.socialmediascanner.db.Emails;
+import com.acfreeman.socialmediascanner.db.Email;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
-import com.acfreeman.socialmediascanner.db.Phones;
+import com.acfreeman.socialmediascanner.db.Phone;
 import com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity;
 
 import java.util.ArrayList;
@@ -261,8 +260,8 @@ public class RegistrationInformation extends AppCompatActivity {
                             p.setError("Phone number is required!");
                             error = true;
                         } else {
-                            Phones phone = new Phones(owner.getId(), Long.parseLong(p.getText().toString()), "Cell");
-                            database.addPhones(phone);
+                            Phone phone = new Phone(owner.getId(), Long.parseLong(p.getText().toString()), "Cell");
+                            database.addPhone(phone);
                         }
                     }
 
@@ -272,8 +271,8 @@ public class RegistrationInformation extends AppCompatActivity {
                             e.setError("Email is required!");
                             error = true;
                         } else {
-                            Emails email = new Emails((long)owner.getId(), e.getText().toString(), "Work");
-                            database.addEmails(email);
+                            Email email = new Email((long)owner.getId(), e.getText().toString(), "Work");
+                            database.addEmail(email);
                         }
                     }
                     ////

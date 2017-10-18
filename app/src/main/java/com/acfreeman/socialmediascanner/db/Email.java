@@ -4,14 +4,14 @@ package com.acfreeman.socialmediascanner.db;
  * Created by jianziyu on 2017/9/19.
  */
 
-public class Emails {
+public class Email {
     private long id;
     private String email;
     private String type;
-    public Emails()
+    public Email()
     {
     }
-    public Emails(Long id, String email,String type)
+    public Email(Long id, String email, String type)
     {
         this.id = id;
         this.email=email;

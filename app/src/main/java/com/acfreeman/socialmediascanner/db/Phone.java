@@ -4,14 +4,14 @@ package com.acfreeman.socialmediascanner.db;
  * Created by jianziyu on 2017/9/19.
  */
 
-public class Phones {
+public class Phone {
     private long id;
     private long number;
     private String type;
-    public Phones()
+    public Phone()
     {
     }
-    public Phones(long id,long number,String type)
+    public Phone(long id, long number, String type)
     {
         this.id=id;
         this.number=number;
