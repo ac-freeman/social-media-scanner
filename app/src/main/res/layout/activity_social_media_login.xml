@@ -6,20 +6,23 @@
     android:layout_height="match_parent"
     tools:context="com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity">
     <RelativeLayout
-        android:layout_width="368dp"
-        android:layout_height="495dp"
-        tools:layout_editor_absoluteY="8dp"
-        tools:layout_editor_absoluteX="8dp">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
         <com.twitter.sdk.android.core.identity.TwitterLoginButton
             android:id="@+id/twitter_button"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
             android:layout_width="300dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"/>
         <Button
             android:id="@+id/linkedin_button"
             android:layout_width="300dp"
             android:layout_height="56dp"
             android:layout_weight="1"
+            android:layout_centerHorizontal="true"
             android:layout_below="@+id/twitter_button"/>
+
             <!--android:background="@drawable/li_default"-->
 
         <ImageView
@@ -27,7 +30,16 @@
             android:layout_width="300dp"
             android:layout_height="56dp"
             android:layout_below="@+id/linkedin_button"
+            android:layout_centerHorizontal="true"
             android:layout_weight="1" />
+
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/facebook_button"
+            android:layout_width="300dp"
+            android:layout_height="56dp"
+            android:layout_below="@+id/spotify_button"
+            android:layout_centerHorizontal="true"
+            />
 
 
         <Button
@@ -36,7 +48,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Next"
-            android:layout_below="@+id/spotify_button" />
+            android:layout_below="@+id/facebook_button"
+            android:layout_centerHorizontal="true"/>
 
     </RelativeLayout>
 

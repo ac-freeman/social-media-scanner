@@ -453,8 +453,8 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
                 DataModel dataModel = dataModels.get(position);
 
-                Snackbar.make(view, dataModel.getName() + "\n" + dataModel.getPhones().get(0).getNumber() + "\n" + dataModel.getEmails().get(0).getEmail() + "\n" + dataModel.getSocials().get(0).getType(), Snackbar.LENGTH_LONG)
-                        .setAction("No action", null).show();
+//                Snackbar.make(view, dataModel.getName() + "\n" + dataModel.getPhones().get(0).getNumber() + "\n" + dataModel.getEmails().get(0).getEmail() + "\n" + dataModel.getSocials().get(0).getType(), Snackbar.LENGTH_LONG)
+//                        .setAction("No action", null).show();
 
                 if(adapter.inEditmode){
                     if(adapter.checks.get(position)==1)
@@ -676,14 +676,32 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                         database.addSocial(linkedinSocial);
                         break;
 
+                    case "fb":
+                        String facebook_id = rawArray[i + 1];
+
+                        try {
+                            this.getPackageManager().getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
+                                    uri= "fb://facewebmodal/f?href="+"https://www.facebook.com/"+facebook_id; //Tries with FB's URI
+                        } catch (Exception e) {
+                            uri = "https://www.facebook.com/" + (facebook_id); //catches a url to the desired page
+                        }
+
+                        socialAdderArrayList.add(new SocialAdder(uri, "Facebook"));
+                        Social facebookSocial = new Social(contact.getId(), "Facebook", facebook_id);
+                        database.addSocial(facebookSocial);
+                        break;
+
                 }
 
             }
 
+            BottomNavigationView bottomNavigationView;
+            bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
+            bottomNavigationView.setSelectedItemId(R.id.navigation_friends);
             showNoticeDialog("Andrew Freeman");
 
         }
-        mScannerView.resumeCameraPreview(MainActivity.this);
+//        mScannerView.resumeCameraPreview(MainActivity.this);
     }
 
     public void socialAdd(String uri) {

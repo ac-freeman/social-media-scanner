@@ -45,8 +45,13 @@ public class SwitchModel {
                 this.switchName = "LinkedIn";
                 this.switchImage = R.drawable.icons8_linkedin;
                 break;
+            case "fb":
+                this.switchName = "Facebook";
+                this.switchImage = R.drawable.fb_24dp;
+                break;
             default:
                 this.switchName = "ERR.";
+                break;
         }
     }
 

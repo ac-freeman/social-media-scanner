@@ -21,6 +21,16 @@ import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Social;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphRequestAsyncTask;
+import com.facebook.GraphResponse;
+import com.facebook.Profile;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.linkedin.platform.APIHelper;
 import com.linkedin.platform.LISessionManager;
 import com.linkedin.platform.errors.LIApiError;
@@ -40,6 +50,8 @@ import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+import com.facebook.FacebookSdk;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,8 +67,13 @@ import static android.view.MotionEvent.ACTION_BUTTON_PRESS;
 public class SocialMediaLoginActivity extends AppCompatActivity implements CustomDialogFragment.NoticeDialogListener {
 
     private TwitterLoginButton loginButton;
+    private LoginButton facebookButton;
     private ImageView liButton;
+
     private ImageView spotifyButton;
+
+    CallbackManager callbackManager = CallbackManager.Factory.create();
+
     private static final String SPOTIFY_CLIENT_ID = "b8d2cf358e334542837ba4ae37e09d4b";
     private static final int SPOTIFY_REQUEST_CODE = 1337;
     private static final String SPOTIFY_REDIRECT_URI = "scanner://callback";
@@ -219,6 +236,48 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
         });
 
 
+
+        facebookButton = (LoginButton) findViewById(R.id.facebook_button);
+        facebookButton.setReadPermissions("email");
+        // Other app specific specialization
+
+
+        // Callback registration
+        facebookButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                final AccessToken accessToken = loginResult.getAccessToken();
+
+                GraphRequestAsyncTask request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject user, GraphResponse graphResponse) {
+                        String facebook_id = user.optString("id");
+                        Log.d("facebook", user.optString("id"));
+                        /////add to database//////////
+                        Social facebook = new Social(owner.getId(),"fb", facebook_id);
+                        database.addSocial(facebook);
+                        //////////////////////////////
+                    }
+                }).executeAsync();
+
+            }
+
+            @Override
+            public void onCancel() {
+                // App code
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                // App code
+            }
+        });
+//        String facebook_id = Profile.getCurrentProfile().getId();
+//        Log.i("FacebookLogin", "Facebook id: " + facebook_id);
+
+
+
+
         Button nextButton = findViewById(R.id.next_button);
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -233,6 +292,9 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 
         //LinkedIn
 //        LISessionManager.
+
+
+
 
 
     }
@@ -329,7 +391,11 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
             //linkedin
             LISessionManager.getInstance(getApplicationContext()).onActivityResult(this, requestCode, resultCode, data);
 
+
         }
+
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+
     }
 
     public void showNoticeDialog(String social_title, String uri) {
