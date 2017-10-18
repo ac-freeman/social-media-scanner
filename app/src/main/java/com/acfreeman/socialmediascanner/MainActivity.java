@@ -679,6 +679,14 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                         database.addSocial(linkedinSocial);
                         break;
 
+                    case "sp":
+                        String spotify_id = rawArray[i + 1];
+                        uri = "spotify:user:"+spotify_id;
+                        socialAdderArrayList.add(new SocialAdder(uri, "Spotify"));
+                        Social spotifySocial = new Social(contact.getId(), "Spotify", spotify_id);
+                        database.addSocial(spotifySocial);
+                        break;
+
                     case "fb":
                         String facebook_id = rawArray[i + 1];
 
