@@ -676,14 +676,25 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                         database.addSocial(linkedinSocial);
                         break;
 
+                    case "fb":
+                        String facebook_id = rawArray[i + 1];
+                        uri = "https://www.facebook.com/" + (facebook_id);
+                        socialAdderArrayList.add(new SocialAdder(uri, "Facebook"));
+                        Social facebookSocial = new Social(contact.getId(), "Facebook", facebook_id);
+                        database.addSocial(facebookSocial);
+                        break;
+
                 }
 
             }
 
+            BottomNavigationView bottomNavigationView;
+            bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
+            bottomNavigationView.setSelectedItemId(R.id.navigation_friends);
             showNoticeDialog("Andrew Freeman");
 
         }
-        mScannerView.resumeCameraPreview(MainActivity.this);
+//        mScannerView.resumeCameraPreview(MainActivity.this);
     }
 
     public void socialAdd(String uri) {
