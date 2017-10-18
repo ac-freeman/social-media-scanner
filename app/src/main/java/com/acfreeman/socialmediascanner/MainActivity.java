@@ -678,7 +678,14 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
                     case "fb":
                         String facebook_id = rawArray[i + 1];
-                        uri = "https://www.facebook.com/" + (facebook_id);
+
+                        try {
+                            this.getPackageManager().getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
+                                    uri= "fb://facewebmodal/f?href="+"https://www.facebook.com/"+facebook_id; //Tries with FB's URI
+                        } catch (Exception e) {
+                            uri = "https://www.facebook.com/" + (facebook_id); //catches a url to the desired page
+                        }
+
                         socialAdderArrayList.add(new SocialAdder(uri, "Facebook"));
                         Social facebookSocial = new Social(contact.getId(), "Facebook", facebook_id);
                         database.addSocial(facebookSocial);
