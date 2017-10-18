@@ -40,6 +40,10 @@ public class SwitchModel {
                 this.switchName = "LinkedIn";
                 this.switchImage = R.drawable.icons8_linkedin;
                 break;
+            case "sp":
+                this.switchName = "Spotify";
+                this.switchImage = R.drawable.ic_spotify_24dp;
+                break;
             case "fb":
                 this.switchName = "Facebook";
                 this.switchImage = R.drawable.fb_24dp;

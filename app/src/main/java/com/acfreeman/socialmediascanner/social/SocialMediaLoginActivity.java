@@ -286,17 +286,6 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                 startActivity(startIntent);
             }
         });
-//        liButton = new ImageView();
-//        Drawable res = getResources().getDrawable(R.drawable.li_default);   //deprecated, but alternative requires API 21+
-//        liButton.setImageDrawable(res);
-
-        //LinkedIn
-//        LISessionManager.
-
-
-
-
-
     }
 
 
@@ -331,19 +320,6 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                                 String line;
                                 while((line = bufferedReader.readLine()) != null) {
                                     sb.append(line);
-                                    //Log.e("A", line);
-
-//                                    String[] words = s.split(" ");
-//                                    int place = 0;
-//
-//                                    while(words[place] == null) {
-//                                        place++;
-//                                    }
-//
-//                                    if(words[place] == "\"id\"") {
-//                                        Log.e("BBBBBBB", words[place +2]);
-//                                    }
-
                                 }
 
                                 JSONObject json = new JSONObject(sb.toString());
