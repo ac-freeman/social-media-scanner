@@ -20,6 +20,11 @@ import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Social;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.linkedin.platform.APIHelper;
 import com.linkedin.platform.LISessionManager;
 import com.linkedin.platform.errors.LIApiError;
@@ -39,6 +44,8 @@ import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+import com.facebook.FacebookSdk;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,6 +57,7 @@ import static android.view.MotionEvent.ACTION_BUTTON_PRESS;
 public class SocialMediaLoginActivity extends AppCompatActivity implements CustomDialogFragment.NoticeDialogListener {
 
     private TwitterLoginButton loginButton;
+    private LoginButton facebookButton;
     private ImageView liButton;
     private static final String SPOTIFY_CLIENT_ID = "b8d2cf358e334542837ba4ae37e09d4b";
     private static final int SPOTIFY_REQUEST_CODE = 1337;
@@ -210,6 +218,33 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
         });
 
 
+
+        facebookButton = (LoginButton) findViewById(R.id.facebook_button);
+        facebookButton.setReadPermissions("email");
+        // Other app specific specialization
+
+        CallbackManager callbackManager = CallbackManager.Factory.create();
+        // Callback registration
+        facebookButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+
+            }
+
+            @Override
+            public void onCancel() {
+                // App code
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                // App code
+            }
+        });
+
+
+
+
         Button nextButton = findViewById(R.id.next_button);
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -224,6 +259,9 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 
         //LinkedIn
 //        LISessionManager.
+
+
+
 
 
     }

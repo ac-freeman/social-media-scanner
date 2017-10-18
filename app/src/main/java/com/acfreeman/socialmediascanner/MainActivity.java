@@ -453,8 +453,8 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
                 DataModel dataModel = dataModels.get(position);
 
-                Snackbar.make(view, dataModel.getName() + "\n" + dataModel.getPhones().get(0).getNumber() + "\n" + dataModel.getEmails().get(0).getEmail() + "\n" + dataModel.getSocials().get(0).getType(), Snackbar.LENGTH_LONG)
-                        .setAction("No action", null).show();
+//                Snackbar.make(view, dataModel.getName() + "\n" + dataModel.getPhones().get(0).getNumber() + "\n" + dataModel.getEmails().get(0).getEmail() + "\n" + dataModel.getSocials().get(0).getType(), Snackbar.LENGTH_LONG)
+//                        .setAction("No action", null).show();
 
                 if(adapter.inEditmode){
                     if(adapter.checks.get(position)==1)
