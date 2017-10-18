@@ -40,6 +40,11 @@ public class SwitchModel {
                 this.switchName = "LinkedIn";
                 this.switchImage = R.drawable.icons8_linkedin;
                 break;
+            //Logo needs to be changed to the spotify logo
+            case "sp":
+                this.switchName = "Spotify";
+                this.switchImage = R.drawable.icons8_linkedin;
+                break;
             case "fb":
                 this.switchName = "Facebook";
                 this.switchImage = R.drawable.fb_24dp;
