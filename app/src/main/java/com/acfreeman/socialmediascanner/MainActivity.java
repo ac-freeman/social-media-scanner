@@ -709,7 +709,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             BottomNavigationView bottomNavigationView;
             bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
             bottomNavigationView.setSelectedItemId(R.id.navigation_friends);
-            showNoticeDialog("Andrew Freeman");
+            showNoticeDialog(userName);
 
         }
 //        mScannerView.resumeCameraPreview(MainActivity.this);
