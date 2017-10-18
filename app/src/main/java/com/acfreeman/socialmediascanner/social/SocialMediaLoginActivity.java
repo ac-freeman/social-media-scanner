@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -55,6 +56,10 @@ import com.facebook.FacebookSdk;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 import static android.view.MotionEvent.ACTION_BUTTON_PRESS;
@@ -64,7 +69,11 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
     private TwitterLoginButton loginButton;
     private LoginButton facebookButton;
     private ImageView liButton;
+
+    private ImageView spotifyButton;
+
     CallbackManager callbackManager = CallbackManager.Factory.create();
+
     private static final String SPOTIFY_CLIENT_ID = "b8d2cf358e334542837ba4ae37e09d4b";
     private static final int SPOTIFY_REQUEST_CODE = 1337;
     private static final String SPOTIFY_REDIRECT_URI = "scanner://callback";
@@ -208,7 +217,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
             }
         });
 
-        ImageView spotifyButton = findViewById(R.id.spotify_button);
+        spotifyButton = findViewById(R.id.spotify_button);
         spotifyButton.setBackgroundResource(R.drawable.spotify_login);
         spotifyButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -216,10 +225,13 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                 AuthenticationRequest.Builder builder =
                         new AuthenticationRequest.Builder(SPOTIFY_CLIENT_ID, AuthenticationResponse.Type.TOKEN, SPOTIFY_REDIRECT_URI);
 
-                builder.setScopes(new String[]{"streaming"});
+                builder.setScopes(new String[]{"user-follow-modify", "user-read-private"});
                 AuthenticationRequest request = builder.build();
 
                 AuthenticationClient.openLoginActivity(SocialMediaLoginActivity.this, SPOTIFY_REQUEST_CODE, request);
+
+
+
             }
         });
 
@@ -287,15 +299,100 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 
     }
 
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Pass the activity result to the login button.
-        loginButton.onActivityResult(requestCode, resultCode, data);
+        // Check if result comes from the correct activity
+        if (requestCode == SPOTIFY_REQUEST_CODE) {
+            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
+            switch (response.getType()) {
+                // Response was successful and contains auth token
+                case TOKEN:
+                    // Handle successful response
+                    final String authToken = response.getAccessToken();
+                    Log.e("AAAAAAAAAAAAA", "authtoken: " + authToken);
 
-        //linkedin
-        LISessionManager.getInstance(getApplicationContext()).onActivityResult(this, requestCode, resultCode, data);
+                    AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            try {
+                                URL url = new URL("https://api.spotify.com/v1/me");
+
+                                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                                urlConnection.setRequestProperty("Authorization", "Bearer " + authToken);
+                                urlConnection.setRequestMethod("GET");
+
+                                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+
+                                StringBuilder sb = new StringBuilder();
+                                String line;
+                                while((line = bufferedReader.readLine()) != null) {
+                                    sb.append(line);
+                                    //Log.e("A", line);
+
+//                                    String[] words = s.split(" ");
+//                                    int place = 0;
+//
+//                                    while(words[place] == null) {
+//                                        place++;
+//                                    }
+//
+//                                    if(words[place] == "\"id\"") {
+//                                        Log.e("BBBBBBB", words[place +2]);
+//                                    }
+
+                                }
+
+                                JSONObject json = new JSONObject(sb.toString());
+
+                                String user_id = json.getString("id");
+
+                                Log.e("SDKFJ", user_id);
+
+                                /////add to database//////////
+                                Social spotify = new Social(owner.getId(),"sp", user_id);
+                                database.addSocial(spotify);
+                                //////////////////////////////
+
+                                for (int i = 0; i < database.getSocialCount(); i++) {
+                                    Log.e("DATABASE", database.getSocial(0).toString());
+                                    Log.e("DATABASE", database.getSocial(1).toString());
+                                    Log.e("DATABASE", database.getSocial(2).toString());
+                                }
+
+                            }
+                            catch (Exception ex) {
+                                Log.e("Exception: ", ex.toString());
+                            }
+                            return null;
+                        }
+                    };
+
+                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+                    break;
+
+                // Auth flow returned an error
+                case ERROR:
+                    // Handle error response
+                    break;
+
+                // Most likely auth flow was cancelled
+                default:
+                    // Handle other cases
+            }
+        } else { //for linkedin
+            // Pass the activity result to the login button.
+            loginButton.onActivityResult(requestCode, resultCode, data);
+
+            //linkedin
+            LISessionManager.getInstance(getApplicationContext()).onActivityResult(this, requestCode, resultCode, data);
+
+
+        }
 
         callbackManager.onActivityResult(requestCode, resultCode, data);
 
