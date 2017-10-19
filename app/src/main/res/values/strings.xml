@@ -9,8 +9,12 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_activity_social_media_login">SocialMediaLogin</string>
+    <string name="title_delete">Delete</string>
 
     <string name="com.twitter.sdk.android.CONSUMER_KEY">PHhItLDvwGuDilRKzvDiZp0ys</string>
     <string name="com.twitter.sdk.android.CONSUMER_SECRET">iVgdEPz5LHSRLSljjS9RdHsKgAoxVLiVnnteQqR2dcehsteG7F</string>
+    <string name="facebook_app_id">140267453275422</string>
+    <string name="fb_login_protocol_scheme">fb140267453275422</string>
+
 
 </resources>

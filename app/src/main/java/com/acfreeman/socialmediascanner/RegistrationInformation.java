@@ -9,28 +9,25 @@ import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
-import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.acfreeman.socialmediascanner.db.Emails;
+import com.acfreeman.socialmediascanner.db.Email;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
-import com.acfreeman.socialmediascanner.db.Phones;
-import com.acfreeman.socialmediascanner.db.Social;
+import com.acfreeman.socialmediascanner.db.Phone;
 import com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity;
-import com.acfreeman.socialmediascanner.social.SocialSwitch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +57,6 @@ public class RegistrationInformation extends AppCompatActivity {
     public int plusEmailCnt;
     public int plusPhoneCnt;
 
-    //not sure what this does - does something when the app is first launched it think?
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     SharedPreferences mPrefs;
     final String firstLaunchPref= "firstLaunch";
@@ -123,9 +119,13 @@ public class RegistrationInformation extends AppCompatActivity {
         phoneEditText.setInputType(InputType.TYPE_CLASS_PHONE);
         phoneEditText.setWidth(textWidth);
 
-        final Button plusPhone = new Button(this);
-        plusPhone.setText("+");
-        plusPhone.setWidth(LayoutParams.WRAP_CONTENT);  //Doesn't work
+        final ImageButton plusPhone = new ImageButton(this);
+//        final Button plusPhone = new Button(this);
+//        plusPhone.setText("+");
+        plusPhone.setImageResource(R.drawable.ic_add_circle_green_24px);
+        TypedValue typedValue = new TypedValue();
+        getTheme().resolveAttribute(R.attr.selectableItemBackground, typedValue, true);
+        plusPhone.setBackgroundResource(typedValue.resourceId);
         plusPhoneCnt = 0;
 
         final TableRow phoneRow = new TableRow(this);
@@ -142,9 +142,11 @@ public class RegistrationInformation extends AppCompatActivity {
         emailEditText.setHint("Email");
         emailEditText.setWidth(textWidth);
 
-        final Button plusEmail = new Button(this);
-        plusEmail.setText("+");
-        plusEmail.setWidth(LayoutParams.WRAP_CONTENT);  //Doesn't work
+//        final Button plusEmail = new Button(this);
+//        plusEmail.setText("+");
+        final ImageButton plusEmail = new ImageButton(this);
+        plusEmail.setImageResource(R.drawable.ic_add_circle_green_24px);
+        plusEmail.setBackgroundResource(typedValue.resourceId);
         plusEmailCnt = 0;
 
         TableRow emailRow = new TableRow(this);
@@ -258,8 +260,8 @@ public class RegistrationInformation extends AppCompatActivity {
                             p.setError("Phone number is required!");
                             error = true;
                         } else {
-                            Phones phone = new Phones(owner.getId(), Integer.parseInt(p.getText().toString()), "Cell");
-                            database.addPhones(phone);
+                            Phone phone = new Phone(owner.getId(), Long.parseLong(p.getText().toString()), "Cell");
+                            database.addPhone(phone);
                         }
                     }
 
@@ -269,8 +271,8 @@ public class RegistrationInformation extends AppCompatActivity {
                             e.setError("Email is required!");
                             error = true;
                         } else {
-                            Emails email = new Emails((long)owner.getId(), e.getText().toString(), "Work");
-                            database.addEmails(email);
+                            Email email = new Email((long)owner.getId(), e.getText().toString(), "Work");
+                            database.addEmail(email);
                         }
                     }
                     ////

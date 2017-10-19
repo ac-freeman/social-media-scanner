@@ -5,13 +5,13 @@ package com.acfreeman.socialmediascanner.db;
  */
 
 public class Social {
-    private int id;
+    private long id;
     private String type;
     private String username;
     public Social()
     {
     }
-    public Social(int id,String type,String username)
+    public Social(long id,String type,String username)
     {
         this.id=id;
         this.type=type;
@@ -27,7 +27,7 @@ public class Social {
         this.username = username;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
     public String getUsername() {

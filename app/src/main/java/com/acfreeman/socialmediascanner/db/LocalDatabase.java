@@ -19,7 +19,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
     private static final int DATABASE_VERSION = 1;
     // Database Name
     private static final String DATABASE_NAME = "userInfo";
-    // Contacts table name
+    // Contact table name
     private static final String TABLE_EMAILS = "Emails";
     private static final String TABLE_OWNER = "Owner";
     private static final String TABLE_PHONES = "Phones";
@@ -85,19 +85,6 @@ public class LocalDatabase extends SQLiteOpenHelper{
 // Creating tables again
         onCreate(db);
     }
-    // Adding new user
-//    public void addUser(User user) {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//
- //       ContentValues values = new ContentValues();
- //       values.put(KEY_NAME, user.getName()); // User Name
- //       values.put(KEY_EM_ADDR, user.getAddress()); // User Phone Number
-
-// Inserting Row
- //       db.insert(TABLE_USERS, null, values);
- //       db.close(); // Closing database connection
- //   }
-
 
     //***********************************************************************************************
     // Adding new user
@@ -113,36 +100,36 @@ public class LocalDatabase extends SQLiteOpenHelper{
         db.close(); // Closing database connection
     }
 
-    public void addPhones(Phones phones) {
+    public void addPhone(Phone phone) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_ID, phones.getId()); // id
-        values.put(KEY_PH_NUMBER, phones.getNumber()); // phone number
-        values.put(KEY_PH_TYPE, phones.getType()); // phone number type
+        values.put(KEY_ID, phone.getId()); // id
+        values.put(KEY_PH_NUMBER, phone.getNumber()); // phone number
+        values.put(KEY_PH_TYPE, phone.getType()); // phone number type
 // Inserting Row
         db.insert(TABLE_PHONES, null, values);
         db.close(); // Closing database connection
     }
 
-    public void addEmails(Emails emails) {
+    public void addEmail(Email email) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_ID, emails.getId()); // id
-        values.put(KEY_EM_ADDR, emails.getEmail()); // email
-        values.put(KEY_EM_TYPE, emails.getType()); // email type
+        values.put(KEY_ID, email.getId()); // id
+        values.put(KEY_EM_ADDR, email.getEmail()); // email
+        values.put(KEY_EM_TYPE, email.getType()); // email type
 // Inserting Row
         db.insert(TABLE_EMAILS, null, values);
         db.close(); // Closing database connection
     }
 
-    public void addContacts(Contacts contacts) {
+    public void addContact(Contact contact) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-//        values.put(KEY_ID, contacts.getId()); // Owner ID
-        values.put(KEY_NAME, contacts.getName()); // Owner Name
+//        values.put(KEY_ID, contact.getId()); // Owner ID
+        values.put(KEY_NAME, contact.getName()); // Owner Name
 
 // Inserting Row
         db.insert(TABLE_CONTACTS, null, values);
@@ -155,17 +142,22 @@ public class LocalDatabase extends SQLiteOpenHelper{
         Cursor c = db.rawQuery(selectQuery, null);
         if (c != null && c.moveToFirst()) {
             lastId = c.getLong(0); //The 0 is the column index, we only have 1 column, so the index is 0
-            contacts.setId(lastId);
+            contact.setId(lastId);
         }
-
-
-
         db.close(); // Closing database connection
 
     }
 
+    public void deleteContactById(long id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        db.execSQL("DELETE FROM " +TABLE_CONTACTS + " WHERE rowid="+id);
+        db.execSQL("DELETE FROM " + TABLE_EMAILS + " WHERE " + KEY_ID +" ="+id);
+        db.execSQL("DELETE FROM " + TABLE_PHONES + " WHERE " + KEY_ID +" ="+id);
+        db.execSQL("DELETE FROM " + TABLE_SOCIAL + " WHERE " + KEY_ID +" ="+id);
+    }
+
     ///////////
-    public void getContactId(Contacts contacts) {
+    public void getContactId(Contact contact) {
         SQLiteDatabase db = this.getWritableDatabase();
 
     }
@@ -201,7 +193,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
         return ownerA;
     }
 
-    public Phones getPhones(int id) {
+    public Phone getPhone(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_PHONES, new String[]{KEY_ID,
@@ -210,13 +202,13 @@ public class LocalDatabase extends SQLiteOpenHelper{
         if (cursor != null)
             cursor.moveToFirst();
 
-        Phones phoneA = new Phones(Long.parseLong(cursor.getString(0)),
+        Phone phoneA = new Phone(Long.parseLong(cursor.getString(0)),
                 Integer.parseInt(cursor.getString(1)), cursor.getString(2));
 // return user
         return phoneA;
     }
 
-    public Emails getEmail(int id) {
+    public Email getEmail(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_EMAILS, new String[]{KEY_ID,
@@ -225,13 +217,13 @@ public class LocalDatabase extends SQLiteOpenHelper{
         if (cursor != null)
             cursor.moveToFirst();
 
-        Emails emailsA = new Emails(Long.parseLong(cursor.getString(0)),
+        Email emailA = new Email(Long.parseLong(cursor.getString(0)),
                 cursor.getString(1), cursor.getString(2));
 // return user
-        return emailsA;
+        return emailA;
     }
 
-    public Contacts getContacts(int id) {
+    public Contact getContact(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_CONTACTS, new String[]{KEY_ID,
@@ -240,10 +232,10 @@ public class LocalDatabase extends SQLiteOpenHelper{
         if (cursor != null)
             cursor.moveToFirst();
 
-        Contacts contactsA = new Contacts(Integer.parseInt(cursor.getString(0)),
+        Contact contactA = new Contact(Integer.parseInt(cursor.getString(0)),
                 cursor.getString(1));
 // return user
-        return contactsA;
+        return contactA;
     }
 
     public Social getSocial(int id) {
@@ -263,8 +255,8 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
 
     // Getting All Users
-    public List<Phones> getAllPhones() {
-        List<Phones> phonesList = new ArrayList<Phones>();
+    public List<Phone> getAllPhones() {
+        List<Phone> phoneList = new ArrayList<Phone>();
 // Select All Query
         String selectQuery = "SELECT * FROM " + TABLE_PHONES;
 
@@ -274,17 +266,17 @@ public class LocalDatabase extends SQLiteOpenHelper{
 // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                Phones phones = new Phones();
-                phones.setId(Integer.parseInt(cursor.getString(0)));
-                phones.setNumber(Integer.parseInt(cursor.getString(1)));
-                phones.setType(cursor.getString(2));
+                Phone phone = new Phone();
+                phone.setId(Integer.parseInt(cursor.getString(0)));
+                phone.setNumber(Integer.parseInt(cursor.getString(1)));
+                phone.setType(cursor.getString(2));
 // Adding contact to list
-                phonesList.add(phones);
+                phoneList.add(phone);
             } while (cursor.moveToNext());
         }
 
 // return contact list
-        return phonesList;
+        return phoneList;
     }
 
     public List<Owner> getAllOwner() {
@@ -310,8 +302,8 @@ public class LocalDatabase extends SQLiteOpenHelper{
         return ownerList;
     }
 
-    public List<Emails> getAllEmails() {
-        List<Emails> emailsList = new ArrayList<Emails>();
+    public List<Email> getAllEmails() {
+        List<Email> emailList = new ArrayList<Email>();
 // Select All Query
         String selectQuery = "SELECT * FROM " + TABLE_EMAILS;
 
@@ -321,21 +313,21 @@ public class LocalDatabase extends SQLiteOpenHelper{
 // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                Emails emails = new Emails();
-                emails.setId(Integer.parseInt(cursor.getString(0)));
-                emails.setEmail(cursor.getString(1));
-                emails.setType(cursor.getString(2));
+                Email email = new Email();
+                email.setId(Integer.parseInt(cursor.getString(0)));
+                email.setEmail(cursor.getString(1));
+                email.setType(cursor.getString(2));
 // Adding contact to list
-                emailsList.add(emails);
+                emailList.add(email);
             } while (cursor.moveToNext());
         }
 
 // return contact list
-        return emailsList;
+        return emailList;
     }
 
-    public List<Contacts> getAllContacts() {
-        List<Contacts> contactsList = new ArrayList<Contacts>();
+    public List<Contact> getAllContacts() {
+        List<Contact> contactList = new ArrayList<Contact>();
 // Select All Query
         String selectQuery = "SELECT rowid, * FROM " + TABLE_CONTACTS;
 
@@ -345,16 +337,16 @@ public class LocalDatabase extends SQLiteOpenHelper{
 // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                Contacts contacts = new Contacts();
-                contacts.setId(Long.parseLong(cursor.getString(0)));
-                contacts.setName(cursor.getString(1));
+                Contact contact = new Contact();
+                contact.setId(Long.parseLong(cursor.getString(0)));
+                contact.setName(cursor.getString(1));
 // Adding contact to list
-                contactsList.add(contacts);
+                contactList.add(contact);
             } while (cursor.moveToNext());
         }
 
 // return contact list
-        return contactsList;
+        return contactList;
     }
 
     public List<Social> getAllSocial() {
@@ -383,7 +375,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
 //******************************************************************
 
 
-    public ArrayList<Emails> getUserEmails(long id) {
+    public ArrayList<Email> getUserEmails(long id) {
 
         String countQuery = "SELECT * FROM " + TABLE_EMAILS +" WHERE " + KEY_ID + " = " + id;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -391,11 +383,11 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
         Log.i("DATABASEDEBUG",String.valueOf(cursor.getCount()));
 
-        ArrayList<Emails> emails = new ArrayList<>();
+        ArrayList<Email> emails = new ArrayList<>();
 
         if (cursor.moveToFirst()) {
             do {
-                Emails email = new Emails(Long.parseLong(cursor.getString(0)),
+                Email email = new Email(Long.parseLong(cursor.getString(0)),
                         cursor.getString(1), cursor.getString(2));
                 emails.add(email);
             } while (cursor.moveToNext());
@@ -403,7 +395,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
         return emails;
     }
 
-    public ArrayList<Phones> getUserPhones(long id) {
+    public ArrayList<Phone> getUserPhones(long id) {
 
         String countQuery = "SELECT * FROM " + TABLE_PHONES +" WHERE " + KEY_ID + " = " + id;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -411,11 +403,11 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
         Log.i("DATABASEDEBUG",String.valueOf(cursor.getCount()));
 
-        ArrayList<Phones> phones = new ArrayList<>();
+        ArrayList<Phone> phones = new ArrayList<>();
 
         if (cursor.moveToFirst()) {
             do {
-                Phones phone = new Phones(Long.parseLong(cursor.getString(0)),
+                Phone phone = new Phone(Long.parseLong(cursor.getString(0)),
                         cursor.getInt(1), cursor.getString(2));
                 phones.add(phone);
             } while (cursor.moveToNext());
@@ -423,7 +415,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
         return phones;
     }
 
-    public ArrayList<Social> getUserSocials(int id) {
+    public ArrayList<Social> getUserSocials(long id) {
 
         String countQuery = "SELECT * FROM " + TABLE_SOCIAL +" WHERE " + KEY_ID + " = " + id;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -501,16 +493,16 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
     //***************************************************************************************
     // Updating a user
-    public int updatePhones(Phones phones) {
+    public int updatePhones(Phone phone) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_PH_NUMBER, phones.getNumber());
-        values.put(KEY_PH_TYPE, phones.getType());
+        values.put(KEY_PH_NUMBER, phone.getNumber());
+        values.put(KEY_PH_TYPE, phone.getType());
 
 // updating row
         return db.update(TABLE_PHONES, values, KEY_ID + " = ?",
-        new String[]{String.valueOf(phones.getId())});
+        new String[]{String.valueOf(phone.getId())});
     }
 
     public int updateOwner(Owner owner) {
@@ -524,27 +516,27 @@ public class LocalDatabase extends SQLiteOpenHelper{
                 new String[]{String.valueOf(owner.getId())});
     }
 
-    public int updateEmails(Emails emails) {
+    public int updateEmails(Email email) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_EM_ADDR, emails.getEmail());
-        values.put(KEY_EM_TYPE, emails.getType());
+        values.put(KEY_EM_ADDR, email.getEmail());
+        values.put(KEY_EM_TYPE, email.getType());
 
 // updating row
         return db.update(TABLE_EMAILS, values, KEY_ID + " = ?",
-                new String[]{String.valueOf(emails.getId())});
+                new String[]{String.valueOf(email.getId())});
     }
 
-    public int updateContacts(Contacts contacts) {
+    public int updateContacts(Contact contact) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_NAME, contacts.getName());
+        values.put(KEY_NAME, contact.getName());
 
 // updating row
         return db.update(TABLE_CONTACTS, values, KEY_ID + " = ?",
-                new String[]{String.valueOf(contacts.getId())});
+                new String[]{String.valueOf(contact.getId())});
     }
 
     public int updateSocial(Social social) {
@@ -561,10 +553,10 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
 //********************************************************************************************
     // Deleting a user
-    public void deletePhones(Phones phones) {
+    public void deletePhones(Phone phone) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_PHONES, KEY_ID + " = ?",
-        new String[] { String.valueOf(phones.getId()) });
+        new String[] { String.valueOf(phone.getId()) });
         db.close();
     }
 
@@ -575,17 +567,17 @@ public class LocalDatabase extends SQLiteOpenHelper{
         db.close();
     }
 
-    public void deleteEmails(Emails emails) {
+    public void deleteEmails(Email email) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_EMAILS, KEY_ID + " = ?",
-                new String[] { String.valueOf(emails.getId()) });
+                new String[] { String.valueOf(email.getId()) });
         db.close();
     }
 
-    public void deleteContacts(Contacts contacts) {
+    public void deleteContacts(Contact contact) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_CONTACTS, KEY_ID + " = ?",
-                new String[] { String.valueOf(contacts.getId()) });
+                new String[] { String.valueOf(contact.getId()) });
         db.close();
     }
     //******************************************************************************************
