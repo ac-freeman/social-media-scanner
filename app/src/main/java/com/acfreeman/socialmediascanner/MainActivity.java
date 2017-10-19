@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
@@ -78,11 +79,12 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     private boolean camera;
     public boolean handleScan;
     private static Toolbar myToolbar;
-    private static final int MY_PERMISSIONS_REQUEST = 101;
+    private static final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
+    private static final int MY_PERMISSIONS_REQUEST_CONTACTS = 2;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     SharedPreferences mPrefs;
-    final String firstMainActivityPref= "firstMainActivity";
+    final String firstMainActivityPref = "firstMainActivity";
     Boolean firstMainActivity;
 
     /**
@@ -116,11 +118,12 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     public void hideAppbarButtons() {
         MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
         MenuItem saveContactsButton = myToolbar.getMenu().findItem(R.id.action_save_contact);
-        if (deleteButton != null && saveContactsButton != null){
+        if (deleteButton != null && saveContactsButton != null) {
             deleteButton.setVisible(false);
-        saveContactsButton.setVisible(false);
+            saveContactsButton.setVisible(false);
+        }
     }
-    }
+
     public void showAppbarButtons() {
         MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
         MenuItem saveContactsButton = myToolbar.getMenu().findItem(R.id.action_save_contact);
@@ -129,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             saveContactsButton.setVisible(true);
         }
     }
+
     public void toggleAppbarButtons() {
         MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
         MenuItem saveContactsButton = myToolbar.getMenu().findItem(R.id.action_save_contact);
@@ -142,11 +146,13 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        DialogFragment dialog;
+        Bundle args;
         switch (item.getItemId()) {
             case R.id.action_delete:
-                DialogFragment dialog = new CustomDialogFragment();
+                dialog = new CustomDialogFragment();
 
-                Bundle args = new Bundle();
+                args = new Bundle();
                 args.putString("dialog_title", "Delete selected contacts?");
                 args.putString("action", "delete");
 
@@ -154,6 +160,14 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 dialog.show(getFragmentManager(), "CustomDialogFragment");
 
                 return true;
+            case R.id.action_save_contact:
+                dialog = new CustomDialogFragment();
+                args = new Bundle();
+                args.putString("dialog_title", "Save selected contacts to device?");
+                args.putString("action", "saveContact");
+
+                dialog.setArguments(args);
+                dialog.show(getFragmentManager(), "CustomDialogFragment");
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -230,7 +244,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         params1.addRule(RelativeLayout.BELOW, mImageView.getId());
         params1.addRule(RelativeLayout.CENTER_IN_PARENT);
-
 
 
         Display display = getWindowManager().getDefaultDisplay();
@@ -339,7 +352,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
      * Uses https://github.com/dm77/barcodescanner
      * Requires camera permission in settings
      */
-    private final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
 
     private void scanCode() {
 
@@ -397,14 +409,14 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
     private void showFriends() {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        firstMainActivity= mPrefs.getBoolean(firstMainActivityPref, true);
+        firstMainActivity = mPrefs.getBoolean(firstMainActivityPref, true);
 
         FrameLayout frameLayout = findViewById(R.id.content);
         listView = new ListView(getApplicationContext());
 
         dataModels = new ArrayList<>();
 
-        if(firstMainActivity) {
+        if (firstMainActivity) {
             addDummyData();
             SharedPreferences.Editor editor = mPrefs.edit();
             editor.putBoolean(firstMainActivityPref, false);
@@ -464,8 +476,8 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 //                Snackbar.make(view, dataModel.getName() + "\n" + dataModel.getPhones().get(0).getNumber() + "\n" + dataModel.getEmails().get(0).getEmail() + "\n" + dataModel.getSocials().get(0).getType(), Snackbar.LENGTH_LONG)
 //                        .setAction("No action", null).show();
 
-                if(adapter.inEditmode){
-                    if(adapter.checks.get(position)==1)
+                if (adapter.inEditmode) {
+                    if (adapter.checks.get(position) == 1)
                         adapter.checks.set(position, 0);
                     else
                         adapter.checks.set(position, 1);
@@ -475,7 +487,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                         adapter.notifyDataSetChanged();
                     }
                 });
-                Log.i("CONTACTDEBUG","Item clicked!");
+                Log.i("CONTACTDEBUG", "Item clicked!");
             }
         });
 
@@ -512,7 +524,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         return builder;
     }
 
-    private void addDummyData(){
+    private void addDummyData() {
         Contact contact;
         LocalDatabase db = new LocalDatabase(getApplicationContext());
 
@@ -686,7 +698,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
                     case "sp":
                         String spotify_id = rawArray[i + 1];
-                        uri = "spotify:user:"+spotify_id;
+                        uri = "spotify:user:" + spotify_id;
                         socialAdderArrayList.add(new SocialAdder(uri, "Spotify"));
                         Social spotifySocial = new Social(contact.getId(), "Spotify", spotify_id);
                         database.addSocial(spotifySocial);
@@ -697,7 +709,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
                         try {
                             this.getPackageManager().getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
-                                    uri= "fb://facewebmodal/f?href="+"https://www.facebook.com/"+facebook_id; //Tries with FB's URI
+                            uri = "fb://facewebmodal/f?href=" + "https://www.facebook.com/" + facebook_id; //Tries with FB's URI
                         } catch (Exception e) {
                             uri = "https://www.facebook.com/" + (facebook_id); //catches a url to the desired page
                         }
@@ -712,7 +724,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             }
 
             BottomNavigationView bottomNavigationView;
-            bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
+            bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
             bottomNavigationView.setSelectedItemId(R.id.navigation_friends);
             showNoticeDialog(userName);
 
@@ -725,6 +737,36 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 Uri.parse(uri));
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);   //Makes it so that a single back-button press brings you back to our app
         startActivityForResult(i, 1);
+    }
+
+    private void saveContactsToDevice() {
+
+
+        for (int i = 0; i < adapter.checks.size(); i++) {
+            if (adapter.checks.get(i) == 1) {
+                DataModel model = adapter.getItem(i);
+
+                Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
+                // Sets the MIME type to match the Contacts Provider
+                intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
+
+                intent.putExtra(ContactsContract.Intents.Insert.NAME, model.getName());
+                for (Phone p : model.getPhones()) {
+                    intent.putExtra(ContactsContract.Intents.Insert.PHONE, Long.toString(p.getNumber()))
+                            .putExtra(ContactsContract.Intents.Insert.PHONE_TYPE, p.getType());
+                }
+
+                for (Email em : model.getEmails()) {
+                    intent.putExtra(ContactsContract.Intents.Insert.EMAIL, em.getEmail())
+                            .putExtra(ContactsContract.Intents.Insert.EMAIL_TYPE, em.getType());
+                }
+
+                startActivity(intent);
+            }
+        }
+        adapter.inEditmode = false;
+        adapter.notifyDataSetChanged();
+
     }
 
     @Override
@@ -816,6 +858,19 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 }
                 hideAppbarButtons();
                 break;
+            case "saveContact":
+                if (ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.WRITE_CONTACTS)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{Manifest.permission.WRITE_CONTACTS},
+                            MY_PERMISSIONS_REQUEST_CONTACTS);
+                } else {
+                    saveContactsToDevice();
+                }
+
+                hideAppbarButtons();
+                break;
         }
     }
 
@@ -831,6 +886,8 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 break;
             case "delete":
                 break;
+            case "saveContact":
+                break;
         }
 
     }
@@ -843,12 +900,22 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-
                 } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
 
+            case MY_PERMISSIONS_REQUEST_CONTACTS: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    saveContactsToDevice();
+                } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
