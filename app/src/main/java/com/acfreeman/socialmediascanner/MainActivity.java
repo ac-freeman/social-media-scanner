@@ -113,25 +113,30 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         return true;
     }
 
-    public void hideDeleteButton() {
+    public void hideAppbarButtons() {
         MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
-        if (deleteButton != null)
+        MenuItem saveContactsButton = myToolbar.getMenu().findItem(R.id.action_save_contact);
+        if (deleteButton != null && saveContactsButton != null){
             deleteButton.setVisible(false);
+        saveContactsButton.setVisible(false);
     }
-
-    public void showDeleteButton() {
+    }
+    public void showAppbarButtons() {
         MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
-        if (deleteButton != null)
+        MenuItem saveContactsButton = myToolbar.getMenu().findItem(R.id.action_save_contact);
+        if (deleteButton != null && saveContactsButton != null) {
             deleteButton.setVisible(true);
+            saveContactsButton.setVisible(true);
+        }
     }
-
-    public void toggleDeleteButton() {
+    public void toggleAppbarButtons() {
         MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
-        if (deleteButton != null) {
-            if (deleteButton.isVisible())
-                hideDeleteButton();
+        MenuItem saveContactsButton = myToolbar.getMenu().findItem(R.id.action_save_contact);
+        if (deleteButton != null && saveContactsButton != null) {
+            if (deleteButton.isVisible() || saveContactsButton.isVisible())
+                hideAppbarButtons();
             else
-                showDeleteButton();
+                showAppbarButtons();
         }
     }
 
@@ -173,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                             mScannerView.stopCamera();
                         }
                         showCode();
-                        hideDeleteButton();
+                        hideAppbarButtons();
                     }
                     return true;
 
@@ -185,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     }
                     showCode = false;
                     showFriends();
-                    hideDeleteButton();
+                    hideAppbarButtons();
 
                     return true;
 
@@ -195,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     handleScan = true;
                     showCode = false;
                     scanCode();
-                    hideDeleteButton();
+                    hideAppbarButtons();
 
                     return true;
             }
@@ -433,7 +438,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                toggleDeleteButton();
+                toggleAppbarButtons();
 
                 Log.i("CONTACTDEBUG", "Long click");
                 adapter.toggleEditMode();
@@ -809,7 +814,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     }
 
                 }
-                hideDeleteButton();
+                hideAppbarButtons();
                 break;
         }
     }
