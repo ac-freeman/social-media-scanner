@@ -485,9 +485,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
                 final DataModel dataModel = dataModels.get(position);
 
-//                Snackbar.make(view, dataModel.getName() + "\n" + dataModel.getPhones().get(0).getNumber() + "\n" + dataModel.getEmails().get(0).getEmail() + "\n" + dataModel.getSocials().get(0).getType(), Snackbar.LENGTH_LONG)
-//                        .setAction("No action", null).show();
-
                 if (adapter.inEditmode) {
                     if (adapter.checks.get(position) == 1)
                         adapter.checks.set(position, 0);
@@ -545,6 +542,46 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                         }
                     });
 
+                    cardListView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View view, MotionEvent motionEvent) {
+                            if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+                                startY = layout.getY();
+                                Log.i("MOVEDEBUG","STARTY "+startY);
+                                float motionY = motionEvent.getRawY();
+                                margin = motionY - startY;
+                            }
+                            else if(motionEvent.getAction() == MotionEvent.ACTION_MOVE){
+
+                                float motionY = motionEvent.getRawY();
+
+                                float newY = motionY - margin;
+                                if(margin != 0) {
+                                    Log.i("MOVEDEBUG", "Moving to " + newY);
+                                    layout.setVisibility(View.INVISIBLE);
+                                    if (newY < 0)
+                                        newY = 0;
+                                    layout.setY(newY);
+                                    layout.setVisibility(View.VISIBLE);
+                                }
+                            }
+                            else if(motionEvent.getAction() == MotionEvent.ACTION_UP){
+                                Log.i("MOVEDEBUG","ACTION UP "+layout.getY());
+                                if(layout.getY()>startY){
+                                    //lower
+                                    lowerCard(layout, height,darkener);
+                                } else if(layout.getY()<startY){
+                                    //raise
+                                    raiseCard(layout);
+                                } else {
+                                    //TODO: Do list item actions
+                                    Log.i("CARDDEBUG","Card item clicked!");
+                                }
+                            }
+                            return false;
+                        }
+                    });
+
                     layout.setOnTouchListener(new View.OnTouchListener() {
                         @Override
                         public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -570,26 +607,10 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                                 Log.i("MOVEDEBUG","ACTION UP "+layout.getY());
                                 if(layout.getY()>startY){
                                     //lower
-                                    ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", layout.getY(), height);
-                                    objectAnimator.setDuration(400);
-                                    objectAnimator.start();
-                                    final Handler handler = new Handler();
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            darkener.setAlpha(0.0f);
-                                            darkener.setClickable(false);
-                                        }
-                                    }, 400);
-
+                                    lowerCard(layout, height,darkener);
                                 } else {
                                     //raise
-                                    ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", layout.getY(), 0);
-//                                    objectAnimator.setDuration(400);
-                                    objectAnimator.start();
-
-
-//                                    layout.addView(cardListView);
+                                    raiseCard(layout);
                                 }
                             }
                             return false;
@@ -608,6 +629,25 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     }
     float margin;
     float startY;
+    public void lowerCard(RelativeLayout layout,int height, final ImageView darkener){
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", layout.getY(), height);
+        objectAnimator.setDuration(400);
+        objectAnimator.start();
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                darkener.setAlpha(0.0f);
+                darkener.setClickable(false);
+            }
+        }, 400);
+    }
+    public void raiseCard(RelativeLayout layout){
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", layout.getY(), 0);
+//                                    objectAnimator.setDuration(400);
+        objectAnimator.start();
+    }
+
 
     //from https://stackoverflow.com/questions/14371092/how-to-make-a-specific-text-on-textview-bold
     public static SpannableStringBuilder makeSectionOfTextBold(String text, String textToBold) {

@@ -41,6 +41,7 @@ private static class ViewHolder {
 
     @Override
     public void onClick(View v) {
+        Log.i("CARDDEBUG","Card item clicked!");
         //WE OVERRIDE THIS LISTENER IN MAINACTIVITY
 //        int position=(Integer) v.getTag();
 //        Object object= getItem(position);
@@ -104,7 +105,7 @@ private static class ViewHolder {
 
         viewHolder.image.setImageResource(cardDataModel.getImage());
 
-        viewHolder.image.setOnClickListener(this);
+//        viewHolder.image.setOnClickListener(this);
         viewHolder.image.setTag(position);
         // Return the completed view to render on screen
         return convertView;
