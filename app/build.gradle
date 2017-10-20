@@ -26,6 +26,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
+    compile project(':linkedin-sdk')
+    compile project(':auth-lib')
     compile 'com.android.support:appcompat-v7:26.0.0'
     compile 'com.android.support:design:26.0.0'
     compile 'com.android.support:support-vector-drawable:26.0.0'
@@ -38,7 +40,5 @@ dependencies {
     compile 'me.dm7.barcodescanner:zxing:1.9.8'
     compile 'com.twitter.sdk.android:twitter:3.1.1'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile project(':linkedin-sdk')
-    compile project(':auth-lib')
     testCompile 'junit:junit:4.12'
 }
