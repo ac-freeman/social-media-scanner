@@ -92,7 +92,7 @@ public class ContactsAdapter extends ArrayAdapter<DataModel> implements View.OnC
             viewHolder.txtName = (TextView) result.findViewById(R.id.name);
             viewHolder.checkBox = (CheckBox) result.findViewById(R.id.checkbox);
 //            viewHolder.txtType = (TextView) convertView.findViewById(R.id.type);
-            Log.i("CONTACTDEBUG", "In edit mode? " + inEditmode);
+//            Log.i("CONTACTDEBUG", "In edit mode? " + inEditmode);
             if(inEditmode){
                 if(checks.get(position)==1) {
                     Log.i("CONTACTDEBUG","Position = " + position);

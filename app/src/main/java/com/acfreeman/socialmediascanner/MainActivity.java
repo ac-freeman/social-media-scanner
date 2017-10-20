@@ -1,6 +1,7 @@
 package com.acfreeman.socialmediascanner;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
@@ -30,9 +32,13 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -481,12 +487,91 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                         adapter.checks.set(position, 0);
                     else
                         adapter.checks.set(position, 1);
+
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+                } else {
+                    final RelativeLayout layout = findViewById(R.id.activity_contact_card);
+                    final TextView cardName = findViewById(R.id.activity_contact_card_name);
+                    cardName.setText(dataModel.getName());
+
+//                        layout.startAnimation(slideUp);
+                    layout.setVisibility(View.VISIBLE);
+                    final int height = getResources().getDisplayMetrics().heightPixels;
+
+                    final ImageView darkener = (ImageView) findViewById(R.id.darken_frame);
+                    darkener.setAlpha(0.6f);
+                    darkener.setClickable(true);
+
+                    ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", height, 500);
+                    objectAnimator.setDuration(400);
+                    objectAnimator.start();
+
+
+                    darkener.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", 500, height);
+                            objectAnimator.setDuration(400);
+                            objectAnimator.start();
+                            darkener.setAlpha(0.0f);
+                            darkener.setClickable(false);
+                        }
+                    });
+
+                    layout.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View view, MotionEvent motionEvent) {
+                            if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+                                startY = layout.getY();
+                                Log.i("MOVEDEBUG","STARTY "+startY);
+                                float motionY = motionEvent.getRawY();
+                                margin = motionY - startY;
+                            }
+                            else if(motionEvent.getAction() == MotionEvent.ACTION_MOVE){
+
+                                float motionY = motionEvent.getRawY();
+
+                                float newY = motionY - margin;
+                                Log.i("MOVEDEBUG","Moving to "+newY);
+                                layout.setVisibility(View.INVISIBLE);
+                                if(newY<0)
+                                    newY=0;
+                                layout.setY(newY);
+                                layout.setVisibility(View.VISIBLE);
+                            }
+                            else if(motionEvent.getAction() == MotionEvent.ACTION_UP){
+                                Log.i("MOVEDEBUG","ACTION UP "+layout.getY());
+                                if(layout.getY()>startY){
+                                    //lower
+                                    ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", layout.getY(), height);
+                                    objectAnimator.setDuration(400);
+                                    objectAnimator.start();
+                                    final Handler handler = new Handler();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            darkener.setAlpha(0.0f);
+                                            darkener.setClickable(false);
+                                        }
+                                    }, 400);
+
+                                } else {
+                                    //raise
+                                    ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", layout.getY(), 0);
+//                                    objectAnimator.setDuration(400);
+                                    objectAnimator.start();
+                                }
+                            }
+                            return false;
+                        }
+                    });
+
                 }
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        adapter.notifyDataSetChanged();
-                    }
-                });
+
                 Log.i("CONTACTDEBUG", "Item clicked!");
             }
         });
@@ -495,6 +580,8 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
 
     }
+    float margin;
+    float startY;
 
     //from https://stackoverflow.com/questions/14371092/how-to-make-a-specific-text-on-textview-bold
     public static SpannableStringBuilder makeSectionOfTextBold(String text, String textToBold) {
