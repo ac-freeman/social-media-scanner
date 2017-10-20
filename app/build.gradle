@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 26
@@ -40,5 +41,6 @@ dependencies {
     compile 'me.dm7.barcodescanner:zxing:1.9.8'
     compile 'com.twitter.sdk.android:twitter:3.1.1'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.google.android.gms:play-services-auth:9.0.0'
     testCompile 'junit:junit:4.12'
 }
