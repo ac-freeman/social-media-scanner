@@ -55,6 +55,8 @@ import com.acfreeman.socialmediascanner.db.Phone;
 import com.acfreeman.socialmediascanner.db.Social;
 import com.acfreeman.socialmediascanner.showcode.ShowcodeAdapter;
 import com.acfreeman.socialmediascanner.showcode.SwitchModel;
+import com.acfreeman.socialmediascanner.showfriends.CardDataModel;
+import com.acfreeman.socialmediascanner.showfriends.ContactCardAdapter;
 import com.acfreeman.socialmediascanner.showfriends.ContactsAdapter;
 import com.acfreeman.socialmediascanner.showfriends.DataModel;
 import com.acfreeman.socialmediascanner.social.SocialAdder;
@@ -67,6 +69,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.twitter.sdk.android.core.Twitter;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -412,6 +415,9 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     private ContactsAdapter adapter;
     ArrayList<DataModel> dataModels;
     ListView listView;
+    private ContactCardAdapter cardAdapter;
+    ArrayList<CardDataModel> cardDataModels;
+    ListView cardListView;
 
     private void showFriends() {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -477,7 +483,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                DataModel dataModel = dataModels.get(position);
+                final DataModel dataModel = dataModels.get(position);
 
 //                Snackbar.make(view, dataModel.getName() + "\n" + dataModel.getPhones().get(0).getNumber() + "\n" + dataModel.getEmails().get(0).getEmail() + "\n" + dataModel.getSocials().get(0).getType(), Snackbar.LENGTH_LONG)
 //                        .setAction("No action", null).show();
@@ -498,7 +504,24 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     final TextView cardName = findViewById(R.id.activity_contact_card_name);
                     cardName.setText(dataModel.getName());
 
-//                        layout.startAnimation(slideUp);
+
+                    cardListView = findViewById(R.id.activity_contact_card_listview);
+                    cardListView.setClickable(false);
+                    cardDataModels = new ArrayList<>();
+
+                    for(Phone p : dataModel.getPhones()){
+                        cardDataModels.add(new CardDataModel(p));
+                    }
+                    for(Email e : dataModel.getEmails()){
+                        cardDataModels.add(new CardDataModel(e));
+                    }
+                    for(Social s : dataModel.getSocials()) {
+                        cardDataModels.add(new CardDataModel(s));
+                    }
+
+                    cardAdapter= new ContactCardAdapter(cardDataModels, getApplicationContext());
+                    cardListView.setAdapter(cardAdapter);
+
                     layout.setVisibility(View.VISIBLE);
                     final int height = getResources().getDisplayMetrics().heightPixels;
 
@@ -564,6 +587,9 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                                     ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", layout.getY(), 0);
 //                                    objectAnimator.setDuration(400);
                                     objectAnimator.start();
+
+
+//                                    layout.addView(cardListView);
                                 }
                             }
                             return false;

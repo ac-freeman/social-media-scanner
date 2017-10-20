@@ -192,6 +192,7 @@ public class RegistrationInformation extends AppCompatActivity {
                     phoneEditText.setHint("Phone");
                     phoneEditText.setInputType(InputType.TYPE_CLASS_PHONE);
                     phoneEditText.setWidth(textWidth);
+                    PhoneList.add(phoneEditText);
 
 
 
@@ -222,6 +223,7 @@ public class RegistrationInformation extends AppCompatActivity {
                     EditText emailEditText = new EditText(getApplicationContext());
                     emailEditText.setHint("Email");
                     emailEditText.setWidth(textWidth);
+                    EmailList.add(emailEditText);
 
 
                     TableRow newEmailRow = new TableRow(getApplicationContext());
