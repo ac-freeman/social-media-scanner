@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     private static Toolbar myToolbar;
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
     private static final int MY_PERMISSIONS_REQUEST_CONTACTS = 2;
+    private static final int MY_PERMISSIONS_REQUEST_PHONE = 3;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     SharedPreferences mPrefs;
@@ -507,17 +508,17 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     cardListView.setClickable(false);
                     cardDataModels = new ArrayList<>();
 
-                    for(Phone p : dataModel.getPhones()){
+                    for (Phone p : dataModel.getPhones()) {
                         cardDataModels.add(new CardDataModel(p));
                     }
-                    for(Email e : dataModel.getEmails()){
+                    for (Email e : dataModel.getEmails()) {
                         cardDataModels.add(new CardDataModel(e));
                     }
-                    for(Social s : dataModel.getSocials()) {
+                    for (Social s : dataModel.getSocials()) {
                         cardDataModels.add(new CardDataModel(s));
                     }
 
-                    cardAdapter= new ContactCardAdapter(cardDataModels, getApplicationContext());
+                    cardAdapter = new ContactCardAdapter(cardDataModels, getApplicationContext());
                     cardListView.setAdapter(cardAdapter);
 
                     layout.setVisibility(View.VISIBLE);
@@ -547,22 +548,20 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     //drag listener??
 
 
-
                     cardListView.setOnTouchListener(new View.OnTouchListener() {
                         @Override
                         public boolean onTouch(View view, MotionEvent motionEvent) {
-                            if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+                            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                                 startY = layout.getY();
-                                Log.i("MOVEDEBUG","STARTY "+startY);
+                                Log.i("MOVEDEBUG", "STARTY " + startY);
                                 float motionY = motionEvent.getRawY();
                                 margin = motionY - startY;
-                            }
-                            else if(motionEvent.getAction() == MotionEvent.ACTION_MOVE){
+                            } else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
 
                                 float motionY = motionEvent.getRawY();
 
                                 float newY = motionY - margin;
-                                if(margin != 0) {
+                                if (margin != 0) {
                                     Log.i("MOVEDEBUG", "Moving to " + newY);
                                     layout.setVisibility(View.INVISIBLE);
                                     if (newY < 0)
@@ -570,18 +569,17 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                                     layout.setY(newY);
                                     layout.setVisibility(View.VISIBLE);
                                 }
-                            }
-                            else if(motionEvent.getAction() == MotionEvent.ACTION_UP){
-                                Log.i("MOVEDEBUG","ACTION UP "+layout.getY());
-                                if(layout.getY()>startY){
+                            } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                                Log.i("MOVEDEBUG", "ACTION UP " + layout.getY());
+                                if (layout.getY() > startY) {
                                     //lower
-                                    lowerCard(layout, height,darkener);
-                                } else if(layout.getY()<startY){
+                                    lowerCard(layout, height, darkener);
+                                } else if (layout.getY() < startY) {
                                     //raise
                                     raiseCard(layout);
                                 } else {
                                     //TODO: Do list item actions
-                                    Log.i("CARDDEBUG","Card item clicked!");
+                                    Log.i("CARDDEBUG", "Card item clicked!");
 //                                    cardAdapter.onClick(cardListView.);
 //                                    view.setVisibility(View.INVISIBLE);
                                 }
@@ -593,28 +591,31 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     cardListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                            Log.i("CARDDEBUG","ITEM clicked!");
+                            Log.i("CARDDEBUG", "ITEM clicked!");
                             final CardDataModel cardDataModel = cardDataModels.get(position);
-                            switch (cardDataModel.getTag()){
+                            switch (cardDataModel.getTag()) {
                                 case 'p':
-                                    Log.i("CARDDEBUG","Calling phone number");//TODO
+                                    Log.i("CARDDEBUG", "Calling phone number");//TODO
+
+                                    phoneNum_forCall = Uri.parse("tel:" + cardDataModel.getPhone().getNumber());
+                                        callPhone();
                                     break;
                                 case 'e':
-                                    Log.i("CARDDEBUG","Emailing email");//TODO
+                                    Log.i("CARDDEBUG", "Emailing email");//TODO
                                     break;
                                 case 's':
-                                    switch (cardDataModel.getSocial().getType()){
+                                    switch (cardDataModel.getSocial().getType()) {
                                         case "Twitter":
-                                            Log.i("CARDDEBUG","Adding on Twitter");//TODO
+                                            Log.i("CARDDEBUG", "Adding on Twitter");//TODO
                                             break;
                                         case "LinkedIn":
-                                            Log.i("CARDDEBUG","Adding on LinkedIn");//TODO
+                                            Log.i("CARDDEBUG", "Adding on LinkedIn");//TODO
                                             break;
                                         case "Spotify":
-                                            Log.i("CARDDEBUG","Adding on Spotify");//TODO
+                                            Log.i("CARDDEBUG", "Adding on Spotify");//TODO
                                             break;
                                         case "Facebook":
-                                            Log.i("CARDDEBUG","Adding on Facebook");//TODO
+                                            Log.i("CARDDEBUG", "Adding on Facebook");//TODO
                                             break;
                                     }
                                     break;
@@ -626,29 +627,27 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     layout.setOnTouchListener(new View.OnTouchListener() {
                         @Override
                         public boolean onTouch(View view, MotionEvent motionEvent) {
-                            if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+                            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                                 startY = layout.getY();
-                                Log.i("MOVEDEBUG","STARTY "+startY);
+                                Log.i("MOVEDEBUG", "STARTY " + startY);
                                 float motionY = motionEvent.getRawY();
                                 margin = motionY - startY;
-                            }
-                            else if(motionEvent.getAction() == MotionEvent.ACTION_MOVE){
+                            } else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
 
                                 float motionY = motionEvent.getRawY();
 
                                 float newY = motionY - margin;
-                                Log.i("MOVEDEBUG","Moving to "+newY);
+                                Log.i("MOVEDEBUG", "Moving to " + newY);
                                 layout.setVisibility(View.INVISIBLE);
-                                if(newY<0)
-                                    newY=0;
+                                if (newY < 0)
+                                    newY = 0;
                                 layout.setY(newY);
                                 layout.setVisibility(View.VISIBLE);
-                            }
-                            else if(motionEvent.getAction() == MotionEvent.ACTION_UP){
-                                Log.i("MOVEDEBUG","ACTION UP "+layout.getY());
-                                if(layout.getY()>startY){
+                            } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                                Log.i("MOVEDEBUG", "ACTION UP " + layout.getY());
+                                if (layout.getY() > startY) {
                                     //lower
-                                    lowerCard(layout, height,darkener);
+                                    lowerCard(layout, height, darkener);
                                 } else {
                                     //raise
                                     raiseCard(layout);
@@ -668,8 +667,23 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
 
     }
+
     float margin;
     float startY;
+    Uri phoneNum_forCall;
+
+    private void callPhone() {
+        Intent intent = new Intent(Intent.ACTION_CALL);
+        intent.setData(phoneNum_forCall);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.CALL_PHONE},
+                    MY_PERMISSIONS_REQUEST_PHONE);
+            return;
+        }
+        getApplicationContext().startActivity(intent);
+    }
+
     public void lowerCard(RelativeLayout layout,int height, final ImageView darkener){
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", layout.getY(), height);
         objectAnimator.setDuration(400);
@@ -1109,6 +1123,18 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
                     saveContactsToDevice();
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+            case MY_PERMISSIONS_REQUEST_PHONE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    callPhone();
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.

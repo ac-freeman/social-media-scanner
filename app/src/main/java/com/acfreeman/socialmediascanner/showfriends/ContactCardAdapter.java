@@ -47,7 +47,7 @@ private static class ViewHolder {
 
     @Override
     public void onClick(View v) {
-       
+
 
     }
 
