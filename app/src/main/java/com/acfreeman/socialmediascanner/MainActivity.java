@@ -595,13 +595,15 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                             final CardDataModel cardDataModel = cardDataModels.get(position);
                             switch (cardDataModel.getTag()) {
                                 case 'p':
-                                    Log.i("CARDDEBUG", "Calling phone number");//TODO
-
+                                    Log.i("CARDDEBUG", "Calling phone number");
                                     phoneNum_forCall = Uri.parse("tel:" + cardDataModel.getPhone().getNumber());
                                         callPhone();
                                     break;
                                 case 'e':
-                                    Log.i("CARDDEBUG", "Emailing email");//TODO
+                                    Log.i("CARDDEBUG", "Emailing email");
+                                    Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                                            "mailto",cardDataModel.getEmail().getEmail(), null));
+                                    startActivity(Intent.createChooser(emailIntent, "Send email..."));
                                     break;
                                 case 's':
                                     switch (cardDataModel.getSocial().getType()) {
