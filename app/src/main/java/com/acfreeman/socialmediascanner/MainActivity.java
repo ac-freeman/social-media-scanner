@@ -595,31 +595,16 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                             final CardDataModel cardDataModel = cardDataModels.get(position);
                             switch (cardDataModel.getTag()) {
                                 case 'p':
-                                    Log.i("CARDDEBUG", "Calling phone number");
                                     phoneNum_forCall = Uri.parse("tel:" + cardDataModel.getPhone().getNumber());
                                         callPhone();
                                     break;
                                 case 'e':
-                                    Log.i("CARDDEBUG", "Emailing email");
                                     Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                                             "mailto",cardDataModel.getEmail().getEmail(), null));
                                     startActivity(Intent.createChooser(emailIntent, "Send email..."));
                                     break;
                                 case 's':
-                                    switch (cardDataModel.getSocial().getType()) {
-                                        case "Twitter":
-                                            Log.i("CARDDEBUG", "Adding on Twitter");//TODO
-                                            break;
-                                        case "LinkedIn":
-                                            Log.i("CARDDEBUG", "Adding on LinkedIn");//TODO
-                                            break;
-                                        case "Spotify":
-                                            Log.i("CARDDEBUG", "Adding on Spotify");//TODO
-                                            break;
-                                        case "Facebook":
-                                            Log.i("CARDDEBUG", "Adding on Facebook");//TODO
-                                            break;
-                                    }
+                                    showNoticeDialog((String) cardName.getText(), cardDataModel.getSocial());
                                     break;
                             }
 
@@ -1032,6 +1017,43 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         }
 
     }
+    public void showNoticeDialog(String name, Social social) {
+            // Create an instance of the dialog fragment and show it
+            DialogFragment dialog = new CustomDialogFragment();
+
+            String type = social.getType();
+        String uri ="";
+        switch (type) {
+            case "Twitter":
+                uri = "https://twitter.com/intent/follow?user_id=" + social.getUsername();
+                break;
+            case "LinkedIn":
+                uri = "https://www.linkedin.com/profile/view?id=" + social.getUsername();
+                break;
+            case "Spotify":
+                uri = "spotify:user:" + social.getUsername();
+                break;
+            case "Facebook":
+                try {
+                    this.getPackageManager().getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
+                    uri = "fb://facewebmodal/f?href=" + "https://www.facebook.com/" + social.getUsername(); //Tries with FB's URI
+                } catch (Exception e) {
+                    uri = "https://www.facebook.com/" + social.getUsername(); //catches a url to the desired page
+                }
+                break;
+        }
+
+
+            Bundle args = new Bundle();
+            args.putString("dialog_title", "Would you like to add " + name + " on " + type + "?");
+            args.putString("name", name);
+            args.putString("uri", uri);
+            args.putString("action", "singleSocialAdd");
+
+            dialog.setArguments(args);
+            dialog.show(getFragmentManager(), "CustomDialogFragment");
+
+    }
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
@@ -1041,12 +1063,18 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         Bundle mArgs = dialog.getArguments();
         String name = mArgs.getString("name");
         String action = mArgs.getString("action");
+        String uri;
         switch (action) {
             case "socialAdd":
-                String uri = mArgs.getString("uri");
+                uri = mArgs.getString("uri");
                 socialAdd(uri);
 
                 showNoticeDialog(name);
+                break;
+            case "singleSocialAdd":
+                uri = mArgs.getString("uri");
+                Log.i("SOCIALDEBUG",uri);
+                socialAdd(uri);
                 break;
             case "delete":
                 for (int i = 0; i < adapter.checks.size(); i++) {
@@ -1093,6 +1121,8 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         switch (action) {
             case "socialAdd":
                 showNoticeDialog(name);
+                break;
+            case "singleSocialAdd":
                 break;
             case "delete":
                 break;
