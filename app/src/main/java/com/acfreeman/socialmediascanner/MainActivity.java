@@ -723,6 +723,15 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         Contact contact;
         LocalDatabase db = new LocalDatabase(getApplicationContext());
 
+        contact = new Contact("Andrew Freeman");
+        db.addContact(contact);
+        db.addPhone(new Phone(contact.getId(),2142186153,"Cell"));
+        db.addEmail(new Email(contact.getId(), "afreema4@samford.edu", "Work"));
+        db.addSocial(new Social(contact.getId(), "Twitter", "392381109"));
+        db.addSocial(new Social(contact.getId(), "LinkedIn", "AAoAAA4bE1IBoMdCU1I23EQvkTgYE_ggW3s39SY&authType=name&authToken=qTgI&trk=api*a4550044*s4612704*"));
+        db.addSocial(new Social(contact.getId(), "Spotify", "acfreeman"));
+        db.addSocial(new Social(contact.getId(), "Facebook", "1720598201286659"));
+
         contact = new Contact("Chad Jones");
         db.addContact(contact);
         contact = new Contact("Alex Beck");
