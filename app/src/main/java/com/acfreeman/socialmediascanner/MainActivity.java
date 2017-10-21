@@ -39,6 +39,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -542,6 +543,11 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                         }
                     });
 
+
+                    //drag listener??
+
+
+
                     cardListView.setOnTouchListener(new View.OnTouchListener() {
                         @Override
                         public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -576,9 +582,44 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                                 } else {
                                     //TODO: Do list item actions
                                     Log.i("CARDDEBUG","Card item clicked!");
+//                                    cardAdapter.onClick(cardListView.);
+//                                    view.setVisibility(View.INVISIBLE);
                                 }
                             }
                             return false;
+                        }
+                    });
+
+                    cardListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                            Log.i("CARDDEBUG","ITEM clicked!");
+                            final CardDataModel cardDataModel = cardDataModels.get(position);
+                            switch (cardDataModel.getTag()){
+                                case 'p':
+                                    Log.i("CARDDEBUG","Calling phone number");//TODO
+                                    break;
+                                case 'e':
+                                    Log.i("CARDDEBUG","Emailing email");//TODO
+                                    break;
+                                case 's':
+                                    switch (cardDataModel.getSocial().getType()){
+                                        case "Twitter":
+                                            Log.i("CARDDEBUG","Adding on Twitter");//TODO
+                                            break;
+                                        case "LinkedIn":
+                                            Log.i("CARDDEBUG","Adding on LinkedIn");//TODO
+                                            break;
+                                        case "Spotify":
+                                            Log.i("CARDDEBUG","Adding on Spotify");//TODO
+                                            break;
+                                        case "Facebook":
+                                            Log.i("CARDDEBUG","Adding on Facebook");//TODO
+                                            break;
+                                    }
+                                    break;
+                            }
+
                         }
                     });
 

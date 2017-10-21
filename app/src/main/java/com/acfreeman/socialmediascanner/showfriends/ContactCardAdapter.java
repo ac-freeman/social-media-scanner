@@ -9,10 +9,13 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.R;
 
 import java.util.ArrayList;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by Andrew on 10/20/2017.
@@ -39,26 +42,20 @@ private static class ViewHolder {
         this.dataSet = null;
     }
 
-    @Override
-    public void onClick(View v) {
-        Log.i("CARDDEBUG","Card item clicked!");
-        //WE OVERRIDE THIS LISTENER IN MAINACTIVITY
-//        int position=(Integer) v.getTag();
-//        Object object= getItem(position);
-//        DataModel dataModel=(DataModel)object;
-//        Log.i("CONTACTDEBUG", "Item clicked!");
-//
-////        switch (v.getId())
-////        {
-////            case R.id.item_info:
-//////                Snackbar.make(v, "Release date " +dataModel.getFeature(), Snackbar.LENGTH_LONG)
-//////                        .setAction("No action", null).show();
-////                break;
-////        }
-    }
 
     private int lastPosition = -1;
 
+    @Override
+    public void onClick(View v) {
+       
+
+    }
+
+
+    public void actionTest(){
+
+
+    }
     @Override
     public View getView(final int position, View convertView, final ViewGroup parent) {
         // Get the data item for this position
@@ -108,6 +105,7 @@ private static class ViewHolder {
 //        viewHolder.image.setOnClickListener(this);
         viewHolder.image.setTag(position);
         // Return the completed view to render on screen
+//        convertView.setOnClickListener(this);
         return convertView;
     }
 
