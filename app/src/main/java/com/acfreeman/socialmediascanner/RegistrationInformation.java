@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.InputType;
 import android.util.Log;
 import android.util.TypedValue;
@@ -121,6 +122,7 @@ public class RegistrationInformation extends AppCompatActivity {
         phoneEditText.setHint("Phone");
         phoneEditText.setInputType(InputType.TYPE_CLASS_PHONE);
         phoneEditText.setWidth(textWidth);
+        phoneEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
         final ImageButton plusPhone = new ImageButton(this);
 //        final Button plusPhone = new Button(this);
@@ -259,8 +261,12 @@ public class RegistrationInformation extends AppCompatActivity {
 
                         ")+";
 
-                String validPhone = "^\\(?([0-9]{3})\\)?[-.\\s]?([0-9]{3})[-.\\s]?([0-9]{4})$";
-
+                 String validPhone = "^\\(?([0-9]{3})\\)?[-.\\s]?([0-9]{3})[-.\\s]?([0-9]{4})$";
+//                String validPhone = "\\+(9[976]\\d|8[987530]\\d|6[987]\\d|5[90]\\d|42\\d|3[875]\\d|\n" +
+//                        "2[98654321]\\d|9[8543210]|8[6421]|6[6543210]|5[87654321]|\n" +
+//                        "4[987654310]|3[9643210]|2[70]|7|1)\n" +
+//                        "\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*(\\d{1,2})$";
+                //String validPhone = "^\\+(?:[0-9] ?){6,14}[0-9]$";
 
                 if (nameEditText.getText().toString().trim().equals("")) {
                     Toast.makeText(getApplicationContext(), "Name is required!", Toast.LENGTH_SHORT).show();
@@ -275,18 +281,18 @@ public class RegistrationInformation extends AppCompatActivity {
 
 
                     for (EditText p : PhoneList) {
-                        matcher= Pattern.compile(validPhone).matcher(p.getText().toString());
+                        //matcher= Pattern.compile(validPhone).matcher(p.getText().toString());
+                        number = p.getText().toString();
+                        numFormated = number.replaceAll("[^0-9]", "");
                         if (p.getText().toString().trim().equals("")) {
                             Toast.makeText(getApplicationContext(), "Phone number is required!", Toast.LENGTH_SHORT).show();
                             p.setError("Phone number is required!");
                             error = true;
-                        } else if(!matcher.matches()){
+                        } else if(numFormated.length() < 7 || numFormated.length() > 11){
                             Toast.makeText(getApplicationContext(), "Phone number is not valid!", Toast.LENGTH_SHORT).show();
-                            p.setError("Enter a vaild 10 digit phone number!");
+                            p.setError("Enter a vaild phone number!");
                             error = true;
                         }else {
-                            number = p.getText().toString();
-                            numFormated = number.replaceAll("[^0-9]", "");
                             Phone phone = new Phone(owner.getId(), Long.parseLong(numFormated), "Cell");
                             database.addPhone(phone);
                             Toast.makeText(getApplicationContext(), "Phone number stored as: " + numFormated, Toast.LENGTH_SHORT).show();
