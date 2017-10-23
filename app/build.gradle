@@ -43,4 +43,5 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.google.android.gms:play-services-auth:9.0.0'
     testCompile 'junit:junit:4.12'
+    compile 'com.microsoft.azure:azure-mobile-android:26.0.0'
 }

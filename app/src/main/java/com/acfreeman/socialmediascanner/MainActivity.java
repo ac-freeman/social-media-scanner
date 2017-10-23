@@ -69,6 +69,8 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.twitter.sdk.android.core.Twitter;
+import com.microsoft.windowsazure.mobileservices.*;
+
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -92,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
     private static final int MY_PERMISSIONS_REQUEST_CONTACTS = 2;
     private static final int MY_PERMISSIONS_REQUEST_PHONE = 3;
+    private MobileServiceClient mClient;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     SharedPreferences mPrefs;
@@ -106,6 +109,10 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mClient = new MobileServiceClient(
+                "https://socialmediascanner.azurewebsites.net",
+                this
+        );
         super.onCreate(savedInstanceState);
         Twitter.initialize(this);
         setContentView(R.layout.activity_main);
