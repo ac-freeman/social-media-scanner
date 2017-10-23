@@ -750,8 +750,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         db.addContact(contact);
         contact = new Contact("Opal Patricks");
         db.addContact(contact);
-        contact = new Contact("Queen Rita");
-        db.addContact(contact);
         contact = new Contact("Sam Terry");
         db.addContact(contact);
         contact = new Contact("Ur Very");

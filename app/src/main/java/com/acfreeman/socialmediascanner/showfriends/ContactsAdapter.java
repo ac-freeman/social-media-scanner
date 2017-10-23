@@ -127,8 +127,6 @@ public class ContactsAdapter extends ArrayAdapter<DataModel> implements View.OnC
         lastPosition = position;
 
         viewHolder.txtName.setText(dataModel.getName());
-//        viewHolder.txtType.setText(dataModel.getType());
-        viewHolder.info.setOnClickListener(this);
         viewHolder.info.setTag(position);
         // Return the completed view to render on screen
         return convertView;
