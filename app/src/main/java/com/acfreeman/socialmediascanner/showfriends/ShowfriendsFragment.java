@@ -42,12 +42,13 @@ import java.util.List;
 
 import static com.acfreeman.socialmediascanner.MainActivity.MY_PERMISSIONS_REQUEST_CONTACTS;
 import static com.acfreeman.socialmediascanner.MainActivity.firstMainActivityPref;
+//import static com.acfreeman.socialmediascanner.MainActivity.socialAdd;
 
 /**
  * Created by Andrew on 10/23/2017.
  */
 
-public class ShowfriendsFragment extends Fragment implements CustomDialogFragment.NoticeDialogListener{
+public class ShowfriendsFragment extends Fragment{
     private ContactsAdapter adapter;
     ArrayList<DataModel> dataModels;
     ListView listView;
@@ -210,10 +211,7 @@ public class ShowfriendsFragment extends Fragment implements CustomDialogFragmen
                                     //raise
                                     raiseCard(layout);
                                 } else {
-                                    //TODO: Do list item actions
-                                    Log.i("CARDDEBUG", "Card item clicked!");
-//                                    cardAdapter.onClick(cardListView.);
-//                                    view.setVisibility(View.INVISIBLE);
+                                    /////
                                 }
                             }
                             return false;
@@ -228,8 +226,7 @@ public class ShowfriendsFragment extends Fragment implements CustomDialogFragmen
                             switch (cardDataModel.getTag()) {
                                 case 'p':
                                     phoneNum_forCall = Uri.parse("tel:" + cardDataModel.getPhone().getNumber());
-//                                    MainActivity.callPhone(phoneNum_forCall);
-                                    //TODO
+                                    callPhone();
                                     break;
                                 case 'e':
                                     Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
@@ -237,8 +234,7 @@ public class ShowfriendsFragment extends Fragment implements CustomDialogFragmen
                                     startActivity(Intent.createChooser(emailIntent, "Send email..."));
                                     break;
                                 case 's':
-//                                    showNoticeDialog((String) cardName.getText(), cardDataModel.getSocial());
-                                    //TODO
+                                    showNoticeDialog((String) cardName.getText(), cardDataModel.getSocial());
                                     break;
                             }
 
@@ -293,57 +289,6 @@ public class ShowfriendsFragment extends Fragment implements CustomDialogFragmen
 
 
 
-    public void lowerCard(RelativeLayout layout,int height, final ImageView darkener){
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", layout.getY(), height);
-        objectAnimator.setDuration(400);
-        objectAnimator.start();
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                darkener.setAlpha(0.0f);
-                darkener.setClickable(false);
-            }
-        }, 400);
-    }
-    public void raiseCard(RelativeLayout layout){
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", layout.getY(), 0);
-//                                    objectAnimator.setDuration(400);
-        objectAnimator.start();
-    }
-
-    private void saveContactsToDevice() {
-
-
-        for (int i = 0; i < adapter.checks.size(); i++) {
-            if (adapter.checks.get(i) == 1) {
-                DataModel model = adapter.getItem(i);
-
-                Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
-                // Sets the MIME type to match the Contacts Provider
-                intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
-
-                intent.putExtra(ContactsContract.Intents.Insert.NAME, model.getName());
-                for (Phone p : model.getPhones()) {
-                    intent.putExtra(ContactsContract.Intents.Insert.PHONE, Long.toString(p.getNumber()))
-                            .putExtra(ContactsContract.Intents.Insert.PHONE_TYPE, p.getType());
-                }
-
-                for (Email em : model.getEmails()) {
-                    intent.putExtra(ContactsContract.Intents.Insert.EMAIL, em.getEmail())
-                            .putExtra(ContactsContract.Intents.Insert.EMAIL_TYPE, em.getType());
-                }
-
-                startActivity(intent);
-            }
-        }
-        adapter.inEditmode = false;
-        adapter.notifyDataSetChanged();
-
-    }
-
-
-
     public void showNoticeDialog(String name, Social social) {
         // Create an instance of the dialog fragment and show it
         DialogFragment dialog = new CustomDialogFragment();
@@ -378,76 +323,90 @@ public class ShowfriendsFragment extends Fragment implements CustomDialogFragmen
         args.putString("action", "singleSocialAdd");
 
         dialog.setArguments(args);
-        dialog.show(getFragmentManager(), "CustomDialogFragment");
+        dialog.show(getFragmentManager().beginTransaction(), "CustomDialogFragment");
 
     }
 
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        //Add user intent
-        //Go to next social media dialog
+    public void lowerCard(RelativeLayout layout,int height, final ImageView darkener){
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", layout.getY(), height);
+        objectAnimator.setDuration(400);
+        objectAnimator.start();
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                darkener.setAlpha(0.0f);
+                darkener.setClickable(false);
+            }
+        }, 400);
+    }
+    public void raiseCard(RelativeLayout layout){
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", layout.getY(), 0);
+//                                    objectAnimator.setDuration(400);
+        objectAnimator.start();
+    }
 
-        Bundle mArgs = dialog.getArguments();
-        String name = mArgs.getString("name");
-        String action = mArgs.getString("action");
-        String uri;
-        switch (action) {
-            case "singleSocialAdd":
-                uri = mArgs.getString("uri");
-                Log.i("SOCIALDEBUG",uri);
-                MainActivity.socialAdd(uri);
-                break;
-            case "delete":
-                for (int i = 0; i < adapter.checks.size(); i++) {
-                    if (adapter.checks.get(i) == 1) {
-                        adapter.checks.remove(i);
-                        //TODO: remove from listview
-                        DataModel model = adapter.getItem(i);
-                        long contactId = model.getId();
-                        adapter.remove(model);
-                        Log.i("CONTACTDEBUG", "Removing item from list at position " + i);
-                        LocalDatabase db = new LocalDatabase(getActivity());
-                        db.deleteContactById(contactId);
+    public void saveContactsToDevice() {
 
-                        adapter.inEditmode = false;
-                        adapter.notifyDataSetChanged();
-                        i--;
-                    }
 
-                }
-                MainActivity.hideAppbarButtons();
-                break;
-            case "saveContact":
-                if (ContextCompat.checkSelfPermission(getActivity(),
-                        Manifest.permission.WRITE_CONTACTS)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(getActivity(),
-                            new String[]{Manifest.permission.WRITE_CONTACTS},
-                            MY_PERMISSIONS_REQUEST_CONTACTS);
-                } else {
-                    saveContactsToDevice();
+        for (int i = 0; i < adapter.checks.size(); i++) {
+            if (adapter.checks.get(i) == 1) {
+                DataModel model = adapter.getItem(i);
+
+                Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
+                // Sets the MIME type to match the Contacts Provider
+                intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
+
+                intent.putExtra(ContactsContract.Intents.Insert.NAME, model.getName());
+                for (Phone p : model.getPhones()) {
+                    intent.putExtra(ContactsContract.Intents.Insert.PHONE, Long.toString(p.getNumber()))
+                            .putExtra(ContactsContract.Intents.Insert.PHONE_TYPE, p.getType());
                 }
 
-                MainActivity.hideAppbarButtons();
-                break;
+                for (Email em : model.getEmails()) {
+                    intent.putExtra(ContactsContract.Intents.Insert.EMAIL, em.getEmail())
+                            .putExtra(ContactsContract.Intents.Insert.EMAIL_TYPE, em.getType());
+                }
+
+                startActivity(intent);
+            }
+        }
+        adapter.inEditmode = false;
+        adapter.notifyDataSetChanged();
+
+    }
+
+    public void deleteContacts(){
+        for (int i = 0; i < adapter.checks.size(); i++) {
+            if (adapter.checks.get(i) == 1) {
+                adapter.checks.remove(i);
+                DataModel model = adapter.getItem(i);
+                long contactId = model.getId();
+                adapter.remove(model);
+                Log.i("CONTACTDEBUG", "Removing item from list at position " + i);
+                LocalDatabase db = new LocalDatabase(getActivity());
+                db.deleteContactById(contactId);
+
+                adapter.inEditmode = false;
+                adapter.notifyDataSetChanged();
+                i--;
+            }
+
         }
     }
 
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-        //Go to next social media dialog
-        Bundle mArgs = dialog.getArguments();
-        String name = mArgs.getString("name");
-        String action = mArgs.getString("action");
-        switch (action) {
-            case "singleSocialAdd":
-                break;
-            case "delete":
-                break;
-            case "saveContact":
-                break;
+    public void callPhone() {
+        Intent intent = new Intent(Intent.ACTION_CALL);
+        intent.setData(phoneNum_forCall);
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.CALL_PHONE},
+                    MainActivity.MY_PERMISSIONS_REQUEST_PHONE);
+            return;
         }
-
+        this.startActivity(intent);
     }
+
+
 
 }

@@ -17,7 +17,6 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
@@ -34,14 +33,9 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.acfreeman.socialmediascanner.db.Contact;
@@ -51,18 +45,12 @@ import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Phone;
 import com.acfreeman.socialmediascanner.db.Social;
 import com.acfreeman.socialmediascanner.showcode.ShowcodeFragment;
-import com.acfreeman.socialmediascanner.showfriends.CardDataModel;
-import com.acfreeman.socialmediascanner.showfriends.ContactCardAdapter;
-import com.acfreeman.socialmediascanner.showfriends.ContactsAdapter;
-import com.acfreeman.socialmediascanner.showfriends.DataModel;
 import com.acfreeman.socialmediascanner.showfriends.ShowfriendsFragment;
 import com.acfreeman.socialmediascanner.social.SocialAdder;
 import com.google.zxing.Result;
 import com.twitter.sdk.android.core.Twitter;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -86,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     SharedPreferences mPrefs;
     public static final String firstMainActivityPref = "firstMainActivity";
     Boolean firstMainActivity;
+    ShowfriendsFragment showfriendsFragment = new ShowfriendsFragment();
 
     /**
      * Called when activity begins
@@ -106,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_friends);
+
     }
 
     @Override
@@ -309,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.content, new ShowfriendsFragment());
+        ft.replace(R.id.content, showfriendsFragment);
         ft.commit();
     }
 
@@ -559,12 +549,11 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 //        mScannerView.resumeCameraPreview(MainActivity.this);
     }
 
-    public static void socialAdd(String uri) {
+    public void socialAdd(String uri) {
         Intent i = new Intent(Intent.ACTION_VIEW,
                 Uri.parse(uri));
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);   //Makes it so that a single back-button press brings you back to our app
-//        this.startActivityForResult(i, 1);
-        //TODO
+        this.startActivityForResult(i, 1);
     }
 
 
@@ -595,17 +584,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         }
     }
 
-    public void callPhone(Uri phoneNum_forCall) {
-        Intent intent = new Intent(Intent.ACTION_CALL);
-        intent.setData(phoneNum_forCall);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CALL_PHONE},
-                    MainActivity.MY_PERMISSIONS_REQUEST_PHONE);
-            return;
-        }
-        this.startActivity(intent);
-    }
+
 
 
     public void showNoticeDialog(String name) {
@@ -636,6 +615,8 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     }
 
 
+
+
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         //Add user intent
@@ -654,8 +635,26 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 break;
             case "singleSocialAdd":
                 uri = mArgs.getString("uri");
-                Log.i("SOCIALDEBUG",uri);
+               Log.i("SOCIALDEBUG",uri);
                 socialAdd(uri);
+                break;
+            case "delete":
+                showfriendsFragment.deleteContacts();
+
+                MainActivity.hideAppbarButtons();
+                break;
+            case "saveContact":
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.WRITE_CONTACTS)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.WRITE_CONTACTS},
+                            MY_PERMISSIONS_REQUEST_CONTACTS);
+                } else {
+                    showfriendsFragment.saveContactsToDevice();
+                }
+
+                MainActivity.hideAppbarButtons();
                 break;
         }
     }
@@ -703,8 +702,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
 
-
-//                    saveContactsToDevice();//TODO
+                    showfriendsFragment.saveContactsToDevice();
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -718,8 +716,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     // contacts-related task you need to do.
 
 
-//                    callPhone();
-                    //TODO
+                    showfriendsFragment.callPhone();
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
