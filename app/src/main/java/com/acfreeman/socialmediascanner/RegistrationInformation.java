@@ -329,7 +329,10 @@ public class RegistrationInformation extends AppCompatActivity {
                             database.addEmail(email);
                             Toast.makeText(getApplicationContext(), "Email stored as: " + email.getEmail(), Toast.LENGTH_SHORT).show();
                         }
-                        Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
+
+
+                        Intent startIntent = new Intent(getApplicationContext(), GoogleLoginActivity.class);
+
                         startActivity(startIntent);
                     }
 
