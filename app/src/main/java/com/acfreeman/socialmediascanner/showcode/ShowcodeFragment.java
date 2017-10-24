@@ -31,8 +31,6 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
-
 /**
  * Created by Andrew on 10/23/2017.
  */
@@ -66,14 +64,14 @@ public class ShowcodeFragment extends Fragment {
         switchModels.add(new SwitchModel("Email address(es)", "em", R.drawable.ic_email_black_24dp));
 
         List socials = new ArrayList();
-        LocalDatabase db = new LocalDatabase(getApplicationContext());
+        LocalDatabase db = new LocalDatabase(getActivity());
         List<Owner> owner = db.getAllOwner();
         ArrayList<Social> sociallist = db.getUserSocials(owner.get(0).getId());
         for (Social s : sociallist) {
             switchModels.add(new SwitchModel(s.getType(), s.getUsername()));
         }
 
-        showcodeAdapter = new ShowcodeAdapter(switchModels, getApplicationContext());
+        showcodeAdapter = new ShowcodeAdapter(switchModels, getActivity());
         codeListView.setAdapter(showcodeAdapter);
 
 
@@ -105,7 +103,7 @@ public class ShowcodeFragment extends Fragment {
             builder.append("|");
 
             // personal information
-            LocalDatabase database = new LocalDatabase(getApplicationContext());
+            LocalDatabase database = new LocalDatabase(getActivity());
             Owner owner = database.getOwner(0);
             String ownerName = owner.getName();
             ArrayList<Phone> ownerPhones = database.getUserPhones(owner.getId());

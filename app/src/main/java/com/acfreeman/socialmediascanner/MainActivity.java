@@ -55,6 +55,7 @@ import com.acfreeman.socialmediascanner.showfriends.CardDataModel;
 import com.acfreeman.socialmediascanner.showfriends.ContactCardAdapter;
 import com.acfreeman.socialmediascanner.showfriends.ContactsAdapter;
 import com.acfreeman.socialmediascanner.showfriends.DataModel;
+import com.acfreeman.socialmediascanner.showfriends.ShowfriendsFragment;
 import com.acfreeman.socialmediascanner.social.SocialAdder;
 import com.google.zxing.Result;
 import com.twitter.sdk.android.core.Twitter;
@@ -78,12 +79,12 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     public boolean handleScan;
     private static Toolbar myToolbar;
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
-    private static final int MY_PERMISSIONS_REQUEST_CONTACTS = 2;
-    private static final int MY_PERMISSIONS_REQUEST_PHONE = 3;
+    public static final int MY_PERMISSIONS_REQUEST_CONTACTS = 2;
+    public static final int MY_PERMISSIONS_REQUEST_PHONE = 3;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     SharedPreferences mPrefs;
-    final String firstMainActivityPref = "firstMainActivity";
+    public static final String firstMainActivityPref = "firstMainActivity";
     Boolean firstMainActivity;
 
     /**
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         return true;
     }
 
-    public void hideAppbarButtons() {
+    public static void hideAppbarButtons() {
         MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
         MenuItem saveContactsButton = myToolbar.getMenu().findItem(R.id.action_save_contact);
         if (deleteButton != null && saveContactsButton != null) {
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         }
     }
 
-    public void showAppbarButtons() {
+    public static void showAppbarButtons() {
         MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
         MenuItem saveContactsButton = myToolbar.getMenu().findItem(R.id.action_save_contact);
         if (deleteButton != null && saveContactsButton != null) {
@@ -132,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         }
     }
 
-    public void toggleAppbarButtons() {
+    public static void toggleAppbarButtons() {
         MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
         MenuItem saveContactsButton = myToolbar.getMenu().findItem(R.id.action_save_contact);
         if (deleteButton != null && saveContactsButton != null) {
@@ -294,281 +295,25 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
     }
 
-    private ContactsAdapter adapter;
-    ArrayList<DataModel> dataModels;
-    ListView listView;
-    private ContactCardAdapter cardAdapter;
-    ArrayList<CardDataModel> cardDataModels;
-    ListView cardListView;
+
 
     private void showFriends() {
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         firstMainActivity = mPrefs.getBoolean(firstMainActivityPref, true);
-
-        FrameLayout frameLayout = findViewById(R.id.content);
-        listView = new ListView(getApplicationContext());
-
-        dataModels = new ArrayList<>();
-
         if (firstMainActivity) {
             addDummyData();
             SharedPreferences.Editor editor = mPrefs.edit();
             editor.putBoolean(firstMainActivityPref, false);
             editor.commit(); // Very important to save the preference
         }
-        LocalDatabase db = new LocalDatabase(getApplicationContext());
-        List<Contact> contactslist = db.getAllContacts();
 
-
-        //sort contacts alphabetically
-        if (contactslist.size() > 0) {
-            Collections.sort(contactslist, new Comparator<Contact>() {
-                @Override
-                public int compare(final Contact object1, final Contact object2) {
-                    return object1.getName().compareTo(object2.getName());
-                }
-            });
-        }
-
-        for (Contact c : contactslist) {
-            ArrayList<Phone> userphoneslist = db.getUserPhones(c.getId());
-            ArrayList<Email> useremailslist = db.getUserEmails(c.getId());
-            ArrayList<Social> sociallist = db.getUserSocials(c.getId());
-            dataModels.add(new DataModel(c.getName(), c.getId(), userphoneslist, useremailslist, sociallist));
-        }
-
-        adapter = new ContactsAdapter(dataModels, getApplicationContext());
-
-        listView.setAdapter(adapter);
-        listView.setLongClickable(true);
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                toggleAppbarButtons();
-
-                Log.i("CONTACTDEBUG", "Long click");
-                adapter.toggleEditMode();
-                adapter.checks.set(i, 1);
-
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        adapter.notifyDataSetChanged();
-                    }
-                });
-
-                //tells system to stop listening for another click in same action
-                return true;
-            }
-
-        });
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                final DataModel dataModel = dataModels.get(position);
-
-                if (adapter.inEditmode) {
-                    if (adapter.checks.get(position) == 1)
-                        adapter.checks.set(position, 0);
-                    else
-                        adapter.checks.set(position, 1);
-
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-                            adapter.notifyDataSetChanged();
-                        }
-                    });
-                } else {
-                    final RelativeLayout layout = findViewById(R.id.activity_contact_card);
-                    final TextView cardName = findViewById(R.id.activity_contact_card_name);
-                    cardName.setText(dataModel.getName());
-
-
-                    cardListView = findViewById(R.id.activity_contact_card_listview);
-                    cardListView.setClickable(false);
-                    cardDataModels = new ArrayList<>();
-
-                    for (Phone p : dataModel.getPhones()) {
-                        cardDataModels.add(new CardDataModel(p));
-                    }
-                    for (Email e : dataModel.getEmails()) {
-                        cardDataModels.add(new CardDataModel(e));
-                    }
-                    for (Social s : dataModel.getSocials()) {
-                        cardDataModels.add(new CardDataModel(s));
-                    }
-
-                    cardAdapter = new ContactCardAdapter(cardDataModels, getApplicationContext());
-                    cardListView.setAdapter(cardAdapter);
-
-                    layout.setVisibility(View.VISIBLE);
-                    final int height = getResources().getDisplayMetrics().heightPixels;
-
-                    final ImageView darkener = (ImageView) findViewById(R.id.darken_frame);
-                    darkener.setAlpha(0.6f);
-                    darkener.setClickable(true);
-
-                    ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", height, 500);
-                    objectAnimator.setDuration(400);
-                    objectAnimator.start();
-
-
-                    darkener.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", 500, height);
-                            objectAnimator.setDuration(400);
-                            objectAnimator.start();
-                            darkener.setAlpha(0.0f);
-                            darkener.setClickable(false);
-                        }
-                    });
-
-
-                    //drag listener??
-
-
-                    cardListView.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View view, MotionEvent motionEvent) {
-                            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                                startY = layout.getY();
-                                Log.i("MOVEDEBUG", "STARTY " + startY);
-                                float motionY = motionEvent.getRawY();
-                                margin = motionY - startY;
-                            } else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
-
-                                float motionY = motionEvent.getRawY();
-
-                                float newY = motionY - margin;
-                                if (margin != 0) {
-                                    Log.i("MOVEDEBUG", "Moving to " + newY);
-                                    layout.setVisibility(View.INVISIBLE);
-                                    if (newY < 0)
-                                        newY = 0;
-                                    layout.setY(newY);
-                                    layout.setVisibility(View.VISIBLE);
-                                }
-                            } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                                Log.i("MOVEDEBUG", "ACTION UP " + layout.getY());
-                                if (layout.getY() > startY) {
-                                    //lower
-                                    lowerCard(layout, height, darkener);
-                                } else if (layout.getY() < startY) {
-                                    //raise
-                                    raiseCard(layout);
-                                } else {
-                                    //TODO: Do list item actions
-                                    Log.i("CARDDEBUG", "Card item clicked!");
-//                                    cardAdapter.onClick(cardListView.);
-//                                    view.setVisibility(View.INVISIBLE);
-                                }
-                            }
-                            return false;
-                        }
-                    });
-
-                    cardListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                            Log.i("CARDDEBUG", "ITEM clicked!");
-                            final CardDataModel cardDataModel = cardDataModels.get(position);
-                            switch (cardDataModel.getTag()) {
-                                case 'p':
-                                    phoneNum_forCall = Uri.parse("tel:" + cardDataModel.getPhone().getNumber());
-                                        callPhone();
-                                    break;
-                                case 'e':
-                                    Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                                            "mailto",cardDataModel.getEmail().getEmail(), null));
-                                    startActivity(Intent.createChooser(emailIntent, "Send email..."));
-                                    break;
-                                case 's':
-                                    showNoticeDialog((String) cardName.getText(), cardDataModel.getSocial());
-                                    break;
-                            }
-
-                        }
-                    });
-
-                    layout.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View view, MotionEvent motionEvent) {
-                            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                                startY = layout.getY();
-                                Log.i("MOVEDEBUG", "STARTY " + startY);
-                                float motionY = motionEvent.getRawY();
-                                margin = motionY - startY;
-                            } else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
-
-                                float motionY = motionEvent.getRawY();
-
-                                float newY = motionY - margin;
-                                Log.i("MOVEDEBUG", "Moving to " + newY);
-                                layout.setVisibility(View.INVISIBLE);
-                                if (newY < 0)
-                                    newY = 0;
-                                layout.setY(newY);
-                                layout.setVisibility(View.VISIBLE);
-                            } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                                Log.i("MOVEDEBUG", "ACTION UP " + layout.getY());
-                                if (layout.getY() > startY) {
-                                    //lower
-                                    lowerCard(layout, height, darkener);
-                                } else {
-                                    //raise
-                                    raiseCard(layout);
-                                }
-                            }
-                            return false;
-                        }
-                    });
-
-                }
-
-                Log.i("CONTACTDEBUG", "Item clicked!");
-            }
-        });
-
-        frameLayout.addView(listView);
-
-
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.content, new ShowfriendsFragment());
+        ft.commit();
     }
 
-    float margin;
-    float startY;
-    Uri phoneNum_forCall;
 
-    private void callPhone() {
-        Intent intent = new Intent(Intent.ACTION_CALL);
-        intent.setData(phoneNum_forCall);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]{Manifest.permission.CALL_PHONE},
-                    MY_PERMISSIONS_REQUEST_PHONE);
-            return;
-        }
-        getApplicationContext().startActivity(intent);
-    }
-
-    public void lowerCard(RelativeLayout layout,int height, final ImageView darkener){
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", layout.getY(), height);
-        objectAnimator.setDuration(400);
-        objectAnimator.start();
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                darkener.setAlpha(0.0f);
-                darkener.setClickable(false);
-            }
-        }, 400);
-    }
-    public void raiseCard(RelativeLayout layout){
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", layout.getY(), 0);
-//                                    objectAnimator.setDuration(400);
-        objectAnimator.start();
-    }
 
 
     //from https://stackoverflow.com/questions/14371092/how-to-make-a-specific-text-on-textview-bold
@@ -814,42 +559,15 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 //        mScannerView.resumeCameraPreview(MainActivity.this);
     }
 
-    public void socialAdd(String uri) {
+    public static void socialAdd(String uri) {
         Intent i = new Intent(Intent.ACTION_VIEW,
                 Uri.parse(uri));
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);   //Makes it so that a single back-button press brings you back to our app
-        startActivityForResult(i, 1);
+//        this.startActivityForResult(i, 1);
+        //TODO
     }
 
-    private void saveContactsToDevice() {
 
-
-        for (int i = 0; i < adapter.checks.size(); i++) {
-            if (adapter.checks.get(i) == 1) {
-                DataModel model = adapter.getItem(i);
-
-                Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
-                // Sets the MIME type to match the Contacts Provider
-                intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
-
-                intent.putExtra(ContactsContract.Intents.Insert.NAME, model.getName());
-                for (Phone p : model.getPhones()) {
-                    intent.putExtra(ContactsContract.Intents.Insert.PHONE, Long.toString(p.getNumber()))
-                            .putExtra(ContactsContract.Intents.Insert.PHONE_TYPE, p.getType());
-                }
-
-                for (Email em : model.getEmails()) {
-                    intent.putExtra(ContactsContract.Intents.Insert.EMAIL, em.getEmail())
-                            .putExtra(ContactsContract.Intents.Insert.EMAIL_TYPE, em.getType());
-                }
-
-                startActivity(intent);
-            }
-        }
-        adapter.inEditmode = false;
-        adapter.notifyDataSetChanged();
-
-    }
 
     @Override
     public void onResume() {
@@ -875,6 +593,18 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         if (camera) {
             mScannerView.stopCamera();
         }
+    }
+
+    public void callPhone(Uri phoneNum_forCall) {
+        Intent intent = new Intent(Intent.ACTION_CALL);
+        intent.setData(phoneNum_forCall);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CALL_PHONE},
+                    MainActivity.MY_PERMISSIONS_REQUEST_PHONE);
+            return;
+        }
+        this.startActivity(intent);
     }
 
 
@@ -904,43 +634,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         }
 
     }
-    public void showNoticeDialog(String name, Social social) {
-            // Create an instance of the dialog fragment and show it
-            DialogFragment dialog = new CustomDialogFragment();
 
-            String type = social.getType();
-        String uri ="";
-        switch (type) {
-            case "Twitter":
-                uri = "https://twitter.com/intent/follow?user_id=" + social.getUsername();
-                break;
-            case "LinkedIn":
-                uri = "https://www.linkedin.com/profile/view?id=" + social.getUsername();
-                break;
-            case "Spotify":
-                uri = "spotify:user:" + social.getUsername();
-                break;
-            case "Facebook":
-                try {
-                    this.getPackageManager().getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
-                    uri = "fb://facewebmodal/f?href=" + "https://www.facebook.com/" + social.getUsername(); //Tries with FB's URI
-                } catch (Exception e) {
-                    uri = "https://www.facebook.com/" + social.getUsername(); //catches a url to the desired page
-                }
-                break;
-        }
-
-
-            Bundle args = new Bundle();
-            args.putString("dialog_title", "Would you like to add " + name + " on " + type + "?");
-            args.putString("name", name);
-            args.putString("uri", uri);
-            args.putString("action", "singleSocialAdd");
-
-            dialog.setArguments(args);
-            dialog.show(getFragmentManager(), "CustomDialogFragment");
-
-    }
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
@@ -962,39 +656,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 uri = mArgs.getString("uri");
                 Log.i("SOCIALDEBUG",uri);
                 socialAdd(uri);
-                break;
-            case "delete":
-                for (int i = 0; i < adapter.checks.size(); i++) {
-                    if (adapter.checks.get(i) == 1) {
-                        adapter.checks.remove(i);
-                        //TODO: remove from listview
-                        DataModel model = adapter.getItem(i);
-                        long contactId = model.getId();
-                        adapter.remove(model);
-                        Log.i("CONTACTDEBUG", "Removing item from list at position " + i);
-                        LocalDatabase db = new LocalDatabase(getApplicationContext());
-                        db.deleteContactById(contactId);
-
-                        adapter.inEditmode = false;
-                        adapter.notifyDataSetChanged();
-                        i--;
-                    }
-
-                }
-                hideAppbarButtons();
-                break;
-            case "saveContact":
-                if (ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.WRITE_CONTACTS)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(MainActivity.this,
-                            new String[]{Manifest.permission.WRITE_CONTACTS},
-                            MY_PERMISSIONS_REQUEST_CONTACTS);
-                } else {
-                    saveContactsToDevice();
-                }
-
-                hideAppbarButtons();
                 break;
         }
     }
@@ -1041,7 +702,9 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    saveContactsToDevice();
+
+
+//                    saveContactsToDevice();//TODO
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -1053,7 +716,10 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    callPhone();
+
+
+//                    callPhone();
+                    //TODO
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
