@@ -273,8 +273,6 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 //        Log.i("FacebookLogin", "Facebook id: " + facebook_id);
 
 
-
-
         Button nextButton = findViewById(R.id.next_button);
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override

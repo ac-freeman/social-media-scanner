@@ -29,7 +29,6 @@ import com.acfreeman.socialmediascanner.db.Email;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Phone;
-import com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -314,6 +313,7 @@ public class RegistrationInformation extends AppCompatActivity {
                     ////
 
                     if(!error) {
+<<<<<<< Updated upstream
                         for (EditText p : PhoneList) {
                             //matcher= Pattern.compile(validPhone).matcher(p.getText().toString());
                             number = p.getText().toString();
@@ -330,6 +330,9 @@ public class RegistrationInformation extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Email stored as: " + email.getEmail(), Toast.LENGTH_SHORT).show();
                         }
                         Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
+=======
+                        Intent startIntent = new Intent(getApplicationContext(), GoogleLoginActivity.class);
+>>>>>>> Stashed changes
                         startActivity(startIntent);
                     }
 
