@@ -313,7 +313,6 @@ public class RegistrationInformation extends AppCompatActivity {
                     ////
 
                     if(!error) {
-<<<<<<< Updated upstream
                         for (EditText p : PhoneList) {
                             //matcher= Pattern.compile(validPhone).matcher(p.getText().toString());
                             number = p.getText().toString();
@@ -329,10 +328,8 @@ public class RegistrationInformation extends AppCompatActivity {
                             database.addEmail(email);
                             Toast.makeText(getApplicationContext(), "Email stored as: " + email.getEmail(), Toast.LENGTH_SHORT).show();
                         }
-                        Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
-=======
+
                         Intent startIntent = new Intent(getApplicationContext(), GoogleLoginActivity.class);
->>>>>>> Stashed changes
                         startActivity(startIntent);
                     }
 
