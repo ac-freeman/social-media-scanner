@@ -294,10 +294,6 @@ public class RegistrationInformation extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Phone number is not valid!", Toast.LENGTH_SHORT).show();
                             p.setError("Enter a vaild phone number!");
                             error = true;
-                        }else {
-                            Phone phone = new Phone(owner.getId(), Long.parseLong(numFormated), "Cell");
-                            database.addPhone(phone);
-                            Toast.makeText(getApplicationContext(), "Phone number stored as: " + numFormated, Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -313,14 +309,26 @@ public class RegistrationInformation extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(),"Email address is not valid!",Toast.LENGTH_LONG).show();
                             e.setError("Enter valid email address!");
                             error = true;
-                        } else {
-                            Email email = new Email((long)owner.getId(), e.getText().toString(), "Work");
-                            database.addEmail(email);
                         }
                     }
                     ////
 
                     if(!error) {
+                        for (EditText p : PhoneList) {
+                            //matcher= Pattern.compile(validPhone).matcher(p.getText().toString());
+                            number = p.getText().toString();
+                            numFormated = number.replaceAll("[^0-9]", "");
+                            Phone phone = new Phone(owner.getId(), Long.parseLong(numFormated), "Cell");
+                            database.addPhone(phone);
+                            Toast.makeText(getApplicationContext(), "Phone number stored as: " + numFormated, Toast.LENGTH_SHORT).show();
+                        }
+
+                        for (EditText e : EmailList) {
+                            matcher = Pattern.compile(validEmail).matcher(e.getText().toString());
+                            Email email = new Email((long) owner.getId(), e.getText().toString(), "Work");
+                            database.addEmail(email);
+                            Toast.makeText(getApplicationContext(), "Email stored as: " + email.getEmail(), Toast.LENGTH_SHORT).show();
+                        }
                         Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
                         startActivity(startIntent);
                     }
