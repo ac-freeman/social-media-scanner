@@ -3,11 +3,12 @@ package com.acfreeman.socialmediascanner;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -31,15 +32,10 @@ import android.text.style.StyleSpan;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.Display;
-import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -54,23 +50,15 @@ import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Phone;
 import com.acfreeman.socialmediascanner.db.Social;
-import com.acfreeman.socialmediascanner.showcode.ShowcodeAdapter;
-import com.acfreeman.socialmediascanner.showcode.SwitchModel;
+import com.acfreeman.socialmediascanner.showcode.ShowcodeFragment;
 import com.acfreeman.socialmediascanner.showfriends.CardDataModel;
 import com.acfreeman.socialmediascanner.showfriends.ContactCardAdapter;
 import com.acfreeman.socialmediascanner.showfriends.ContactsAdapter;
 import com.acfreeman.socialmediascanner.showfriends.DataModel;
 import com.acfreeman.socialmediascanner.social.SocialAdder;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.Result;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
-import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.twitter.sdk.android.core.Twitter;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -238,124 +226,16 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
      * Generating and displaying QR code
      * Uses ZXing
      */
-    ArrayList<SwitchModel> switchModels = new ArrayList<>();
-    private static ShowcodeAdapter showcodeAdapter;
 
-    ListView codeListView;
     Boolean showCode;
 
     private void showCode() {
         showCode = true;
-        QRCodeWriter writer = new QRCodeWriter();
-        final FrameLayout frameLayout = findViewById(R.id.content);
-        RelativeLayout relativeLayout = new RelativeLayout(this);
-        mImageView = new ImageView(this);
-        mImageView.setId(1);
-
-        RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        params1.addRule(RelativeLayout.BELOW, mImageView.getId());
-        params1.addRule(RelativeLayout.CENTER_IN_PARENT);
-
-
-        Display display = getWindowManager().getDefaultDisplay();
-        int width = display.getWidth() * 3 / 4;
-        RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(width, width);
-        params2.addRule(RelativeLayout.CENTER_IN_PARENT);
-        params2.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-
-        switchModels = new ArrayList<>();
-        codeListView = new ListView(this);
-
-
-        switchModels.add(new SwitchModel("Phone number(s)", "ph", R.drawable.ic_phone_black_24dp));
-        switchModels.add(new SwitchModel("Email address(es)", "em", R.drawable.ic_email_black_24dp));
-
-        List socials = new ArrayList();
-        LocalDatabase db = new LocalDatabase(getApplicationContext());
-        List<Owner> owner = db.getAllOwner();
-        ArrayList<Social> sociallist = db.getUserSocials(owner.get(0).getId());
-        for (Social s : sociallist) {
-            switchModels.add(new SwitchModel(s.getType(), s.getUsername()));
-        }
-
-
-        showcodeAdapter = new ShowcodeAdapter(switchModels, getApplicationContext());
-        codeListView.setAdapter(showcodeAdapter);
-
-
-        codeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                SwitchModel switchModel = switchModels.get(position);
-                Log.i("SWITCHDEBUG", "Something clicked");
-                switchModel.getSwitcher().toggle();
-                switchModel.toggleState();
-                Log.i("SWITCHDEBUG", "Switch toggled to " + switchModel.getState());
-                generateCode(frameLayout, switchModels);
-            }
-        });
-
-        relativeLayout.addView(mImageView, params2);
-        relativeLayout.addView(codeListView, params1);
-        frameLayout.addView(relativeLayout);
-
-        generateCode(frameLayout, switchModels);
-    }
-
-
-    public void generateCode(FrameLayout frameLayout, ArrayList<SwitchModel> switchSet) {
-
-        try {
-            int width = frameLayout.getWidth();
-            int height = frameLayout.getHeight();
-            MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-            StringBuilder builder = new StringBuilder();
-            builder.append("|");
-
-            // personal information
-            LocalDatabase database = new LocalDatabase(this);
-            Owner owner = database.getOwner(0);
-            String ownerName = owner.getName();
-            ArrayList<Phone> ownerPhones = database.getUserPhones(owner.getId());
-            ArrayList<Email> ownerEmails = database.getUserEmails(owner.getId());
-
-            builder.append(ownerName + "|");
-            for (SwitchModel sw : switchSet) {
-                Log.i("SWITCHERDEBUG", sw.getSwitchName() + ", " + sw.getState());
-                if (sw.getState()) {
-                    switch (sw.getTag()) {
-                        case "ph":
-
-                            for (Phone p : ownerPhones) {
-                                builder.append("ph" + "|" + p.getNumber() + "|" + p.getType() + "|");
-                            }
-                            break;
-                        case "em":
-                            for (Email e : ownerEmails) {
-                                builder.append("em" + "|" + e.getEmail() + "|" + e.getType() + "|");
-                            }
-                            break;
-                        default:
-                            builder.append(sw.getTag() + "|" + sw.getUser_id() + "|");
-                            break;
-
-                    }
-                }
-            }
-
-            String encodeStr = builder.toString();
-
-            BitMatrix bitMatrix = multiFormatWriter.encode(encodeStr, BarcodeFormat.QR_CODE, width, width);
-
-            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-            Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
-
-            mImageView.setImageBitmap(bitmap);
-
-        } catch (WriterException e) {
-            e.printStackTrace();
-        }
+        // get fragment manager
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.content, new ShowcodeFragment());
+        ft.commit();
     }
 
     /**
