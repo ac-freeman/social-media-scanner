@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,13 +19,16 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
@@ -50,7 +55,12 @@ import com.acfreeman.socialmediascanner.social.SocialAdder;
 import com.google.zxing.Result;
 import com.twitter.sdk.android.core.Twitter;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -176,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             switch (item.getItemId()) {
                 case R.id.navigation_show:
                     if (!showCode) {
-                        frameLayout.removeAllViews();
+//                        frameLayout.removeAllViews();
                         if (camera) {
                             camera = false;
                             mScannerView.stopCamera();
@@ -187,10 +197,12 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     return true;
 
                 case R.id.navigation_friends:
-                    frameLayout.removeAllViews();
+//                    frameLayout.removeAllViews();
                     if (camera) {
                         camera = false;
                         mScannerView.stopCamera();
+                        frameLayout.removeAllViews();
+
                     }
                     showCode = false;
                     showFriends();
@@ -199,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     return true;
 
                 case R.id.navigation_camera:
-                    frameLayout.removeAllViews();
+//                    frameLayout.removeAllViews();
                     camera = true;
                     handleScan = true;
                     showCode = false;
@@ -540,14 +552,88 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
             }
 
-            BottomNavigationView bottomNavigationView;
-            bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
-            bottomNavigationView.setSelectedItemId(R.id.navigation_friends);
-            showNoticeDialog(userName);
 
+            showCameraPreview(contact);
+
+            //////////////////////////////
+//            BottomNavigationView bottomNavigationView;
+//            bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
+//            bottomNavigationView.setSelectedItemId(R.id.navigation_friends);
+
+//            showNoticeDialog(userName);
+/////////////////////////////////////////
         }
-//        mScannerView.resumeCameraPreview(MainActivity.this);
     }
+
+    static final int REQUEST_TAKE_PHOTO = 1111;
+    static final int REQUEST_IMAGE_CAPTURE = 1112;
+    private Contact currentContact;
+
+    public void showCameraPreview(Contact contact){
+        mScannerView.stopCamera();
+
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                currentContact = contact;
+
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.acfreeman.socialmediascanner.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                List res = new ArrayList();
+//                LocalDatabase db = new LocalDatabase(getApplicationContext());
+//
+//                Bitmap image = BitmapFactory.decodeFile(mCurrentPhotoPath);
+//
+//// convert bitmap to byte
+//
+//                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//
+//                image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+//
+//                byte imageInByte[] = stream.toByteArray();
+//                contact.setImage(imageInByte);
+//                db.updateImage(contact);
+            }
+        }
+//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+//            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+//        }
+    }
+
+    String mCurrentPhotoPath;
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+
+
 
     public void socialAdd(String uri) {
         Intent i = new Intent(Intent.ACTION_VIEW,
@@ -781,6 +867,52 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             PAINT.setTextAlign(Paint.Align.CENTER);
             canvas.drawText(TEXT, tradeMarkCenter, tradeMarkTop, PAINT);
 
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+//            Bundle extras = data.getExtras();
+//            Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+            LocalDatabase db = new LocalDatabase(getApplicationContext());
+
+            Bitmap image = BitmapFactory.decodeFile(mCurrentPhotoPath);
+
+// convert bitmap to byte
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+            image.compress(Bitmap.CompressFormat.JPEG, 10, stream);     //TODO: improve
+
+            byte imageInByte[] = stream.toByteArray();
+            currentContact.setImage(imageInByte);
+            db.updateImage(currentContact);
+
+            BottomNavigationView bottomNavigationView;
+            bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
+            bottomNavigationView.setSelectedItemId(R.id.navigation_friends);
+
+            showNoticeDialog(currentContact.getName());
+
+//            mImageView.setImageBitmap(imageBitmap);
+        }
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            LocalDatabase db = new LocalDatabase(getApplicationContext());
+
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+            currentContact.setBitmap(imageBitmap);
+            db.updateImage(currentContact);
+
+            BottomNavigationView bottomNavigationView;
+            bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
+            bottomNavigationView.setSelectedItemId(R.id.navigation_friends);
+
+            showNoticeDialog(currentContact.getName());
+
+//            mImageView.setImageBitmap(imageBitmap);
         }
     }
 }

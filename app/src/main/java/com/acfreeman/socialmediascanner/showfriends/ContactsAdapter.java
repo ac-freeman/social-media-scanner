@@ -1,6 +1,8 @@
 package com.acfreeman.socialmediascanner.showfriends;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +13,12 @@ import android.widget.TextView;
 import android.widget.ArrayAdapter;
 
 import com.acfreeman.socialmediascanner.R;
+import com.acfreeman.socialmediascanner.db.LocalDatabase;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by Andrew on 10/13/2017.
@@ -28,6 +34,7 @@ public class ContactsAdapter extends ArrayAdapter<DataModel> implements View.OnC
         TextView txtName;
         ImageView info;
         CheckBox checkBox;
+        Bitmap bitmap;
     }
 
     public ContactsAdapter(ArrayList<DataModel> data, Context context) {
@@ -67,6 +74,7 @@ public class ContactsAdapter extends ArrayAdapter<DataModel> implements View.OnC
 
     private int lastPosition = -1;
     public Boolean inEditmode = false;
+
     public ArrayList<Integer> checks=new ArrayList<Integer>();
 
     @Override
@@ -89,6 +97,8 @@ public class ContactsAdapter extends ArrayAdapter<DataModel> implements View.OnC
             result=convertView;
         }
             viewHolder.info = (ImageView) result.findViewById(R.id.item_info);
+
+
             viewHolder.txtName = (TextView) result.findViewById(R.id.name);
             viewHolder.checkBox = (CheckBox) result.findViewById(R.id.checkbox);
 //            viewHolder.txtType = (TextView) convertView.findViewById(R.id.type);
@@ -126,9 +136,37 @@ public class ContactsAdapter extends ArrayAdapter<DataModel> implements View.OnC
 //        result.startAnimation(animation);
         lastPosition = position;
 
+//        if(bitmap != null) {
+//            viewHolder.info.setImageBitmap(bitmap);
+//        }
+
         viewHolder.txtName.setText(dataModel.getName());
         viewHolder.info.setTag(position);
+
+
+        LocalDatabase db = new LocalDatabase(getApplicationContext());
+
+        byte[] outImage=db.getUserImage(dataModel.getId());
+//        Bitmap outImage=dataModel.getBitmap();
+        if(outImage != null) {
+            ByteArrayInputStream imageStream = new ByteArrayInputStream(outImage);
+
+            Bitmap theImage = BitmapFactory.decodeStream(imageStream);
+
+            viewHolder.info.setImageBitmap(theImage);
+            viewHolder.info.getLayoutParams().width = 125;
+            viewHolder.info.getLayoutParams().height = 125;
+            viewHolder.info.requestLayout();
+
+            Log.i("IMAGEDEBUG","Setting image for contact " + dataModel.getName());
+        }
+        //            viewHolder.info.setImageBitmap();
+
+
         // Return the completed view to render on screen
         return convertView;
     }
+
+
+
 }

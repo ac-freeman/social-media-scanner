@@ -283,7 +283,6 @@ public class RegistrationInformation extends AppCompatActivity {
 
 
                     for (EditText p : PhoneList) {
-                        //matcher= Pattern.compile(validPhone).matcher(p.getText().toString());
                         number = p.getText().toString();
                         numFormated = number.replaceAll("[^0-9]", "");
                         if (p.getText().toString().trim().equals("")) {
@@ -302,7 +301,6 @@ public class RegistrationInformation extends AppCompatActivity {
                         Log.i("Email Debug", "Email address: " + e.getText().toString());
                         if (e.getText().toString().trim().equals("")) {
                             Toast.makeText(getApplicationContext(), "Email is required!", Toast.LENGTH_SHORT).show();
-                            //Toast.makeText(getApplicationContext(),"Enter valid email address",Toast.LENGTH_LONG).show();
                             e.setError("Email is required!");
                             error = true;
                         }else if(!matcher.matches()){
@@ -324,7 +322,7 @@ public class RegistrationInformation extends AppCompatActivity {
                         }
 
                         for (EditText e : EmailList) {
-                            matcher = Pattern.compile(validEmail).matcher(e.getText().toString());
+
                             Email email = new Email((long) owner.getId(), e.getText().toString(), "Work");
                             database.addEmail(email);
                             Toast.makeText(getApplicationContext(), "Email stored as: " + email.getEmail(), Toast.LENGTH_SHORT).show();

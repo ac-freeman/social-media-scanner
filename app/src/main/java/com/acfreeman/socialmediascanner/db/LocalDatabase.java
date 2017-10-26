@@ -29,6 +29,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
     // Users Table Columns names
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
+    private static final String KEY_IMAGE = "image";
     private static final String KEY_EM_ADDR = "user_email_address";
     private static final String KEY_EM_TYPE = "email_type";
     private static final String KEY_PH_NUMBER = "phone_number";
@@ -53,7 +54,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
         db.execSQL(CREATE_OWNER_TABLE);
 
         String CREATE_CONTACTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_CONTACTS + "("
-                 + KEY_NAME + " TEXT" + ")";
+                + KEY_NAME + " TEXT," + KEY_IMAGE + " BLOB" + ")";
         db.execSQL(CREATE_CONTACTS_TABLE);
 
         String CREATE_PHONES_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_PHONES + "("
@@ -130,6 +131,8 @@ public class LocalDatabase extends SQLiteOpenHelper{
         ContentValues values = new ContentValues();
 //        values.put(KEY_ID, contact.getId()); // Owner ID
         values.put(KEY_NAME, contact.getName()); // Owner Name
+//        byte[] empty = new byte[0];
+//        values.put(KEY_IMAGE,empty);
 
 // Inserting Row
         db.insert(TABLE_CONTACTS, null, values);
@@ -147,6 +150,8 @@ public class LocalDatabase extends SQLiteOpenHelper{
         db.close(); // Closing database connection
 
     }
+
+
 
     public void deleteContactById(long id){
         SQLiteDatabase db = this.getReadableDatabase();
@@ -233,7 +238,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
             cursor.moveToFirst();
 
         Contact contactA = new Contact(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1));
+                cursor.getString(1), cursor.getBlob(2));
 // return user
         return contactA;
     }
@@ -374,6 +379,24 @@ public class LocalDatabase extends SQLiteOpenHelper{
     }
 //******************************************************************
 
+    public byte[] getUserImage(long id) {
+
+        String countQuery = "SELECT "+KEY_IMAGE+" FROM " + TABLE_CONTACTS +" WHERE " + "ROWID " + " = " + id;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+
+        Log.i("DATABASEDEBUG",String.valueOf(cursor.getCount()));
+
+        byte[] image;
+
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        image =  cursor.getBlob(0);
+
+        return image;
+    }
+
 
     public ArrayList<Email> getUserEmails(long id) {
 
@@ -492,6 +515,17 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
 
     //***************************************************************************************
+    public int updateImage(Contact contact){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+//        values.put(KEY_IMAGE, contact.getImage());
+        values.put(KEY_IMAGE, contact.getImage());
+
+// updating row
+        return db.update(TABLE_CONTACTS, values, "ROWID" + " = ?",
+                new String[]{String.valueOf(contact.getId())});
+    }
     // Updating a user
     public int updatePhones(Phone phone) {
         SQLiteDatabase db = this.getWritableDatabase();

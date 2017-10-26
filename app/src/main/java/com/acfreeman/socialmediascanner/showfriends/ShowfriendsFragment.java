@@ -87,7 +87,7 @@ public class ShowfriendsFragment extends Fragment{
             ArrayList<Phone> userphoneslist = db.getUserPhones(c.getId());
             ArrayList<Email> useremailslist = db.getUserEmails(c.getId());
             ArrayList<Social> sociallist = db.getUserSocials(c.getId());
-            dataModels.add(new DataModel(c.getName(), c.getId(), userphoneslist, useremailslist, sociallist));
+            dataModels.add(new DataModel(c.getName(), c.getId(), userphoneslist, useremailslist, sociallist, c.getImage()));
         }
 
         adapter = new ContactsAdapter(dataModels, getActivity());
