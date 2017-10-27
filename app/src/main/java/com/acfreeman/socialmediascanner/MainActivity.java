@@ -1,7 +1,6 @@
 package com.acfreeman.socialmediascanner;
 
 import android.Manifest;
-import android.animation.ObjectAnimator;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -18,7 +17,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
@@ -497,6 +495,14 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
 
                     //when adding a new social media platform, simply copy this format
+//                    case "go":
+//                        String google_id = rawArray[i + 1];
+//                        uri = "https://www.linkedin.com/profile/view?id=" + (google_id);
+//                        socialAdderArrayList.add(new SocialAdder(uri, "Google"));
+//                        Social googleSocial = new Social(contact.getId(), "Google", google_id);
+//                        database.addSocial(googleSocial);
+//                        break;
+
                     case "tw":
                         String twitter_id = rawArray[i + 1];
                         uri = "https://twitter.com/intent/follow?user_id=" + (twitter_id);
