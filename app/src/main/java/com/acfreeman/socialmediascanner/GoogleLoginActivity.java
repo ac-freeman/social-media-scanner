@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
@@ -25,6 +26,7 @@ import java.util.List;
 public class GoogleLoginActivity extends FragmentActivity {
 
     private int RC_SIGN_IN = 9001;
+    private boolean signed_in = false;
 
     public LocalDatabase database;
     public List<Owner> owners;
@@ -66,12 +68,17 @@ public class GoogleLoginActivity extends FragmentActivity {
             }
         });
 
-        Button nextButton = findViewById(R.id.nextButton);
+        final Button nextButton = findViewById(R.id.nextButton);
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
-                startActivity(startIntent);
+                if(!signed_in) {
+                    nextButton.setError("Login to Google");
+                    Toast.makeText(getApplicationContext(), "Must sign in to Google account to proceed", Toast.LENGTH_LONG);
+                } else {
+                    Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
+                    startActivity(startIntent);
+                }
             }
         });
 
@@ -94,6 +101,7 @@ public class GoogleLoginActivity extends FragmentActivity {
                 database.addSocial(google);
                 //////////////////////////////
 
+                signed_in = true;
                 //Toast.makeText(GoogleLoginActivity.this, "Google_id: " + database.getSocialCount(), Toast.LENGTH_LONG).show();
             } else {
                 Log.e("CCCCCCCCCCCCCCC", "Could not login");
