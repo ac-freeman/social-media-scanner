@@ -1,11 +1,13 @@
 package com.acfreeman.socialmediascanner.showfriends;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import com.acfreeman.socialmediascanner.db.Email;
 import com.acfreeman.socialmediascanner.db.Phone;
 import com.acfreeman.socialmediascanner.db.Social;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 
 /**
@@ -32,6 +34,11 @@ public class DataModel {
         this.emails=emails;
         this.socials=socials;
         this.image = image;
+        if(image != null){
+            ByteArrayInputStream imageStream = new ByteArrayInputStream(image);
+
+            this.bitmap = BitmapFactory.decodeStream(imageStream);
+        }
 //        this.bitmap=bitmap;
     }
 

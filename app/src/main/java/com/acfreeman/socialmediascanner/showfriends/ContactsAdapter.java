@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.ArrayAdapter;
 
 import com.acfreeman.socialmediascanner.R;
+import com.acfreeman.socialmediascanner.db.Contact;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 
 import java.io.ByteArrayInputStream;
@@ -82,7 +83,7 @@ public class ContactsAdapter extends ArrayAdapter<DataModel> implements View.OnC
         // Get the data item for this position
         DataModel dataModel = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
-        ViewHolder viewHolder; // view lookup cache stored in tag
+        ContactsAdapter.ViewHolder viewHolder; // view lookup cache stored in tag
 
         final View result;
 
@@ -141,25 +142,28 @@ public class ContactsAdapter extends ArrayAdapter<DataModel> implements View.OnC
 //        }
 
         viewHolder.txtName.setText(dataModel.getName());
-        viewHolder.info.setTag(position);
+//        viewHolder.info.setTag(position);
 
 
-        LocalDatabase db = new LocalDatabase(getApplicationContext());
+//        LocalDatabase db = new LocalDatabase(getApplicationContext());
 
-        byte[] outImage=db.getUserImage(dataModel.getId());
-//        Bitmap outImage=dataModel.getBitmap();
+
+
+        Bitmap outImage=dataModel.getBitmap();
         if(outImage != null) {
-            ByteArrayInputStream imageStream = new ByteArrayInputStream(outImage);
 
-            Bitmap theImage = BitmapFactory.decodeStream(imageStream);
 
-            viewHolder.info.setImageBitmap(theImage);
-            viewHolder.info.getLayoutParams().width = 125;
-            viewHolder.info.getLayoutParams().height = 125;
-            viewHolder.info.requestLayout();
+            viewHolder.info.setImageBitmap(outImage);
+
+//            viewHolder.info.requestLayout();
 
             Log.i("IMAGEDEBUG","Setting image for contact " + dataModel.getName());
+        } else {
+            viewHolder.info.setImageResource(R.drawable.icons8_user);
+
         }
+        viewHolder.info.getLayoutParams().width = 100;
+        viewHolder.info.getLayoutParams().height = 100;
         //            viewHolder.info.setImageBitmap();
 
 

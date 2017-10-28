@@ -345,6 +345,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
                 Contact contact = new Contact();
                 contact.setId(Long.parseLong(cursor.getString(0)));
                 contact.setName(cursor.getString(1));
+                contact.setImage(cursor.getBlob(2));
 // Adding contact to list
                 contactList.add(contact);
             } while (cursor.moveToNext());
