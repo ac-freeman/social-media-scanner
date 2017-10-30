@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.util.Log;
 import android.util.TypedValue;
@@ -43,7 +44,6 @@ public class RegistrationInformation extends AppCompatActivity {
    // private Button  addEmailBtn;
     //FrameLayout frameLayout = findViewById(R.id.content);
     //mTextMessage = new TextView(this);
-
 
     private int width;
     private int height;
@@ -109,7 +109,6 @@ public class RegistrationInformation extends AppCompatActivity {
         Display display = getWindowManager().getDefaultDisplay(); Point size = new Point(); display.getSize(size); width = size.x; height = size.y;
         final int textWidth = width/2;
 
-
         final EditText nameEditText = new EditText(this);
         nameEditText.setHint("Name");
         nameEditText.setWidth(textWidth);
@@ -123,6 +122,7 @@ public class RegistrationInformation extends AppCompatActivity {
         phoneEditText.setInputType(InputType.TYPE_CLASS_PHONE);
         phoneEditText.setWidth(textWidth);
         phoneEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+        phoneEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(16)});
 
         final ImageButton plusPhone = new ImageButton(this);
 //        final Button plusPhone = new Button(this);
@@ -146,7 +146,6 @@ public class RegistrationInformation extends AppCompatActivity {
         EditText emailEditText = new EditText(this);
         emailEditText.setHint("Email");
         emailEditText.setWidth(textWidth);
-
 //        final Button plusEmail = new Button(this);
 //        plusEmail.setText("+");
         final ImageButton plusEmail = new ImageButton(this);
@@ -168,8 +167,8 @@ public class RegistrationInformation extends AppCompatActivity {
         submitRow.addView(submitButton);
         table.addView(submitRow);
 
-
         plusPhone.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View view) {
                 if(plusPhoneCnt<2) {
@@ -192,14 +191,12 @@ public class RegistrationInformation extends AppCompatActivity {
 //                        }
 //                    });
 
-
                     EditText phoneEditText = new EditText(getApplicationContext());
                     phoneEditText.setHint("Phone");
                     phoneEditText.setInputType(InputType.TYPE_CLASS_PHONE);
+                    phoneEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+                    phoneEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(16)});
                     phoneEditText.setWidth(textWidth);
-
-
-
 
                     TableRow newPhoneRow = new TableRow(getApplicationContext());
                     newPhoneRow.addView(phoneEditText);
@@ -244,7 +241,8 @@ public class RegistrationInformation extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 boolean error = false;
-                Matcher matcher;
+                Matcher matcher1;
+                Matcher matcher2;
                 String number;
                 String numFormated;
                 String validEmail = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
@@ -262,11 +260,7 @@ public class RegistrationInformation extends AppCompatActivity {
                         ")+";
 
                  String validPhone = "^\\(?([0-9]{3})\\)?[-.\\s]?([0-9]{3})[-.\\s]?([0-9]{4})$";
-//                String validPhone = "\\+(9[976]\\d|8[987530]\\d|6[987]\\d|5[90]\\d|42\\d|3[875]\\d|\n" +
-//                        "2[98654321]\\d|9[8543210]|8[6421]|6[6543210]|5[87654321]|\n" +
-//                        "4[987654310]|3[9643210]|2[70]|7|1)\n" +
-//                        "\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*(\\d{1,2})$";
-                //String validPhone = "^\\+(?:[0-9] ?){6,14}[0-9]$";
+                 String validInterPhone = "^\\+(?:[0-9] ?){6,14}[0-9]$";
 
                 if (nameEditText.getText().toString().trim().equals("")) {
                     Toast.makeText(getApplicationContext(), "Name is required!", Toast.LENGTH_SHORT).show();
@@ -279,20 +273,23 @@ public class RegistrationInformation extends AppCompatActivity {
                     Owner owner = new Owner(0, nameEditText.getText().toString());
                     database.addOwner(owner);
 
-
                     for (EditText p : PhoneList) {
-                        //matcher= Pattern.compile(validPhone).matcher(p.getText().toString());
+                        matcher1= Pattern.compile(validPhone).matcher(p.getText().toString());
+                        matcher2 = Pattern.compile(validInterPhone).matcher(p.getText().toString());
                         number = p.getText().toString();
                         numFormated = number.replaceAll("[^0-9]", "");
                         if (p.getText().toString().trim().equals("")) {
                             Toast.makeText(getApplicationContext(), "Phone number is required!", Toast.LENGTH_SHORT).show();
                             p.setError("Phone number is required!");
                             error = true;
-                        } else if(numFormated.length() < 7 || numFormated.length() > 11){
+                        } else if(numFormated.length() < 7 || numFormated.length() > 7 && !matcher1.matches() && !matcher2.matches()){
                             Toast.makeText(getApplicationContext(), "Phone number is not valid!", Toast.LENGTH_SHORT).show();
-                            p.setError("Enter a vaild phone number!");
-                            error = true;
-                        }else {
+                            if (numFormated.length() > 10){
+                                p.setError("For International Numbers Use (+). US Country Code Not Needed.");
+                            }
+                            else {p.setError("Enter a vaild phone number!");}
+                            error = true;}
+                        else {
                             Phone phone = new Phone(owner.getId(), Long.parseLong(numFormated), "Cell");
                             database.addPhone(phone);
                             Toast.makeText(getApplicationContext(), "Phone number stored as: " + numFormated, Toast.LENGTH_SHORT).show();
@@ -300,14 +297,14 @@ public class RegistrationInformation extends AppCompatActivity {
                     }
 
                     for (EditText e : EmailList) {
-                        matcher= Pattern.compile(validEmail).matcher(e.getText().toString());
+                        matcher1= Pattern.compile(validEmail).matcher(e.getText().toString());
                         Log.i("Email Debug", "Email address: " + e.getText().toString());
                         if (e.getText().toString().trim().equals("")) {
                             Toast.makeText(getApplicationContext(), "Email is required!", Toast.LENGTH_SHORT).show();
                             //Toast.makeText(getApplicationContext(),"Enter valid email address",Toast.LENGTH_LONG).show();
                             e.setError("Email is required!");
                             error = true;
-                        }else if(!matcher.matches()){
+                        }else if(!matcher1.matches()){
                             Toast.makeText(getApplicationContext(),"Email address is not valid!",Toast.LENGTH_LONG).show();
                             e.setError("Enter valid email address!");
                             error = true;
@@ -322,7 +319,6 @@ public class RegistrationInformation extends AppCompatActivity {
                         Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
                         startActivity(startIntent);
                     }
-
 
             }
         });
@@ -352,5 +348,4 @@ public class RegistrationInformation extends AppCompatActivity {
         param.addRule(RelativeLayout.RIGHT_OF, edit.getId());
         return button;
     }
-
 }
