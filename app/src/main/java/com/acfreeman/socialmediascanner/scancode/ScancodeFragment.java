@@ -67,8 +67,7 @@ import static android.app.Activity.RESULT_OK;
  * Created by Andrew on 10/27/2017.
  */
 
-public class ScancodeFragment extends Fragment implements ZXingScannerView.ResultHandler{
-
+public class ScancodeFragment extends Fragment implements ZXingScannerView.ResultHandler {
 
 
     private static ImageView mImageView;
@@ -93,7 +92,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
             }
         };
 
-                scannerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+        scannerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
         frameLayout.addView(scannerView);
 //
@@ -105,20 +104,22 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
         return view;
     }
 
-    private boolean isDialogShowing(){
-        for(DialogFragment d : dialogsList){
-            if(d.isVisible()){
+    private boolean isDialogShowing() {
+        for (DialogFragment d : dialogsList) {
+            if (d.isVisible()) {
                 return false;
             }
         }
         return true;
     }
+
     private boolean wait = true;
     public ArrayList<SocialAdder> socialAdderArrayList = new ArrayList<>();
+
     @Override
     public void handleResult(Result rawResult) {
 //        handleScan = isDialogShowing();
-        Log.i("SCANDEBUG","handlescan: " + handleScan);
+        Log.i("SCANDEBUG", "handlescan: " + handleScan);
         if (handleScan) {    //if screen is not blocked by our dialog fragments
             handleScan = false;
 //            Toast.makeText(this, "Contents = " + rawResult.getText() +
@@ -225,11 +226,11 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
     }
 
 
-
     private Contact currentContact;
     static final int REQUEST_TAKE_PHOTO = 1111;
     static final int REQUEST_IMAGE_CAPTURE = 1112;
-    public void showCameraPreview(Contact contact){
+
+    public void showCameraPreview(Contact contact) {
         scannerView.stopCamera();
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -278,8 +279,8 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
     private File createImageFile() throws IOException {
         // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
+//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + "lastcontactscan";
         File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
@@ -351,8 +352,8 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
     @Override
     public void onResume() {
         super.onResume();
-            scannerView.setResultHandler(this);
-            scannerView.startCamera();
+        scannerView.setResultHandler(this);
+        scannerView.startCamera();
 
 
     }
@@ -361,7 +362,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
     public void onPause() {
         super.onPause();
 
-            scannerView.stopCamera();
+        scannerView.stopCamera();
 
     }
 
@@ -369,7 +370,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
     public void onDestroy() {
         super.onDestroy();
 
-            scannerView.stopCamera();
+        scannerView.stopCamera();
 
     }
 
@@ -384,12 +385,27 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
             Bitmap image = BitmapFactory.decodeFile(mCurrentPhotoPath);
 
+            int width = image.getWidth();
+            int height = image.getHeight();
+
+            Bitmap resizedBitmap;
+            if (width < height) {
+                resizedBitmap = Bitmap.createBitmap(image, 0, (height - width) / 2, width, width);
+            } else {
+                resizedBitmap = Bitmap.createBitmap(image, (width - height) / 2, 0, height, height);
+            }
+
 // convert bitmap to byte
 
+            Bitmap resizedBitmap2 = Bitmap.createScaledBitmap(resizedBitmap, 100, 100, true);
+
+//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+//            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 5, stream);     //TODO: improve
+
+//            byte imageInByte[] = stream.toByteArray();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-            image.compress(Bitmap.CompressFormat.JPEG, 5, stream);     //TODO: improve
-
+            resizedBitmap2.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             byte imageInByte[] = stream.toByteArray();
             currentContact.setImage(imageInByte);
             db.updateImage(currentContact);
@@ -407,8 +423,19 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
+            int width = imageBitmap.getWidth();
+            int height = imageBitmap.getHeight();
 
-            currentContact.setBitmap(imageBitmap);
+            Bitmap resizedBitmap;
+            if (width < height) {
+                resizedBitmap = Bitmap.createBitmap(imageBitmap, 0, (height - width) / 2, width, width);
+            } else {
+                resizedBitmap = Bitmap.createBitmap(imageBitmap, (width - height) / 2, 0, height, height);
+            }
+
+            Bitmap resizedBitmap2 = Bitmap.createScaledBitmap(resizedBitmap, 100, 100, true);
+
+            currentContact.setBitmap(resizedBitmap2);
             db.updateImage(currentContact);
 
 //            BottomNavigationView bottomNavigationView;
@@ -422,6 +449,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
     }
 
     ArrayList<DialogFragment> dialogsList = new ArrayList<>();
+
     public void showNoticeDialog(String name) {
         if (!socialAdderArrayList.isEmpty()) {
             handleScan = false;
