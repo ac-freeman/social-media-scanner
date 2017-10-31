@@ -433,7 +433,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
                 resizedBitmap = Bitmap.createBitmap(imageBitmap, (width - height) / 2, 0, height, height);
             }
 
-            Bitmap resizedBitmap2 = Bitmap.createScaledBitmap(resizedBitmap, 100, 100, true);
+            Bitmap resizedBitmap2 = Bitmap.createScaledBitmap(resizedBitmap, 200, 200, true);
 
             currentContact.setBitmap(resizedBitmap2);
             db.updateImage(currentContact);

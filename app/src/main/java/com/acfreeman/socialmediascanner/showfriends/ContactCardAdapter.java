@@ -69,18 +69,20 @@ private static class ViewHolder {
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.row_item_contact_card, parent, false);
+            viewHolder.image = (ImageView) convertView.findViewById(R.id.contact_card_item_image);
+            viewHolder.txtName = (TextView) convertView.findViewById(R.id.contact_card_item_text);
             result=convertView;
+            result.setTag(viewHolder);
         }
         else {
             viewHolder = (ContactCardAdapter.ViewHolder) convertView.getTag();
             result=convertView;
         }
-        viewHolder.image = (ImageView) result.findViewById(R.id.contact_card_item_image);
-        viewHolder.txtName = (TextView) result.findViewById(R.id.contact_card_item_text);
+
 //            viewHolder.txtType = (TextView) convertView.findViewById(R.id.type);
 //            Log.i("CONTACTDEBUG", "In edit mode? " + inEditmode);
 
-        result.setTag(viewHolder);
+
 
 
 

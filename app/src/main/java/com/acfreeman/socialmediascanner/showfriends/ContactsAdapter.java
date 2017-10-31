@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.db.Contact;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
+import com.acfreeman.socialmediascanner.scancode.ScancodeFragment;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -164,7 +165,7 @@ public class ContactsAdapter extends ArrayAdapter<DataModel> implements View.OnC
 //                    v.progress.setVisibility(View.GONE);
                     v.info.setVisibility(View.VISIBLE);
                     if(result != null)
-                        v.info.setImageBitmap(result);
+                        v.info.setImageBitmap(ShowfriendsFragment.getCircularBitmapWithWhiteBorder(result));
                     else
                         v.info.setImageResource(R.drawable.icons8_user);
                 }
