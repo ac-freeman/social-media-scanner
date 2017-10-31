@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "568862052526",
+    "project_id": "social-media-scanner"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:568862052526:android:baafac70c496da9c",
+        "android_client_info": {
+          "package_name": "com.acfreeman.socialmediascanner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "568862052526-enqdb2bq4dh65978bq7qa8oa7gt2bspc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.acfreeman.socialmediascanner",
+            "certificate_hash": "fdb94385f824296f308c5e2034822521f51d751f"
+          }
+        },
+        {
+          "client_id": "568862052526-a0ggd47gqhqklm533teq8e82giml0ots.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPWF3e1oAgQKU6DDP_5xmLFmHGKSwsmUo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

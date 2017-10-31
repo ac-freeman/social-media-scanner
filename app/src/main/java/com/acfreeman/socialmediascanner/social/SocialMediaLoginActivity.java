@@ -28,7 +28,6 @@ import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphRequestAsyncTask;
 import com.facebook.GraphResponse;
-import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.linkedin.platform.APIHelper;
@@ -50,8 +49,6 @@ import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
-import com.facebook.FacebookSdk;
-
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -366,7 +363,6 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 
             //linkedin
             LISessionManager.getInstance(getApplicationContext()).onActivityResult(this, requestCode, resultCode, data);
-
 
         }
 

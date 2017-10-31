@@ -15,6 +15,7 @@
     <string name="com.twitter.sdk.android.CONSUMER_SECRET">iVgdEPz5LHSRLSljjS9RdHsKgAoxVLiVnnteQqR2dcehsteG7F</string>
     <string name="facebook_app_id">140267453275422</string>
     <string name="fb_login_protocol_scheme">fb140267453275422</string>
+    <string name="title_save_contact">Save contacts to device</string>
 
 
 </resources>

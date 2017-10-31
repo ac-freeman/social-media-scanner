@@ -30,7 +30,6 @@ import com.acfreeman.socialmediascanner.db.Email;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Phone;
-import com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -197,6 +196,7 @@ public class RegistrationInformation extends AppCompatActivity {
                     phoneEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
                     phoneEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(16)});
                     phoneEditText.setWidth(textWidth);
+                    PhoneList.add(phoneEditText);
 
                     TableRow newPhoneRow = new TableRow(getApplicationContext());
                     newPhoneRow.addView(phoneEditText);
@@ -224,6 +224,7 @@ public class RegistrationInformation extends AppCompatActivity {
                     EditText emailEditText = new EditText(getApplicationContext());
                     emailEditText.setHint("Email");
                     emailEditText.setWidth(textWidth);
+                    EmailList.add(emailEditText);
 
 
                     TableRow newEmailRow = new TableRow(getApplicationContext());
@@ -274,16 +275,19 @@ public class RegistrationInformation extends AppCompatActivity {
                     database.addOwner(owner);
 
                     for (EditText p : PhoneList) {
+
                         matcher1= Pattern.compile(validPhone).matcher(p.getText().toString());
                         matcher2 = Pattern.compile(validInterPhone).matcher(p.getText().toString());
+
                         number = p.getText().toString();
                         numFormated = number.replaceAll("[^0-9]", "");
                         if (p.getText().toString().trim().equals("")) {
-                            Toast.makeText(getApplicationContext(), "Phone number is required!", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getApplicationContext(), "Phone number is required!", Toast.LENGTH_SHORT).show();
                             p.setError("Phone number is required!");
                             error = true;
                         } else if(numFormated.length() < 7 || numFormated.length() > 7 && !matcher1.matches() && !matcher2.matches()){
                             Toast.makeText(getApplicationContext(), "Phone number is not valid!", Toast.LENGTH_SHORT).show();
+
                             if (numFormated.length() > 10){
                                 p.setError("For International Numbers Use (+). US Country Code Not Needed.");
                             }
@@ -293,6 +297,7 @@ public class RegistrationInformation extends AppCompatActivity {
                             Phone phone = new Phone(owner.getId(), Long.parseLong(numFormated), "Cell");
                             database.addPhone(phone);
                             Toast.makeText(getApplicationContext(), "Phone number stored as: " + numFormated, Toast.LENGTH_SHORT).show();
+                          
                         }
                     }
 
@@ -301,22 +306,36 @@ public class RegistrationInformation extends AppCompatActivity {
                         Log.i("Email Debug", "Email address: " + e.getText().toString());
                         if (e.getText().toString().trim().equals("")) {
                             Toast.makeText(getApplicationContext(), "Email is required!", Toast.LENGTH_SHORT).show();
-                            //Toast.makeText(getApplicationContext(),"Enter valid email address",Toast.LENGTH_LONG).show();
                             e.setError("Email is required!");
                             error = true;
                         }else if(!matcher1.matches()){
                             Toast.makeText(getApplicationContext(),"Email address is not valid!",Toast.LENGTH_LONG).show();
                             e.setError("Enter valid email address!");
                             error = true;
-                        } else {
-                            Email email = new Email((long)owner.getId(), e.getText().toString(), "Work");
-                            database.addEmail(email);
                         }
                     }
                     ////
 
                     if(!error) {
-                        Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
+                        for (EditText p : PhoneList) {
+                            //matcher= Pattern.compile(validPhone).matcher(p.getText().toString());
+                            number = p.getText().toString();
+                            numFormated = number.replaceAll("[^0-9]", "");
+                            Phone phone = new Phone(owner.getId(), Long.parseLong(numFormated), "Cell");
+                            database.addPhone(phone);
+                            Toast.makeText(getApplicationContext(), "Phone number stored as: " + numFormated, Toast.LENGTH_SHORT).show();
+                        }
+
+                        for (EditText e : EmailList) {
+
+                            Email email = new Email((long) owner.getId(), e.getText().toString(), "Work");
+                            database.addEmail(email);
+                            Toast.makeText(getApplicationContext(), "Email stored as: " + email.getEmail(), Toast.LENGTH_SHORT).show();
+                        }
+
+
+                        Intent startIntent = new Intent(getApplicationContext(), GoogleLoginActivity.class);
+
                         startActivity(startIntent);
                     }
 
