@@ -164,7 +164,8 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 //                        frameLayout.removeAllViews();
                         if (camera) {
                             camera = false;
-                            mScannerView.stopCamera();
+                            if (mScannerView != null)
+                                mScannerView.stopCamera();
                         }
                         showCode();
                         hideAppbarButtons();
@@ -311,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
         contact = new Contact("Andrew Freeman");
         db.addContact(contact);
-        db.addPhone(new Phone(contact.getId(),2142186153,"Cell"));
+        db.addPhone(new Phone(contact.getId(), 2142186153, "Cell"));
         db.addEmail(new Email(contact.getId(), "afreema4@samford.edu", "Work"));
         db.addSocial(new Social(contact.getId(), "Twitter", "392381109"));
         db.addSocial(new Social(contact.getId(), "LinkedIn", "AAoAAA4bE1IBoMdCU1I23EQvkTgYE_ggW3s39SY&authType=name&authToken=qTgI&trk=api*a4550044*s4612704*"));
@@ -440,7 +441,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                 socialAdd(uri);
 
                 fragment = ((ScancodeFragment) getFragmentManager().findFragmentByTag("scancodefragment"));
-                if(fragment.socialAdderArrayList.isEmpty()){
+                if (fragment.socialAdderArrayList.isEmpty()) {
                     fragment.handleScan = true;
                 }
 
@@ -448,7 +449,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                 break;
             case "singleSocialAdd":
                 uri = mArgs.getString("uri");
-               Log.i("SOCIALDEBUG",uri);
+                Log.i("SOCIALDEBUG", uri);
                 socialAdd(uri);
                 break;
             case "delete":
@@ -478,11 +479,18 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         Bundle mArgs = dialog.getArguments();
         String name = mArgs.getString("name");
         String action = mArgs.getString("action");
+        ScancodeFragment fragment;
         switch (action) {
+            case "photoCapture":
+                fragment = ((ScancodeFragment) getFragmentManager().findFragmentByTag("scancodefragment"));
+                fragment.scannerView.startCamera();
+                fragment.handleScan = false;
+                fragment.showSocialAddDialog(name);
+                break;
             case "socialAdd":
 //                showNoticeDialog(name);
-                ScancodeFragment fragment = ((ScancodeFragment) getFragmentManager().findFragmentByTag("scancodefragment"));
-                if(fragment.socialAdderArrayList.isEmpty()){
+                fragment = ((ScancodeFragment) getFragmentManager().findFragmentByTag("scancodefragment"));
+                if (fragment.socialAdderArrayList.isEmpty()) {
                     fragment.handleScan = true;
                 }
                 break;

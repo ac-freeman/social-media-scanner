@@ -71,7 +71,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
 
     private static ImageView mImageView;
-    me.dm7.barcodescanner.zxing.ZXingScannerView scannerView;
+    public me.dm7.barcodescanner.zxing.ZXingScannerView scannerView;
 
 
     public boolean handleScan = true;
@@ -467,6 +467,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
             Bundle args = new Bundle();
             args.putString("dialog_title", "Would you like to take a photo of " + contact.getName() + "?");
+            args.putString("name", contact.getName());
             args.putString("action", "photoCapture");
             currentContact = contact;
 
