@@ -207,8 +207,8 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
             }
 
-
-            showCameraPreview(contact);
+            showCameraRequestDialog(contact);
+//            showCameraPreview(contact);
 
             //////////////////////////////
 //            BottomNavigationView bottomNavigationView;
@@ -230,7 +230,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
     static final int REQUEST_TAKE_PHOTO = 1111;
     static final int REQUEST_IMAGE_CAPTURE = 1112;
 
-    public void showCameraPreview(Contact contact) {
+    public void showCameraPreview() {
         scannerView.stopCamera();
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -246,7 +246,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                currentContact = contact;
+
 
                 Uri photoURI = FileProvider.getUriForFile(getActivity(),
                         "com.acfreeman.socialmediascanner.fileprovider",
@@ -423,7 +423,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 //            bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
 //            bottomNavigationView.setSelectedItemId(R.id.navigation_friends);
 
-            showNoticeDialog(currentContact.getName());
+            showSocialAddDialog(currentContact.getName());
 
 //            mImageView.setImageBitmap(imageBitmap);
         }
@@ -451,7 +451,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 //            bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
 //            bottomNavigationView.setSelectedItemId(R.id.navigation_friends);
 
-            showNoticeDialog(currentContact.getName());
+            showSocialAddDialog(currentContact.getName());
 
 //            mImageView.setImageBitmap(imageBitmap);
         }
@@ -459,7 +459,25 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
     ArrayList<DialogFragment> dialogsList = new ArrayList<>();
 
-    public void showNoticeDialog(String name) {
+    public void showCameraRequestDialog(Contact contact) {
+            handleScan = false;
+            // Create an instance of the dialog fragment and show it
+            DialogFragment dialog = new CustomDialogFragment();
+            dialogsList.add(dialog);
+
+            Bundle args = new Bundle();
+            args.putString("dialog_title", "Would you like to take a photo of " + contact.getName() + "?");
+            args.putString("action", "photoCapture");
+            currentContact = contact;
+
+
+
+            dialog.setArguments(args);
+            dialog.show(getFragmentManager(), "CustomDialogFragment");
+    }
+
+
+    public void showSocialAddDialog(String name) {
         if (!socialAdderArrayList.isEmpty()) {
             handleScan = false;
             // Create an instance of the dialog fragment and show it
@@ -481,7 +499,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
             dialog.show(getFragmentManager(), "CustomDialogFragment");
 
             socialAdderArrayList.remove(0);
-            showNoticeDialog(name);
+            showSocialAddDialog(name);
         }
         if (socialAdderArrayList.isEmpty()) {
 

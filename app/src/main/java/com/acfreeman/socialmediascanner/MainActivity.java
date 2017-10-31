@@ -428,12 +428,18 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         String name = mArgs.getString("name");
         String action = mArgs.getString("action");
         String uri;
+        ScancodeFragment fragment;
         switch (action) {
+            case "photoCapture":
+                fragment = ((ScancodeFragment) getFragmentManager().findFragmentByTag("scancodefragment"));
+                fragment.showCameraPreview();
+
+                break;
             case "socialAdd":
                 uri = mArgs.getString("uri");
                 socialAdd(uri);
 
-                ScancodeFragment fragment = ((ScancodeFragment) getFragmentManager().findFragmentByTag("scancodefragment"));
+                fragment = ((ScancodeFragment) getFragmentManager().findFragmentByTag("scancodefragment"));
                 if(fragment.socialAdderArrayList.isEmpty()){
                     fragment.handleScan = true;
                 }
@@ -485,6 +491,8 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
             case "delete":
                 break;
             case "saveContact":
+                break;
+            default:
                 break;
         }
 

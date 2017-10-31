@@ -179,7 +179,7 @@ public class ShowfriendsFragment extends Fragment{
                     darkener.setAlpha(0.6f);
                     darkener.setClickable(true);
 
-                    ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", height, 500);
+                    ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", height, 350);
                     objectAnimator.setDuration(400);
                     objectAnimator.start();
 
@@ -187,7 +187,7 @@ public class ShowfriendsFragment extends Fragment{
                     darkener.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", 500, height);
+                            ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(layout, "TranslationY", 350, height);
                             objectAnimator.setDuration(400);
                             objectAnimator.start();
                             darkener.setAlpha(0.0f);
