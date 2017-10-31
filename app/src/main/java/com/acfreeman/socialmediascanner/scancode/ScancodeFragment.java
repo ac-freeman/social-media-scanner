@@ -397,7 +397,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
 // convert bitmap to byte
 
-            Bitmap resizedBitmap2 = Bitmap.createScaledBitmap(resizedBitmap, 100, 100, true);
+            Bitmap resizedBitmap2 = Bitmap.createScaledBitmap(resizedBitmap, 500, 500, true);
 
 //            ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
@@ -405,10 +405,19 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
 //            byte imageInByte[] = stream.toByteArray();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            resizedBitmap2.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            resizedBitmap2.compress(Bitmap.CompressFormat.JPEG, 20, stream);
             byte imageInByte[] = stream.toByteArray();
             currentContact.setImage(imageInByte);
             db.updateImage(currentContact);
+
+            File fdelete = new File(mCurrentPhotoPath);
+            if (fdelete.exists()) {
+                if (fdelete.delete()) {
+                    Log.e("-->", "file Deleted :" + mCurrentPhotoPath);
+                } else {
+                    Log.e("-->", "file not Deleted :" + mCurrentPhotoPath);
+                }
+            }
 
 //            BottomNavigationView bottomNavigationView;
 //            bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
@@ -433,7 +442,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
                 resizedBitmap = Bitmap.createBitmap(imageBitmap, (width - height) / 2, 0, height, height);
             }
 
-            Bitmap resizedBitmap2 = Bitmap.createScaledBitmap(resizedBitmap, 200, 200, true);
+            Bitmap resizedBitmap2 = Bitmap.createScaledBitmap(resizedBitmap, 500, 500, true);
 
             currentContact.setBitmap(resizedBitmap2);
             db.updateImage(currentContact);
