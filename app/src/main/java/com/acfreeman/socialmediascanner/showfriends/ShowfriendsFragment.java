@@ -7,6 +7,12 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Shader;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -57,7 +63,6 @@ public class ShowfriendsFragment extends Fragment{
     ListView cardListView;
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -87,7 +92,7 @@ public class ShowfriendsFragment extends Fragment{
             ArrayList<Phone> userphoneslist = db.getUserPhones(c.getId());
             ArrayList<Email> useremailslist = db.getUserEmails(c.getId());
             ArrayList<Social> sociallist = db.getUserSocials(c.getId());
-            dataModels.add(new DataModel(c.getName(), c.getId(), userphoneslist, useremailslist, sociallist));
+            dataModels.add(new DataModel(c.getName(), c.getId(), userphoneslist, useremailslist, sociallist, c.getImage()));
         }
 
         adapter = new ContactsAdapter(dataModels, getActivity());
@@ -133,7 +138,20 @@ public class ShowfriendsFragment extends Fragment{
                     });
                 } else {
                     final RelativeLayout layout = view.findViewById(R.id.activity_contact_card);
+                    final ImageView cardImage = view.findViewById(R.id.activity_contact_card_userimage);
                     final TextView cardName = view.findViewById(R.id.activity_contact_card_name);
+
+                    Bitmap bm = dataModel.getBitmap();
+                    if(bm != null) {
+                        cardImage.setImageBitmap(getCircularBitmapWithWhiteBorder(bm));
+                    } else {
+                        cardImage.setImageResource(R.drawable.icons8_user);
+                    }
+
+
+
+
+
                     cardName.setText(dataModel.getName());
 
 
@@ -407,6 +425,26 @@ public class ShowfriendsFragment extends Fragment{
         this.startActivity(intent);
     }
 
+    /*
+    From https://stackoverflow.com/questions/21871833/making-an-image-circular-with-white-circular-border
+     */
+    public static Bitmap getCircularBitmapWithWhiteBorder(Bitmap bitmap) {
+        if (bitmap == null || bitmap.isRecycled()) {
+            return null;
+        }
 
+        final int width = bitmap.getWidth();
+        final int height = bitmap.getHeight();
 
+        Bitmap canvasBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setShader(shader);
+
+        Canvas canvas = new Canvas(canvasBitmap);
+        float radius = width > height ? ((float) height) / 2f : ((float) width) / 2f;
+        canvas.drawCircle(width / 2, height / 2, radius, paint);
+        return canvasBitmap;
+    }
 }

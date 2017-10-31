@@ -4,14 +4,9 @@ import android.Manifest;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
@@ -26,14 +21,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.style.StyleSpan;
-import android.util.AttributeSet;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.acfreeman.socialmediascanner.db.Contact;
@@ -42,34 +34,29 @@ import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Phone;
 import com.acfreeman.socialmediascanner.db.Social;
+import com.acfreeman.socialmediascanner.scancode.ScancodeFragment;
 import com.acfreeman.socialmediascanner.showcode.ShowcodeFragment;
 import com.acfreeman.socialmediascanner.showfriends.ShowfriendsFragment;
-import com.acfreeman.socialmediascanner.social.SocialAdder;
-import com.google.zxing.Result;
 import com.twitter.sdk.android.core.Twitter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import me.dm7.barcodescanner.core.IViewFinder;
-import me.dm7.barcodescanner.core.ViewFinderView;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
-public class MainActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler, CustomDialogFragment.NoticeDialogListener {
+public class MainActivity extends AppCompatActivity implements CustomDialogFragment.NoticeDialogListener {
 
     private TextView mTextMessage;
-    private static ImageView mImageView;
     private ZXingScannerView mScannerView;
     private boolean camera;
-    public boolean handleScan;
+
     private static Toolbar myToolbar;
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
     public static final int MY_PERMISSIONS_REQUEST_CONTACTS = 2;
     public static final int MY_PERMISSIONS_REQUEST_PHONE = 3;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    SharedPreferences mPrefs;
     public static final String firstMainActivityPref = "firstMainActivity";
     Boolean firstMainActivity;
     ShowfriendsFragment showfriendsFragment = new ShowfriendsFragment();
@@ -174,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             switch (item.getItemId()) {
                 case R.id.navigation_show:
                     if (!showCode) {
-                        frameLayout.removeAllViews();
+//                        frameLayout.removeAllViews();
                         if (camera) {
                             camera = false;
                             mScannerView.stopCamera();
@@ -185,10 +172,12 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     return true;
 
                 case R.id.navigation_friends:
-                    frameLayout.removeAllViews();
+//                    frameLayout.removeAllViews();
                     if (camera) {
                         camera = false;
-                        mScannerView.stopCamera();
+//                        mScannerView.stopCamera();
+//                        frameLayout.removeAllViews();
+
                     }
                     showCode = false;
                     showFriends();
@@ -197,9 +186,9 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                     return true;
 
                 case R.id.navigation_camera:
-                    frameLayout.removeAllViews();
+//                    frameLayout.removeAllViews();
                     camera = true;
-                    handleScan = true;
+
                     showCode = false;
                     scanCode();
                     hideAppbarButtons();
@@ -264,26 +253,12 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             }
         }
 
-
-        FrameLayout frameLayout = findViewById(R.id.content);
-        mScannerView = new ZXingScannerView(this) {
-            @Override
-            protected IViewFinder createViewFinderView(Context context) {
-                return new CustomViewFinderView(context);
-            }
-        };
-        mScannerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
-        frameLayout.addView(mScannerView);
-
-
-        mScannerView.setResultHandler(this);
-        mScannerView.startCamera();
-
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.content, new ScancodeFragment(), "scancodefragment");
+        ft.commit();
 
     }
-
-
 
     private void showFriends() {
         SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -300,8 +275,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         ft.replace(R.id.content, showfriendsFragment);
         ft.commit();
     }
-
-
 
 
     //from https://stackoverflow.com/questions/14371092/how-to-make-a-specific-text-on-textview-bold
@@ -439,189 +412,12 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     }
 
 
-    private boolean wait = true;
-    public ArrayList<SocialAdder> socialAdderArrayList = new ArrayList<>();
-
-    /**
-     * From https://github.com/dm77/barcodescanner
-     *
-     * @param rawResult the raw data contained by the scanned QR code
-     */
-    @Override
-    public void handleResult(Result rawResult) {
-
-
-        if (handleScan) {    //if screen is not blocked by our dialog fragments
-            handleScan = false;
-//            Toast.makeText(this, "Contents = " + rawResult.getText() +
-//                    ", Format = " + rawResult.getBarcodeFormat().toString(), Toast.LENGTH_SHORT).show();
-
-            String raw = rawResult.getText();
-            String[] rawArray = raw.split("\\|");   //pipe character must be escaped in regex
-
-            LocalDatabase database = new LocalDatabase(getApplicationContext());
-            List<Contact> allContacts = database.getAllContacts();
-
-            String t = rawArray[1];
-            String userName = t;
-//            Toast.makeText(this, "Name: " + userName, Toast.LENGTH_SHORT).show();
-            Contact contact = new Contact(userName);
-            database.addContact(contact);
-
-            for (int i = 2; i < rawArray.length; i++) {
-
-                t = rawArray[i];
-                String uri;
-
-
-                switch (t) {
-
-                    case "ph":
-                        String phoneNumber = rawArray[i + 1];
-//                        Toast.makeText(this, "Phone: " + phoneNumber, Toast.LENGTH_SHORT).show();
-                        String typePhone = rawArray[i + 2];
-                        Log.i("PHONEDEBUG", "Contact id: " + contact.getId());
-                        Phone phone = new Phone(contact.getId(), Integer.parseInt(phoneNumber), typePhone);
-                        database.addPhone(phone);
-                        break;
-
-                    case "em":
-                        String emailStr = rawArray[i + 1];
-//                        Toast.makeText(this, "Email: " + emailStr, Toast.LENGTH_SHORT).show();
-                        String typeEmail = rawArray[i + 2];
-                        Email email = new Email(contact.getId(), emailStr, typeEmail);
-                        database.addEmail(email);
-                        break;
-
-
-                    //when adding a new social media platform, simply copy this format
-//                    case "go":
-//                        String google_id = rawArray[i + 1];
-//                        uri = "https://www.linkedin.com/profile/view?id=" + (google_id);
-//                        socialAdderArrayList.add(new SocialAdder(uri, "Google"));
-//                        Social googleSocial = new Social(contact.getId(), "Google", google_id);
-//                        database.addSocial(googleSocial);
-//                        break;
-
-                    case "tw":
-                        String twitter_id = rawArray[i + 1];
-                        uri = "https://twitter.com/intent/follow?user_id=" + (twitter_id);
-                        socialAdderArrayList.add(new SocialAdder(uri, "Twitter"));
-                        Social twitterSocial = new Social(contact.getId(), "Twitter", twitter_id);
-                        database.addSocial(twitterSocial);
-                        break;
-                    case "li":
-
-                        String linkedin_id = rawArray[i + 1];
-                        uri = "https://www.linkedin.com/profile/view?id=" + (linkedin_id);
-                        socialAdderArrayList.add(new SocialAdder(uri, "LinkedIn"));
-                        Social linkedinSocial = new Social(contact.getId(), "LinkedIn", linkedin_id);
-                        database.addSocial(linkedinSocial);
-                        break;
-
-                    case "sp":
-                        String spotify_id = rawArray[i + 1];
-                        uri = "spotify:user:" + spotify_id;
-                        socialAdderArrayList.add(new SocialAdder(uri, "Spotify"));
-                        Social spotifySocial = new Social(contact.getId(), "Spotify", spotify_id);
-                        database.addSocial(spotifySocial);
-                        break;
-
-                    case "fb":
-                        String facebook_id = rawArray[i + 1];
-
-                        try {
-                            this.getPackageManager().getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
-                            uri = "fb://facewebmodal/f?href=" + "https://www.facebook.com/" + facebook_id; //Tries with FB's URI
-                        } catch (Exception e) {
-                            uri = "https://www.facebook.com/" + (facebook_id); //catches a url to the desired page
-                        }
-
-                        socialAdderArrayList.add(new SocialAdder(uri, "Facebook"));
-                        Social facebookSocial = new Social(contact.getId(), "Facebook", facebook_id);
-                        database.addSocial(facebookSocial);
-                        break;
-
-                }
-
-            }
-
-            BottomNavigationView bottomNavigationView;
-            bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
-            bottomNavigationView.setSelectedItemId(R.id.navigation_friends);
-            showNoticeDialog(userName);
-
-        }
-//        mScannerView.resumeCameraPreview(MainActivity.this);
-    }
-
     public void socialAdd(String uri) {
         Intent i = new Intent(Intent.ACTION_VIEW,
                 Uri.parse(uri));
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);   //Makes it so that a single back-button press brings you back to our app
         this.startActivityForResult(i, 1);
     }
-
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (camera) {
-            mScannerView.setResultHandler(this);
-            mScannerView.startCamera();
-        }
-
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (camera) {
-            mScannerView.stopCamera();
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (camera) {
-            mScannerView.stopCamera();
-        }
-    }
-
-
-
-
-    public void showNoticeDialog(String name) {
-        if (!socialAdderArrayList.isEmpty()) {
-            // Create an instance of the dialog fragment and show it
-            DialogFragment dialog = new CustomDialogFragment();
-
-
-            SocialAdder currentSocial = socialAdderArrayList.get(0);
-            String type = currentSocial.getType();
-            String uri = currentSocial.getUri();
-
-            Bundle args = new Bundle();
-            args.putString("dialog_title", "Would you like to add " + name + " on " + type + "?");
-            args.putString("name", name);
-            args.putString("uri", uri);
-            args.putString("action", "socialAdd");
-
-            dialog.setArguments(args);
-            dialog.show(getFragmentManager(), "CustomDialogFragment");
-
-            socialAdderArrayList.remove(0);
-        }
-        if (socialAdderArrayList.isEmpty()) {
-            handleScan = true;
-        }
-
-    }
-
-
-
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
@@ -637,7 +433,12 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
                 uri = mArgs.getString("uri");
                 socialAdd(uri);
 
-                showNoticeDialog(name);
+                ScancodeFragment fragment = ((ScancodeFragment) getFragmentManager().findFragmentByTag("scancodefragment"));
+                if(fragment.socialAdderArrayList.isEmpty()){
+                    fragment.handleScan = true;
+                }
+
+//                showNoticeDialog(name);
                 break;
             case "singleSocialAdd":
                 uri = mArgs.getString("uri");
@@ -673,7 +474,11 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         String action = mArgs.getString("action");
         switch (action) {
             case "socialAdd":
-                showNoticeDialog(name);
+//                showNoticeDialog(name);
+                ScancodeFragment fragment = ((ScancodeFragment) getFragmentManager().findFragmentByTag("scancodefragment"));
+                if(fragment.socialAdderArrayList.isEmpty()){
+                    fragment.handleScan = true;
+                }
                 break;
             case "singleSocialAdd":
                 break;
@@ -735,58 +540,9 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-    /**
-     * From https://github.com/dm77/barcodescanner
-     */
-    private static class CustomViewFinderView extends ViewFinderView {
-
-
-        public static final String TEXT = "Align code in box";
-        public static final int TRADE_MARK_TEXT_SIZE_SP = 20;
-        public final Paint PAINT = new Paint();
-
-
-        public CustomViewFinderView(Context context) {
-            super(context);
-            init();
-        }
-
-        public CustomViewFinderView(Context context, AttributeSet attrs) {
-            super(context, attrs);
-            init();
-        }
-
-        private void init() {
-            PAINT.setColor(Color.WHITE);
-            PAINT.setAntiAlias(true);
-            float textPixelSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
-                    TRADE_MARK_TEXT_SIZE_SP, getResources().getDisplayMetrics());
-            PAINT.setTextSize(textPixelSize);
-
-            setSquareViewFinder(true);
-        }
-
-        @Override
-        public void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-            drawTradeMark(canvas);
-        }
-
-        private void drawTradeMark(Canvas canvas) {
-            Rect framingRect = getFramingRect();
-            float tradeMarkTop;
-            float tradeMarkCenter;
-            if (framingRect != null) {
-                tradeMarkTop = framingRect.top - PAINT.getTextSize() - 10;
-                tradeMarkCenter = framingRect.centerX();
-            } else {
-                tradeMarkTop = 10;
-                tradeMarkCenter = canvas.getWidth() / 2;
-            }
-            PAINT.setTextAlign(Paint.Align.CENTER);
-            canvas.drawText(TEXT, tradeMarkCenter, tradeMarkTop, PAINT);
-
-        }
     }
 }
