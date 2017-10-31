@@ -29,7 +29,6 @@ import com.acfreeman.socialmediascanner.db.Email;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Phone;
-import com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -286,7 +285,7 @@ public class RegistrationInformation extends AppCompatActivity {
                         number = p.getText().toString();
                         numFormated = number.replaceAll("[^0-9]", "");
                         if (p.getText().toString().trim().equals("")) {
-                            Toast.makeText(getApplicationContext(), "Phone number is required!", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getApplicationContext(), "Phone number is required!", Toast.LENGTH_SHORT).show();
                             p.setError("Phone number is required!");
                             error = true;
                         } else if(numFormated.length() < 7 || numFormated.length() > 11){
@@ -327,7 +326,10 @@ public class RegistrationInformation extends AppCompatActivity {
                             database.addEmail(email);
                             Toast.makeText(getApplicationContext(), "Email stored as: " + email.getEmail(), Toast.LENGTH_SHORT).show();
                         }
-                        Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
+
+
+                        Intent startIntent = new Intent(getApplicationContext(), GoogleLoginActivity.class);
+
                         startActivity(startIntent);
                     }
 

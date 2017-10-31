@@ -411,6 +411,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
     }
 
+
     public void socialAdd(String uri) {
         Intent i = new Intent(Intent.ACTION_VIEW,
                 Uri.parse(uri));
