@@ -270,9 +270,6 @@ public class RegistrationInformation extends AppCompatActivity {
                 }
 
                 ////
-                    LocalDatabase database = new LocalDatabase(getApplicationContext());
-                    Owner owner = new Owner(0, nameEditText.getText().toString());
-                    database.addOwner(owner);
 
                     for (EditText p : PhoneList) {
 
@@ -294,9 +291,9 @@ public class RegistrationInformation extends AppCompatActivity {
                             else {p.setError("Enter a vaild phone number!");}
                             error = true;}
                         else {
-                            Phone phone = new Phone(owner.getId(), Long.parseLong(numFormated), "Cell");
-                            database.addPhone(phone);
-                            Toast.makeText(getApplicationContext(), "Phone number stored as: " + numFormated, Toast.LENGTH_SHORT).show();
+//                            Phone phone = new Phone(owner.getId(), Long.parseLong(numFormated), "Cell");
+//                            database.addPhone(phone);
+//                            Toast.makeText(getApplicationContext(), "Phone number stored as: " + numFormated, Toast.LENGTH_SHORT).show();
                           
                         }
                     }
@@ -317,6 +314,11 @@ public class RegistrationInformation extends AppCompatActivity {
                     ////
 
                     if(!error) {
+                        LocalDatabase database = new LocalDatabase(getApplicationContext());
+                        Owner owner = new Owner(0, nameEditText.getText().toString());
+                        database.addOwner(owner);
+
+
                         for (EditText p : PhoneList) {
                             //matcher= Pattern.compile(validPhone).matcher(p.getText().toString());
                             number = p.getText().toString();
