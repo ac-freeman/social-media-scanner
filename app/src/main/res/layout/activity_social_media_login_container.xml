@@ -47,7 +47,8 @@
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
-                    android:layout_margin="20dp"/>
+                    android:layout_margin="20dp"
+                    android:src="@drawable/ic_arrow_forward_white_24dp"/>
             </RelativeLayout>
         </FrameLayout>
 

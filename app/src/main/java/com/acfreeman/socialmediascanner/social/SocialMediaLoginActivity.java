@@ -1,72 +1,26 @@
 package com.acfreeman.socialmediascanner.social;
 
 import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.CustomDialogFragment;
-import com.acfreeman.socialmediascanner.MainActivity;
 import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
-import com.acfreeman.socialmediascanner.db.Social;
+import com.acfreeman.socialmediascanner.social.login.LinkedInFragment;
 import com.acfreeman.socialmediascanner.social.login.TwitterFragment;
-import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.GraphRequest;
-import com.facebook.GraphRequestAsyncTask;
-import com.facebook.GraphResponse;
-import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.linkedin.platform.APIHelper;
-import com.linkedin.platform.LISessionManager;
-import com.linkedin.platform.errors.LIApiError;
-import com.linkedin.platform.errors.LIAuthError;
-import com.linkedin.platform.listeners.ApiListener;
-import com.linkedin.platform.listeners.ApiResponse;
-import com.linkedin.platform.listeners.AuthListener;
-import com.linkedin.platform.utils.Scope;
-import com.spotify.sdk.android.authentication.AuthenticationClient;
-import com.spotify.sdk.android.authentication.AuthenticationRequest;
-import com.spotify.sdk.android.authentication.AuthenticationResponse;
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.Twitter;
-import com.twitter.sdk.android.core.TwitterAuthToken;
-import com.twitter.sdk.android.core.TwitterCore;
-import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
-
-import static android.view.MotionEvent.ACTION_BUTTON_PRESS;
 
 public class SocialMediaLoginActivity extends AppCompatActivity implements CustomDialogFragment.NoticeDialogListener {
 
@@ -97,7 +51,6 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
         owner = owners.get(0);
 
 
-
         setContentView(R.layout.activity_social_media_login_container);
 
         myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -110,9 +63,24 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
         ft.replace(R.id.content, twitterFragment);
         ft.commit();
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<android.support.v4.app.Fragment> allFragments = getSupportFragmentManager().getFragments();
+                for (android.support.v4.app.Fragment fragment : allFragments) {
+                    if (fragment instanceof TwitterFragment) {
+                        LinkedInFragment linkedinFragment = new LinkedInFragment();
 
-
-
+                        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+                        android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+                        ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+                        ft.replace(R.id.content, linkedinFragment);
+                        ft.commit();
+                    }
+                }
+            }
+        });
 
 
 //        loginButton = (TwitterLoginButton) findViewById(R.id.twitter_button);
@@ -302,7 +270,6 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
     }
 
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -398,11 +365,10 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
         DialogFragment dialog = new CustomDialogFragment();
 
 
-
         Bundle args = new Bundle();
         args.putString("dialog_title", "You must install the " + social_title + " app in order to login");
         args.putString("uri", uri);
-        args.putString("action","appInstall");
+        args.putString("action", "appInstall");
 
 
         dialog.setArguments(args);
@@ -421,7 +387,6 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
         startActivity(startIntent);
 
 
-
     }
 
     @Override
@@ -433,12 +398,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
     }
 
 
-    // Build the list of member permissions our LinkedIn session requires
-    private static Scope buildScope() {
-        return Scope.build(Scope.R_BASICPROFILE);
-    }
 }
-
 
 
 

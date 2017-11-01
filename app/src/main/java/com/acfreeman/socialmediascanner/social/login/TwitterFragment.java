@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.R;
@@ -55,7 +56,7 @@ public class TwitterFragment extends Fragment {
         owner = owners.get(0);
 
 
-        loginButton = (TwitterLoginButton) view.findViewById(R.id.twitter_button);
+        loginButton = new TwitterLoginButton(getContext());
         loginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
@@ -95,6 +96,15 @@ public class TwitterFragment extends Fragment {
 //                    showNoticeDialog("Twitter", "https://play.google.com/store/apps/details?id=com.twitter.android");     //TODO TODO
 
                 }
+            }
+        });
+
+
+        Button visibleButton = view.findViewById(R.id.twitter_button);
+        visibleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loginButton.performClick();
             }
         });
 
