@@ -12,25 +12,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Social;
 import com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity;
-import com.linkedin.platform.APIHelper;
-import com.linkedin.platform.LISessionManager;
-import com.linkedin.platform.errors.LIApiError;
-import com.linkedin.platform.errors.LIAuthError;
-import com.linkedin.platform.listeners.ApiListener;
-import com.linkedin.platform.listeners.ApiResponse;
-import com.linkedin.platform.listeners.AuthListener;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;

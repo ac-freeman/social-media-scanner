@@ -14,9 +14,11 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.acfreeman.socialmediascanner.CustomDialogFragment;
+import com.acfreeman.socialmediascanner.MainActivity;
 import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
+import com.acfreeman.socialmediascanner.social.login.FacebookFragment;
 import com.acfreeman.socialmediascanner.social.login.LinkedInFragment;
 import com.acfreeman.socialmediascanner.social.login.SpotifyFragment;
 import com.acfreeman.socialmediascanner.social.login.TwitterFragment;
@@ -35,7 +37,6 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
     private ImageView spotifyButton;
 
     CallbackManager callbackManager = CallbackManager.Factory.create();
-
 
 
     public LocalDatabase database;
@@ -79,7 +80,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
                         ft.replace(R.id.content, linkedinFragment);
                         ft.commit();
-                    } else if(fragment instanceof LinkedInFragment) {
+                    } else if (fragment instanceof LinkedInFragment) {
                         SpotifyFragment spotifyFragment = new SpotifyFragment();
 
                         android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
@@ -87,31 +88,23 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
                         ft.replace(R.id.content, spotifyFragment);
                         ft.commit();
+                    } else if (fragment instanceof SpotifyFragment) {
+                        FacebookFragment facebookFragment = new FacebookFragment();
+
+                        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+                        android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+                        ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+                        ft.replace(R.id.content, facebookFragment);
+                        ft.commit();
+                    } else {
+                        Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(startIntent);
                     }
                 }
             }
         });
 
 
-
-//
-//        spotifyButton = findViewById(R.id.spotify_button);
-//        spotifyButton.setBackgroundResource(R.drawable.spotify_login);
-//        spotifyButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                AuthenticationRequest.Builder builder =
-//                        new AuthenticationRequest.Builder(SPOTIFY_CLIENT_ID, AuthenticationResponse.Type.TOKEN, SPOTIFY_REDIRECT_URI);
-//
-//                builder.setScopes(new String[]{"user-follow-modify", "user-read-private"});
-//                AuthenticationRequest request = builder.build();
-//
-//                AuthenticationClient.openLoginActivity(SocialMediaLoginActivity.this, SPOTIFY_REQUEST_CODE, request);
-//
-//
-//
-//            }
-//        });
 //
 //
 //
@@ -173,8 +166,10 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
         for (android.support.v4.app.Fragment fragment : allFragments) {
             if (fragment instanceof TwitterFragment) {
                 ((TwitterFragment) fragment).onActivityResult(requestCode, resultCode, data);
-            } else if(fragment instanceof SpotifyFragment){
+            } else if (fragment instanceof SpotifyFragment) {
                 ((SpotifyFragment) fragment).onActivityResult(requestCode, resultCode, data);
+            } else if (fragment instanceof FacebookFragment) {
+                ((FacebookFragment) fragment).onActivityResult(requestCode, resultCode, data);
             }
         }
 
@@ -294,11 +289,11 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 
     }
 
-    public static int convertDpToPixel(float dp, Context context){
+    public static int convertDpToPixel(float dp, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
-        float px = dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-        return (int)px;
+        float px = dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return (int) px;
     }
 
 
