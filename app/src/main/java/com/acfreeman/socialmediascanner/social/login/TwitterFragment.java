@@ -6,11 +6,13 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.R;
@@ -29,7 +31,6 @@ import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import java.util.List;
 
-import static com.acfreeman.socialmediascanner.R.id.loginButton;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
@@ -48,12 +49,19 @@ public class TwitterFragment extends Fragment {
 
         Twitter.initialize(getActivity());
 
-        final View view = inflater.inflate(R.layout.fragment_login_twitter,
+        final View view = inflater.inflate(R.layout.fragment_login,
                 container, false);
 
         database = new LocalDatabase(getApplicationContext());
         owners = database.getAllOwner();
         owner = owners.get(0);
+
+        ImageView imageView = view.findViewById(R.id.imageView);
+        imageView.setImageResource(R.drawable.twitter_logo_white);
+        android.view.ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+        layoutParams.width = SocialMediaLoginActivity.convertDpToPixel(200, getContext());
+        layoutParams.height = SocialMediaLoginActivity.convertDpToPixel(200, getContext());
+        imageView.setLayoutParams(layoutParams);
 
 
         loginButton = new TwitterLoginButton(getContext());
@@ -100,7 +108,9 @@ public class TwitterFragment extends Fragment {
         });
 
 
-        Button visibleButton = view.findViewById(R.id.twitter_button);
+        Button visibleButton = view.findViewById(R.id.login_button);
+        visibleButton.setText("Sign in with Twitter");
+        visibleButton.setTextColor(ContextCompat.getColor(getContext(), R.color.twitter_blue));
         visibleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

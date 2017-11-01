@@ -1,17 +1,16 @@
 package com.acfreeman.socialmediascanner.social.login;
 
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.R;
@@ -27,14 +26,7 @@ import com.linkedin.platform.listeners.ApiListener;
 import com.linkedin.platform.listeners.ApiResponse;
 import com.linkedin.platform.listeners.AuthListener;
 import com.linkedin.platform.utils.Scope;
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.Twitter;
-import com.twitter.sdk.android.core.TwitterAuthToken;
-import com.twitter.sdk.android.core.TwitterCore;
-import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.TwitterSession;
-import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,14 +53,29 @@ public class LinkedInFragment extends Fragment {
                              Bundle savedInstanceState) {
 
 
-        final View view = inflater.inflate(R.layout.fragment_login_linkedin,
+        final View view = inflater.inflate(R.layout.fragment_login,
                 container, false);
 
         database = new LocalDatabase(getApplicationContext());
         owners = database.getAllOwner();
         owner = owners.get(0);
 
-        loginButton = (Button) view.findViewById(R.id.linkedin_button);
+        RelativeLayout background = view.findViewById(R.id.background);
+        background.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.linkedin_blue));
+
+        ImageView imageView = view.findViewById(R.id.imageView);
+        imageView.setImageResource(R.drawable.linkedin_title_white);
+        android.view.ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+        layoutParams.width = SocialMediaLoginActivity.convertDpToPixel(200, getContext());
+        layoutParams.height = SocialMediaLoginActivity.convertDpToPixel(50, getContext());
+        imageView.setLayoutParams(layoutParams);
+
+
+
+        loginButton = (Button) view.findViewById(R.id.login_button);
+        loginButton.setText("Sign in with LinkedIn");
+        loginButton.setTextColor(ContextCompat.getColor(getContext(), R.color.linkedin_blue));
+
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
