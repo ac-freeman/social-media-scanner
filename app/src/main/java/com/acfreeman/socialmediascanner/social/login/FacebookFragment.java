@@ -38,6 +38,7 @@ import com.linkedin.platform.listeners.AuthListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
@@ -97,10 +98,22 @@ public class FacebookFragment extends Fragment {
                     public void onCompleted(JSONObject user, GraphResponse graphResponse) {
                         String facebook_id = user.optString("id");
                         Log.d("facebook", user.optString("id"));
-                        /////add to database//////////
-                        Social facebook = new Social(owner.getId(),"fb", facebook_id);
-                        database.addSocial(facebook);
-                        //////////////////////////////
+
+
+                        boolean cont = true;
+                        ArrayList<Social> socials = database.getUserSocials(owner.getId());
+                        for(Social s: socials){
+                            if (s.getType().equals("fb")){
+                                cont = false;
+                            }
+                        }
+
+                        if(cont) {
+                            /////add to database//////////
+                            Social facebook = new Social(owner.getId(), "fb", facebook_id);
+                            database.addSocial(facebook);
+                            //////////////////////////////
+                        }
                     }
                 }).executeAsync();
 

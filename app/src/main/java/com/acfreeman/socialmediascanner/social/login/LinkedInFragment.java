@@ -31,6 +31,7 @@ import com.linkedin.platform.utils.Scope;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static android.view.MotionEvent.ACTION_BUTTON_PRESS;
@@ -102,10 +103,22 @@ public class LinkedInFragment extends Fragment {
 
                                     Log.i("LINKEDINDEBUG", li_id);
 
-                                    /////add to database//////////
-                                    Social linkedin = new Social(owner.getId(), "li", li_id);
-                                    database.addSocial(linkedin);
-                                    //////////////////////////////
+
+
+                                    boolean cont = true;
+                                    ArrayList<Social> socials = database.getUserSocials(owner.getId());
+                                    for(Social s: socials){
+                                        if (s.getType().equals("li")){
+                                            cont = false;
+                                        }
+                                    }
+
+                                    if(cont) {
+                                        /////add to database//////////
+                                        Social linkedin = new Social(owner.getId(), "li", li_id);
+                                        database.addSocial(linkedin);
+                                        //////////////////////////////
+                                    }
                                 } catch (JSONException e) {
                                     Toast.makeText(getApplicationContext(), "ERROR: Could not login to LinkedIn", Toast.LENGTH_LONG).show();
                                     e.printStackTrace();

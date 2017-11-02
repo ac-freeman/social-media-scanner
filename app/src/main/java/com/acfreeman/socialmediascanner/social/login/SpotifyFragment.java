@@ -28,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
@@ -131,10 +132,21 @@ public class SpotifyFragment extends Fragment {
 
                                 Log.e("SDKFJ", user_id);
 
-                                /////add to database//////////
-                                Social spotify = new Social(owner.getId(),"sp", user_id);
-                                database.addSocial(spotify);
-                                //////////////////////////////
+                                boolean cont = true;
+                                ArrayList<Social> socials = database.getUserSocials(owner.getId());
+                                for(Social s: socials){
+                                    if (s.getType().equals("sp")){
+                                        cont = false;
+                                    }
+                                }
+
+                                if(cont) {
+
+                                    /////add to database//////////
+                                    Social spotify = new Social(owner.getId(), "sp", user_id);
+                                    database.addSocial(spotify);
+                                    //////////////////////////////
+                                }
 
 
 

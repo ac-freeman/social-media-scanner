@@ -29,6 +29,7 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
@@ -75,10 +76,20 @@ public class TwitterFragment extends Fragment {
                 Log.i("TWITTERTEST","user_id: " +session.getUserId());
                 Log.i("TWITTERTEST","username: " +session.getUserName());
 
-                /////add to database//////////
-                Social twitter = new Social(owner.getId(),"tw",String.valueOf(session.getUserId()));
-                database.addSocial(twitter);
-                //////////////////////////////
+                boolean cont = true;
+                ArrayList<Social> socials = database.getUserSocials(owner.getId());
+                for(Social s: socials){
+                    if (s.getType().equals("tw")){
+                        cont = false;
+                    }
+                }
+
+                if(cont) {
+                    /////add to database//////////
+                    Social twitter = new Social(owner.getId(), "tw", String.valueOf(session.getUserId()));
+                    database.addSocial(twitter);
+                    //////////////////////////////
+                }
             }
 
             @Override
