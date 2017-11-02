@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.R;
@@ -57,11 +58,14 @@ public class TwitterFragment extends Fragment {
         owners = database.getAllOwner();
         owner = owners.get(0);
 
+        RelativeLayout background = view.findViewById(R.id.background);
+        background.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.twitter_blue));
+
         ImageView imageView = view.findViewById(R.id.imageView);
         imageView.setImageResource(R.drawable.twitter_logo_white);
         android.view.ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
-        layoutParams.width = SocialMediaLoginActivity.convertDpToPixel(200, getContext());
-        layoutParams.height = SocialMediaLoginActivity.convertDpToPixel(200, getContext());
+        layoutParams.width = SocialMediaLoginActivity.convertDpToPixel(125, getContext());
+        layoutParams.height = SocialMediaLoginActivity.convertDpToPixel(125, getContext());
         imageView.setLayoutParams(layoutParams);
 
 

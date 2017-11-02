@@ -1,14 +1,23 @@
-package com.acfreeman.socialmediascanner;
+package com.acfreeman.socialmediascanner.social.login;
 
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Social;
@@ -21,32 +30,53 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+
+import java.util.ArrayList;
 import java.util.List;
 
-public class GoogleLoginActivity extends FragmentActivity {
+import static com.facebook.FacebookSdk.getApplicationContext;
 
-    private int RC_SIGN_IN = 9001;
-    private boolean signed_in = false;
+/**
+ * Created by Andrew on 11/2/2017.
+ */
+
+
+
+public class GoogleFragment extends Fragment {
 
     public LocalDatabase database;
     public List<Owner> owners;
     public Owner owner;
+    private int RC_SIGN_IN = 9001;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_google_login);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        final View view = inflater.inflate(R.layout.fragment_login,
+                container, false);
 
         database = new LocalDatabase(getApplicationContext());
         owners = database.getAllOwner();
         owner = owners.get(0);
 
+        RelativeLayout background = view.findViewById(R.id.background);
+        background.setBackgroundColor(Color.WHITE);
+
+        ImageView imageView = view.findViewById(R.id.imageView);
+        imageView.setImageResource(R.drawable.google_title_color);
+        android.view.ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+        layoutParams.width = SocialMediaLoginActivity.convertDpToPixel(200, getContext());
+        layoutParams.height = SocialMediaLoginActivity.convertDpToPixel(68, getContext());
+        imageView.setLayoutParams(layoutParams);
+
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
 
-        final GoogleApiClient apiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, new GoogleApiClient.OnConnectionFailedListener() {
+        final GoogleApiClient apiClient = new GoogleApiClient.Builder(getContext())
+                .enableAutoManage(getActivity() /* FragmentActivity */, new GoogleApiClient.OnConnectionFailedListener() {
                     @Override
                     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
                         //handle if connection fails
@@ -56,37 +86,25 @@ public class GoogleLoginActivity extends FragmentActivity {
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
-        signInButton.setSize(SignInButton.SIZE_STANDARD);
 
-        signInButton.setOnClickListener(new View.OnClickListener() {
+        Button visibleButton = view.findViewById(R.id.login_button);
+        visibleButton.setText("Sign in with Google");
+        visibleButton.setTextColor(ContextCompat.getColor(getContext(), R.color.google_blue));
+        visibleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                signInButton.performClick();
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient);
                 startActivityForResult(signInIntent, RC_SIGN_IN);
-
             }
         });
 
-        final Button nextButton = findViewById(R.id.nextButton);
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!signed_in) {
-                    nextButton.setError("Login to Google");
-                    Toast.makeText(getApplicationContext(), "Must sign in to Google account to proceed", Toast.LENGTH_LONG);
-                } else {
-                    Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
-                    startActivity(startIntent);
-                }
-            }
-        });
-
+        return view;
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode,resultCode,data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
@@ -95,13 +113,14 @@ public class GoogleLoginActivity extends FragmentActivity {
                 GoogleSignInAccount acct = result.getSignInAccount();
                 String googleId = acct.getId();
                 //String id2 = acct.getIdToken();
+                Log.i("GOOGLE", googleId);
 
                 /////add to database//////////
                 Social google = new Social(owner.getId(),"go",googleId);
                 database.addSocial(google);
                 //////////////////////////////
 
-                signed_in = true;
+//                signed_in = true;
                 //Toast.makeText(GoogleLoginActivity.this, "Google_id: " + database.getSocialCount(), Toast.LENGTH_LONG).show();
             } else {
                 Log.e("CCCCCCCCCCCCCCC", "Could not login");

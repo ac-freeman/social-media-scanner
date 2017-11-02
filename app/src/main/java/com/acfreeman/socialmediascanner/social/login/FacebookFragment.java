@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
@@ -27,15 +26,7 @@ import com.facebook.GraphRequestAsyncTask;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.linkedin.platform.APIHelper;
-import com.linkedin.platform.LISessionManager;
-import com.linkedin.platform.errors.LIApiError;
-import com.linkedin.platform.errors.LIAuthError;
-import com.linkedin.platform.listeners.ApiListener;
-import com.linkedin.platform.listeners.ApiResponse;
-import com.linkedin.platform.listeners.AuthListener;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -74,8 +65,8 @@ public class FacebookFragment extends Fragment {
         ImageView imageView = view.findViewById(R.id.imageView);
         imageView.setImageResource(R.drawable.fb_logo_white);
         android.view.ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
-        layoutParams.width = SocialMediaLoginActivity.convertDpToPixel(200, getContext());
-        layoutParams.height = SocialMediaLoginActivity.convertDpToPixel(200, getContext());
+        layoutParams.width = SocialMediaLoginActivity.convertDpToPixel(125, getContext());
+        layoutParams.height = SocialMediaLoginActivity.convertDpToPixel(125, getContext());
         imageView.setLayoutParams(layoutParams);
 
 

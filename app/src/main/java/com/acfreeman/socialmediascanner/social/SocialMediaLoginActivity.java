@@ -30,6 +30,7 @@ import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.social.login.FacebookFragment;
+import com.acfreeman.socialmediascanner.social.login.GoogleFragment;
 import com.acfreeman.socialmediascanner.social.login.LinkedInFragment;
 import com.acfreeman.socialmediascanner.social.login.SpotifyFragment;
 import com.acfreeman.socialmediascanner.social.login.TwitterFragment;
@@ -69,7 +70,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 
 // finally change the color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.setStatusBarColor(ContextCompat.getColor(this,R.color.twitter_blue));
+            window.setStatusBarColor(ContextCompat.getColor(this,R.color.google_blue));
 
         }
 
@@ -79,7 +80,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
         myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
-        TwitterFragment twitterFragment = new TwitterFragment();
+        GoogleFragment googleFragment = new GoogleFragment();
 
         FragmentManager fm = getSupportFragmentManager();
 
@@ -89,7 +90,13 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         List<Fragment> allFragments = getSupportFragmentManager().getFragments();
                         Log.i("BACKSTACK","Backstack entry count: " + getSupportFragmentManager().getBackStackEntryCount());
                         for (Fragment fragment : allFragments) {
-                            if (fragment instanceof TwitterFragment) {
+                            if (fragment instanceof GoogleFragment) {
+                                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+                                Drawable d = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_arrow_forward_white_24dp);
+                                Drawable d2 = d.getConstantState().newDrawable();
+                                d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(),R.color.google_blue), PorterDuff.Mode.MULTIPLY);
+                                fab.setImageDrawable(d2);
+                            } else if (fragment instanceof TwitterFragment) {
                                 FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
                                 Drawable d = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_arrow_forward_white_24dp);
                                 Drawable d2 = d.getConstantState().newDrawable();
@@ -121,8 +128,8 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 
         FragmentTransaction ft = fm.beginTransaction();
         ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
-        ft.addToBackStack("twitter");
-        ft.replace(R.id.content, twitterFragment);
+        ft.addToBackStack("google");
+        ft.replace(R.id.content, googleFragment);
         ft.commit();
 
 
@@ -130,14 +137,29 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         Drawable d = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_arrow_forward_white_24dp);
         Drawable d2 = d.getConstantState().newDrawable();
-        d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(),R.color.twitter_blue), PorterDuff.Mode.MULTIPLY);
+        d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(),R.color.google_blue), PorterDuff.Mode.MULTIPLY);
         fab.setImageDrawable(d2);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 List<Fragment> allFragments = getSupportFragmentManager().getFragments();
                 for (Fragment fragment : allFragments) {
-                    if (fragment instanceof TwitterFragment) {
+                    if (fragment instanceof GoogleFragment) {
+                        Log.i("SOCIALDEBUG", "Fragment: google" );
+                        TwitterFragment twitterFragment = new TwitterFragment();
+
+                        FragmentManager fm = getSupportFragmentManager();
+                        FragmentTransaction ft = fm.beginTransaction();
+                        ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
+                        ft.addToBackStack("twitter");
+                        ft.replace(R.id.content, twitterFragment);
+                        ft.commit();
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(),R.color.twitter_blue));
+                        }
+                    } else if (fragment instanceof TwitterFragment) {
+                        Log.i("SOCIALDEBUG", "Fragment: twitter" );
                         LinkedInFragment linkedinFragment = new LinkedInFragment();
 
                         FragmentManager fm = getSupportFragmentManager();
@@ -151,6 +173,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                             window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(),R.color.linkedin_blue));
                         }
                     } else if (fragment instanceof LinkedInFragment) {
+                        Log.i("SOCIALDEBUG", "Fragment: linkedin" );
                         SpotifyFragment spotifyFragment = new SpotifyFragment();
 
                         FragmentManager fm = getSupportFragmentManager();
@@ -175,7 +198,8 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(),R.color.com_facebook_blue));
                         }
-                    } else {
+                    } else if (fragment instanceof FacebookFragment){
+                        Log.i("SOCIALDEBUG", "Fragment: facebook" );
                         Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(startIntent);
                     }
@@ -192,7 +216,9 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 
         List<android.support.v4.app.Fragment> allFragments = getSupportFragmentManager().getFragments();
         for (android.support.v4.app.Fragment fragment : allFragments) {
-            if (fragment instanceof TwitterFragment) {
+            if (fragment instanceof GoogleFragment) {
+                ((GoogleFragment) fragment).onActivityResult(requestCode, resultCode, data);
+            } else if (fragment instanceof TwitterFragment) {
                 ((TwitterFragment) fragment).onActivityResult(requestCode, resultCode, data);
             } else if (fragment instanceof LinkedInFragment) {
                 ((LinkedInFragment) fragment).onActivityResult(requestCode, resultCode, data);
