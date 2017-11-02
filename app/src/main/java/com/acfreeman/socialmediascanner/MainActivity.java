@@ -589,15 +589,26 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
             return;
         }
 
-        this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(this, "Press BACK again to exit", Toast.LENGTH_SHORT).show();
-
-        new Handler().postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                doubleBackToExitPressedOnce=false;
+        if(showfriendsFragment.adapter!=null){
+            if(showfriendsFragment.adapter.inEditmode){
+                showfriendsFragment.adapter.inEditmode = false;
+                for(int i = 0; i < showfriendsFragment.adapter.checks.size(); i++){
+                        showfriendsFragment.adapter.checks.set(i,0);
+                }
+                showfriendsFragment.adapter.notifyDataSetChanged();
+                hideAppbarButtons();
             }
-        }, 2000);
+        } else {
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, "Press BACK again to exit", Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 2000);
+        }
     }
 }

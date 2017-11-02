@@ -55,7 +55,7 @@ import static com.acfreeman.socialmediascanner.MainActivity.firstMainActivityPre
  */
 
 public class ShowfriendsFragment extends Fragment{
-    private ContactsAdapter adapter;
+    public ContactsAdapter adapter;
     ArrayList<DataModel> dataModels;
     ListView listView;
     private ContactCardAdapter cardAdapter;
