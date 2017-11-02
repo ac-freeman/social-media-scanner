@@ -4,13 +4,22 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.acfreeman.socialmediascanner.CustomDialogFragment;
@@ -53,6 +62,22 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
         owners = database.getAllOwner();
         owner = owners.get(0);
 
+        final Window window = this.getWindow();
+
+// clear FLAG_TRANSLUCENT_STATUS flag:
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+// finally change the color
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.setStatusBarColor(ContextCompat.getColor(this,R.color.twitter_blue));
+
+        }
+
 
         setContentView(R.layout.activity_social_media_login_container);
 
@@ -61,41 +86,110 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 
         TwitterFragment twitterFragment = new TwitterFragment();
 
-        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
-        android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+        FragmentManager fm = getSupportFragmentManager();
+
+        fm.addOnBackStackChangedListener(
+                new FragmentManager.OnBackStackChangedListener() {
+                    public void onBackStackChanged() {
+                        List<Fragment> allFragments = getSupportFragmentManager().getFragments();
+                        Log.i("BACKSTACK","Backstack entry count: " + getSupportFragmentManager().getBackStackEntryCount());
+//                        for (Fragment fragment : allFragments) {
+//                            if (fragment instanceof TwitterFragment) {
+//                                LinkedInFragment linkedinFragment = new LinkedInFragment();
+//
+//                                FragmentManager fm = getSupportFragmentManager();
+//                                FragmentTransaction ft = fm.beginTransaction();
+//                                ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+//                                ft.addToBackStack("linkedin");
+//                                ft.replace(R.id.content, linkedinFragment);
+//                                ft.commit();
+//
+//                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                                    window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.linkedin_blue));
+//                                }
+//                            } else if (fragment instanceof LinkedInFragment) {
+//                                SpotifyFragment spotifyFragment = new SpotifyFragment();
+//
+//                                FragmentManager fm = getSupportFragmentManager();
+//                                FragmentTransaction ft = fm.beginTransaction();
+//                                ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+//                                ft.addToBackStack("spotify");
+//                                ft.replace(R.id.content, spotifyFragment);
+//                                ft.commit();
+//
+//                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                                    window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.spotify_green));
+//                                }
+//                            } else if (fragment instanceof SpotifyFragment) {
+//                                FacebookFragment facebookFragment = new FacebookFragment();
+//
+//                                FragmentManager fm = getSupportFragmentManager();
+//                                FragmentTransaction ft = fm.beginTransaction();
+//                                ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+//                                ft.addToBackStack("facebook");
+//                                ft.replace(R.id.content, facebookFragment);
+//                                ft.commit();
+//                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                                    window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.com_facebook_blue));
+//                                }
+//                            }
+//                        }
+                    }
+                });
+
+
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
+        ft.addToBackStack("twitter");
         ft.replace(R.id.content, twitterFragment);
         ft.commit();
+
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List<android.support.v4.app.Fragment> allFragments = getSupportFragmentManager().getFragments();
-                for (android.support.v4.app.Fragment fragment : allFragments) {
+                List<Fragment> allFragments = getSupportFragmentManager().getFragments();
+                for (Fragment fragment : allFragments) {
                     if (fragment instanceof TwitterFragment) {
                         LinkedInFragment linkedinFragment = new LinkedInFragment();
 
-                        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
-                        android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-                        ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+                        FragmentManager fm = getSupportFragmentManager();
+                        FragmentTransaction ft = fm.beginTransaction();
+                        ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
+                        ft.addToBackStack("linkedin");
                         ft.replace(R.id.content, linkedinFragment);
                         ft.commit();
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(),R.color.linkedin_blue));
+                        }
                     } else if (fragment instanceof LinkedInFragment) {
                         SpotifyFragment spotifyFragment = new SpotifyFragment();
 
-                        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
-                        android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-                        ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+                        FragmentManager fm = getSupportFragmentManager();
+                        FragmentTransaction ft = fm.beginTransaction();
+                        ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
+                        ft.addToBackStack("spotify");
                         ft.replace(R.id.content, spotifyFragment);
                         ft.commit();
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(),R.color.spotify_green));
+                        }
                     } else if (fragment instanceof SpotifyFragment) {
                         FacebookFragment facebookFragment = new FacebookFragment();
 
-                        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
-                        android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-                        ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+                        FragmentManager fm = getSupportFragmentManager();
+                        FragmentTransaction ft = fm.beginTransaction();
+                        ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
+                        ft.addToBackStack("facebook");
                         ft.replace(R.id.content, facebookFragment);
                         ft.commit();
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(),R.color.com_facebook_blue));
+                        }
                     } else {
                         Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(startIntent);
@@ -104,57 +198,6 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
             }
         });
 
-
-//
-//
-//
-//        facebookButton = (LoginButton) findViewById(R.id.facebook_button);
-//        facebookButton.setReadPermissions("email");
-//        // Other app specific specialization
-//
-//
-//        // Callback registration
-//        facebookButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-//            @Override
-//            public void onSuccess(LoginResult loginResult) {
-//                final AccessToken accessToken = loginResult.getAccessToken();
-//
-//                GraphRequestAsyncTask request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
-//                    @Override
-//                    public void onCompleted(JSONObject user, GraphResponse graphResponse) {
-//                        String facebook_id = user.optString("id");
-//                        Log.d("facebook", user.optString("id"));
-//                        /////add to database//////////
-//                        Social facebook = new Social(owner.getId(),"fb", facebook_id);
-//                        database.addSocial(facebook);
-//                        //////////////////////////////
-//                    }
-//                }).executeAsync();
-//
-//            }
-//
-//            @Override
-//            public void onCancel() {
-//                // App code
-//            }
-//
-//            @Override
-//            public void onError(FacebookException exception) {
-//                // App code
-//            }
-//        });
-//
-//
-//
-//
-//        Button nextButton = findViewById(R.id.next_button);
-//        nextButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
-//                startActivity(startIntent);
-//            }
-//        });
     }
 
 
@@ -166,6 +209,8 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
         for (android.support.v4.app.Fragment fragment : allFragments) {
             if (fragment instanceof TwitterFragment) {
                 ((TwitterFragment) fragment).onActivityResult(requestCode, resultCode, data);
+            } else if (fragment instanceof LinkedInFragment) {
+                ((LinkedInFragment) fragment).onActivityResult(requestCode, resultCode, data);
             } else if (fragment instanceof SpotifyFragment) {
                 ((SpotifyFragment) fragment).onActivityResult(requestCode, resultCode, data);
             } else if (fragment instanceof FacebookFragment) {
