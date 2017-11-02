@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.R;
+import com.acfreeman.socialmediascanner.db.Email;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Social;
@@ -118,6 +119,11 @@ public class GoogleFragment extends Fragment {
                 /////add to database//////////
                 Social google = new Social(owner.getId(),"go",googleId);
                 database.addSocial(google);
+
+                String email = acct.getEmail();
+                Email gmail = new Email((long) owner.getId(), email, "GMail");
+                database.addEmail(gmail);
+
                 //////////////////////////////
 
 //                signed_in = true;

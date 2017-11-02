@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import com.acfreeman.socialmediascanner.CustomDialogFragment;
 import com.acfreeman.socialmediascanner.MainActivity;
 import com.acfreeman.socialmediascanner.R;
+import com.acfreeman.socialmediascanner.RegistrationInformation;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.social.login.FacebookFragment;
@@ -55,8 +56,11 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
         super.onCreate(savedInstanceState);
 
         database = new LocalDatabase(getApplicationContext());
-        owners = database.getAllOwner();
-        owner = owners.get(0);
+
+        LocalDatabase database = new LocalDatabase(getApplicationContext());
+        Owner owner = new Owner(0);
+        database.addOwner(owner);
+
 
         final Window window = this.getWindow();
 
@@ -200,7 +204,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         }
                     } else if (fragment instanceof FacebookFragment){
                         Log.i("SOCIALDEBUG", "Fragment: facebook" );
-                        Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+                        Intent startIntent = new Intent(getApplicationContext(), RegistrationInformation.class);
                         startActivity(startIntent);
                     }
                 }

@@ -145,6 +145,13 @@ public class RegistrationInformation extends AppCompatActivity {
         ////////email/////////
         EditText emailEditText = new EditText(this);
         emailEditText.setHint("Email");
+
+        LocalDatabase database = new LocalDatabase(getApplicationContext());
+        Owner owner = database.getOwner(0);
+        final ArrayList<Email> emails = database.getUserEmails(0);
+        if(emails.size()>0) {
+            emailEditText.setText(emails.get(0).getEmail());
+        }
         emailEditText.setWidth(textWidth);
 //        final Button plusEmail = new Button(this);
 //        plusEmail.setText("+");
@@ -316,8 +323,14 @@ public class RegistrationInformation extends AppCompatActivity {
 
                     if(!error) {
                         LocalDatabase database = new LocalDatabase(getApplicationContext());
-                        Owner owner = new Owner(0, nameEditText.getText().toString());
+                        Owner owner = database.getOwner(0);
+                        database.deleteOwner(owner);
+                        owner = new Owner(0, nameEditText.getText().toString());
                         database.addOwner(owner);
+
+                        if(emails.size()>0) {
+                            database.deleteEmails(emails.get(0));
+                        }
 
 
                         for (EditText p : PhoneList) {
@@ -337,7 +350,7 @@ public class RegistrationInformation extends AppCompatActivity {
                         }
 
 
-                        Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
+                        Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
 
                         startActivity(startIntent);
                     }
