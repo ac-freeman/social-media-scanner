@@ -11,4 +11,8 @@
     <color name="icons">#FFFFFF</color>
     <color name="divider">#BDBDBD</color>
     <color name="red">#f44336</color>
+    <color name  ="twitter_blue">#1DA1F2</color>
+    <color name  ="linkedin_blue">#0077B5</color>
+    <color name  ="spotify_green">#1DB954</color>
+    <color name  ="white">#FFFFFF</color>
 </resources>

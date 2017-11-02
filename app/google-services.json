@@ -1,7 +1,9 @@
 {
   "project_info": {
     "project_number": "568862052526",
-    "project_id": "social-media-scanner"
+    "firebase_url": "https://social-media-scanner.firebaseio.com",
+    "project_id": "social-media-scanner",
+    "storage_bucket": "social-media-scanner.appspot.com"
   },
   "client": [
     {
@@ -12,6 +14,18 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "568862052526-ek2cqtt9p2ts8uc2lit6tq3gidmpopbo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.acfreeman.socialmediascanner",
+            "certificate_hash": "60fe6edf9aa813f9c64fb0039d40de05018b3393"
+          }
+        },
+        {
+          "client_id": "568862052526-hc5eiu19u60q8gfksf73lcilh1uck9jb.apps.googleusercontent.com",
+          "client_type": 3
+        },
         {
           "client_id": "568862052526-enqdb2bq4dh65978bq7qa8oa7gt2bspc.apps.googleusercontent.com",
           "client_type": 1,
@@ -35,11 +49,16 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "568862052526-hc5eiu19u60q8gfksf73lcilh1uck9jb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

@@ -105,7 +105,6 @@ public class GoogleLoginActivity extends FragmentActivity {
                 //Toast.makeText(GoogleLoginActivity.this, "Google_id: " + database.getSocialCount(), Toast.LENGTH_LONG).show();
             } else {
                 Log.e("CCCCCCCCCCCCCCC", "Could not login");
-                signed_in = true;   //TODO: REMOVE, TEMPORARY WORK-AROUND
             }
         }
     }
