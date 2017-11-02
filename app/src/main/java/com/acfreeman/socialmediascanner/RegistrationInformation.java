@@ -90,6 +90,7 @@ public class RegistrationInformation extends AppCompatActivity {
 
         else {
         Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+            startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
          startActivity(startIntent);
         }
 
@@ -351,6 +352,7 @@ public class RegistrationInformation extends AppCompatActivity {
 
 
                         Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+                        startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
                         startActivity(startIntent);
                     }

@@ -602,6 +602,13 @@ public class LocalDatabase extends SQLiteOpenHelper{
         db.close();
     }
 
+    public void deleteOwner(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_OWNER, KEY_ID + " = ?",
+                new String[] { String.valueOf(id) });
+        db.close();
+    }
+
     public void deleteEmails(Email email) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_EMAILS, KEY_ID + " = ?",
