@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.acfreeman.socialmediascanner.db.Email;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Social;
@@ -94,17 +95,24 @@ public class GoogleLoginActivity extends FragmentActivity {
             if (result.isSuccess()) {
                 GoogleSignInAccount acct = result.getSignInAccount();
                 String googleId = acct.getId();
-                //String id2 = acct.getIdToken();
+                String email = acct.getEmail();
+                //String token = acct.getIdToken();
+
+                Log.e("DDDDDDDDDDDDD", "" + email);
 
                 /////add to database//////////
                 Social google = new Social(owner.getId(),"go",googleId);
                 database.addSocial(google);
+
+                Email gmail = new Email((long) owner.getId(), email, "gmail");
+                database.addEmail(gmail);
                 //////////////////////////////
 
                 signed_in = true;
                 //Toast.makeText(GoogleLoginActivity.this, "Google_id: " + database.getSocialCount(), Toast.LENGTH_LONG).show();
             } else {
                 Log.e("CCCCCCCCCCCCCCC", "Could not login");
+//                signed_in = true;   //TODO: REMOVE, TEMPORARY WORK-AROUND
             }
         }
     }
