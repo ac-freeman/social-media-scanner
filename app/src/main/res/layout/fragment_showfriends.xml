@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ListView
+            android:id="@+id/contact_list"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"></ListView>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/darken_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.0"
+            android:background="@color/cardview_dark_background" />
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/activity_contact_card"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/cardview_light_background"
+        android:clickable="true"
+        android:elevation="12dp"
+
+        android:visibility="invisible">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/activity_contact_card_topsection">
+
+        <ImageView
+            android:id="@+id/activity_contact_card_userimage"
+            android:layout_centerVertical="true"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:padding="10dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/activity_contact_card_name"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/activity_contact_card_userimage"
+            android:padding="10dp"
+            android:text="[Name]"
+            android:textColor="@color/cardview_dark_background"
+            android:textSize="40dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/activity_contact_card_topsection"
+            android:layout_centerHorizontal="true"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ListView
+                android:id="@+id/activity_contact_card_listview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:descendantFocusability="blocksDescendants"></ListView>
+        </RelativeLayout>
+
+    </RelativeLayout>
+</FrameLayout>

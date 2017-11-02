@@ -1,5 +1,7 @@
 package com.acfreeman.socialmediascanner.db;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by jianziyu on 2017/9/19.
  */
@@ -7,6 +9,8 @@ package com.acfreeman.socialmediascanner.db;
 public class Contact {
     private long id;
     private String name;
+    private byte[] image;
+    private Bitmap bitmap;
     public Contact()
     {
     }
@@ -14,6 +18,13 @@ public class Contact {
     {
         this.id=id;
         this.name=name;
+
+    }
+
+    public Contact(int id, String name, byte[] image){
+        this.id=id;
+        this.name=name;
+        this.image=image;
 
     }
     public Contact(String name){
@@ -25,6 +36,8 @@ public class Contact {
     public void setName(String name) {
         this.name = name;
     }
+    public void setImage(byte[] image) {this.image = image;}
+    public void setBitmap(Bitmap bitmap) {this.bitmap = bitmap;}
 
 
     public long getId() {
@@ -34,4 +47,8 @@ public class Contact {
     public String getName() {
         return name;
     }
+
+    public byte[] getImage() {return image;}
+
+    public Bitmap getBitmap() {return bitmap;}
 }
