@@ -71,26 +71,14 @@ public class TwitterFragment extends Fragment {
                 // Do something with result, which provides a TwitterSession for making API calls
                 TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
                 TwitterAuthToken authToken = session.getAuthToken();
-                String token = authToken.token;
-                String secret = authToken.secret;
-
-
-                Toast.makeText(getActivity(), "Logged in to Twitter", Toast.LENGTH_SHORT).show();
-
-
 
                 Log.i("TWITTERTEST","user_id: " +session.getUserId());
                 Log.i("TWITTERTEST","username: " +session.getUserName());
-
-//                Intent startIntent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
-//                 startActivity(startIntent);
-
 
                 /////add to database//////////
                 Social twitter = new Social(owner.getId(),"tw",String.valueOf(session.getUserId()));
                 database.addSocial(twitter);
                 //////////////////////////////
-
             }
 
             @Override

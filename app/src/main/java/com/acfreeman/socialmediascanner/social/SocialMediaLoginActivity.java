@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,13 +41,6 @@ import java.util.List;
 
 public class SocialMediaLoginActivity extends AppCompatActivity implements CustomDialogFragment.NoticeDialogListener {
 
-    private TwitterLoginButton loginButton;
-    private LoginButton facebookButton;
-    private ImageView liButton;
-
-    private ImageView spotifyButton;
-
-    CallbackManager callbackManager = CallbackManager.Factory.create();
 
 
     public LocalDatabase database;
@@ -93,47 +88,33 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                     public void onBackStackChanged() {
                         List<Fragment> allFragments = getSupportFragmentManager().getFragments();
                         Log.i("BACKSTACK","Backstack entry count: " + getSupportFragmentManager().getBackStackEntryCount());
-//                        for (Fragment fragment : allFragments) {
-//                            if (fragment instanceof TwitterFragment) {
-//                                LinkedInFragment linkedinFragment = new LinkedInFragment();
-//
-//                                FragmentManager fm = getSupportFragmentManager();
-//                                FragmentTransaction ft = fm.beginTransaction();
-//                                ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
-//                                ft.addToBackStack("linkedin");
-//                                ft.replace(R.id.content, linkedinFragment);
-//                                ft.commit();
-//
-//                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                                    window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.linkedin_blue));
-//                                }
-//                            } else if (fragment instanceof LinkedInFragment) {
-//                                SpotifyFragment spotifyFragment = new SpotifyFragment();
-//
-//                                FragmentManager fm = getSupportFragmentManager();
-//                                FragmentTransaction ft = fm.beginTransaction();
-//                                ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
-//                                ft.addToBackStack("spotify");
-//                                ft.replace(R.id.content, spotifyFragment);
-//                                ft.commit();
-//
-//                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                                    window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.spotify_green));
-//                                }
-//                            } else if (fragment instanceof SpotifyFragment) {
-//                                FacebookFragment facebookFragment = new FacebookFragment();
-//
-//                                FragmentManager fm = getSupportFragmentManager();
-//                                FragmentTransaction ft = fm.beginTransaction();
-//                                ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
-//                                ft.addToBackStack("facebook");
-//                                ft.replace(R.id.content, facebookFragment);
-//                                ft.commit();
-//                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                                    window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.com_facebook_blue));
-//                                }
-//                            }
-//                        }
+                        for (Fragment fragment : allFragments) {
+                            if (fragment instanceof TwitterFragment) {
+                                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+                                Drawable d = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_arrow_forward_white_24dp);
+                                Drawable d2 = d.getConstantState().newDrawable();
+                                d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(),R.color.twitter_blue), PorterDuff.Mode.MULTIPLY);
+                                fab.setImageDrawable(d2);
+                            } else if (fragment instanceof LinkedInFragment) {
+                                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+                                Drawable d = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_arrow_forward_white_24dp);
+                                Drawable d2 = d.getConstantState().newDrawable();
+                                d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(),R.color.linkedin_blue), PorterDuff.Mode.MULTIPLY);
+                                fab.setImageDrawable(d2);
+                            } else if (fragment instanceof SpotifyFragment) {
+                                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+                                Drawable d = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_arrow_forward_white_24dp);
+                                Drawable d2 = d.getConstantState().newDrawable();
+                                d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(),R.color.spotify_green), PorterDuff.Mode.MULTIPLY);
+                                fab.setImageDrawable(d2);
+                            } else if (fragment instanceof FacebookFragment) {
+                                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+                                Drawable d = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_arrow_forward_white_24dp);
+                                Drawable d2 = d.getConstantState().newDrawable();
+                                d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(),R.color.com_facebook_blue), PorterDuff.Mode.MULTIPLY);
+                                fab.setImageDrawable(d2);
+                            }
+                        }
                     }
                 });
 
@@ -147,6 +128,10 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+        Drawable d = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_arrow_forward_white_24dp);
+        Drawable d2 = d.getConstantState().newDrawable();
+        d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(),R.color.twitter_blue), PorterDuff.Mode.MULTIPLY);
+        fab.setImageDrawable(d2);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -217,85 +202,6 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                 ((FacebookFragment) fragment).onActivityResult(requestCode, resultCode, data);
             }
         }
-
-
-//        // Check if result comes from the correct activity
-//        if (requestCode == SPOTIFY_REQUEST_CODE) {
-//            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
-//            switch (response.getType()) {
-//                // Response was successful and contains auth token
-//                case TOKEN:
-//                    // Handle successful response
-//                    final String authToken = response.getAccessToken();
-//                    Log.e("AAAAAAAAAAAAA", "authtoken: " + authToken);
-//
-//                    AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-//                        @Override
-//                        protected Void doInBackground(Void... params) {
-//                            try {
-//                                URL url = new URL("https://api.spotify.com/v1/me");
-//
-//                                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-//                                urlConnection.setRequestProperty("Authorization", "Bearer " + authToken);
-//                                urlConnection.setRequestMethod("GET");
-//
-//                                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-//
-//                                StringBuilder sb = new StringBuilder();
-//                                String line;
-//                                while((line = bufferedReader.readLine()) != null) {
-//                                    sb.append(line);
-//                                }
-//
-//                                JSONObject json = new JSONObject(sb.toString());
-//
-//                                String user_id = json.getString("id");
-//
-//                                Log.e("SDKFJ", user_id);
-//
-//                                /////add to database//////////
-//                                Social spotify = new Social(owner.getId(),"sp", user_id);
-//                                database.addSocial(spotify);
-//                                //////////////////////////////
-//
-//                                for (int i = 0; i < database.getSocialCount(); i++) {
-//                                    Log.e("DATABASE", database.getSocial(0).toString());
-//                                    Log.e("DATABASE", database.getSocial(1).toString());
-//                                    Log.e("DATABASE", database.getSocial(2).toString());
-//                                }
-//
-//                            }
-//                            catch (Exception ex) {
-//                                Log.e("Exception: ", ex.toString());
-//                            }
-//                            return null;
-//                        }
-//                    };
-//
-//                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//
-//                    break;
-//
-//                // Auth flow returned an error
-//                case ERROR:
-//                    // Handle error response
-//                    break;
-//
-//                // Most likely auth flow was cancelled
-//                default:
-//                    // Handle other cases
-//            }
-//        } else { //for linkedin
-//            // Pass the activity result to the login button.
-////            loginButton.onActivityResult(requestCode, resultCode, data);      //TODO TODO
-//
-//            //linkedin
-////            LISessionManager.getInstance(getApplicationContext()).onActivityResult(this, requestCode, resultCode, data);      //TODO TODO
-//
-//        }
-
-//        callbackManager.onActivityResult(requestCode, resultCode, data);
-
     }
 
     public void showNoticeDialog(String social_title, String uri) {
