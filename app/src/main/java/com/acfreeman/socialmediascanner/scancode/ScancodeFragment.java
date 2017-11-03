@@ -14,47 +14,31 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.content.FileProvider;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import com.acfreeman.socialmediascanner.CustomDialogFragment;
-import com.acfreeman.socialmediascanner.MainActivity;
 import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.db.Contact;
 import com.acfreeman.socialmediascanner.db.Email;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
-import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Phone;
 import com.acfreeman.socialmediascanner.db.Social;
-import com.acfreeman.socialmediascanner.showcode.ShowcodeAdapter;
-import com.acfreeman.socialmediascanner.showcode.SwitchModel;
 import com.acfreeman.socialmediascanner.social.SocialAdder;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.Result;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import me.dm7.barcodescanner.core.IViewFinder;
@@ -203,6 +187,13 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
                         database.addSocial(facebookSocial);
                         break;
 
+                    case "go":
+                        String google_id = rawArray[i + 1];
+                        uri = "plus.google.com/" + google_id;
+                        socialAdderArrayList.add(new SocialAdder(uri, "Google+"));
+                        Social googlePlusSocial = new Social(contact.getId(), "Google+", google_id);
+                        database.addSocial(googlePlusSocial);
+                        break;
                 }
 
             }
