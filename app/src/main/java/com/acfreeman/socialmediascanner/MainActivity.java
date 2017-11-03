@@ -164,6 +164,9 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                 return true;
             case R.id.action_settings:
                 //TODO
+                Intent startIntent = new Intent(getApplicationContext(), SettingsActivity.class);
+//                startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(startIntent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
