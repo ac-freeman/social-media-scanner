@@ -161,6 +161,10 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
                 dialog.setArguments(args);
                 dialog.show(getFragmentManager(), "CustomDialogFragment");
+                return true;
+            case R.id.action_settings:
+                //TODO
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
