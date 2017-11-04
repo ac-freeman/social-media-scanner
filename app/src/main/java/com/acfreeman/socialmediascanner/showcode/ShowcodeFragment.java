@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -70,6 +72,7 @@ public class ShowcodeFragment extends Fragment {
         for (Social s : sociallist) {
             switchModels.add(new SwitchModel(s.getType(), s.getUsername()));
         }
+        switchModels = showGPlusOption(switchModels);
 
         showcodeAdapter = new ShowcodeAdapter(switchModels, getActivity());
         codeListView.setAdapter(showcodeAdapter);
@@ -144,6 +147,30 @@ public class ShowcodeFragment extends Fragment {
 
         } catch (WriterException e) {
             e.printStackTrace();
+        }
+    }
+
+    private ArrayList<SwitchModel> showGPlusOption(ArrayList<SwitchModel> switchModels){
+
+        if(!PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("show_gplus_switch", true)) {
+            Log.i("DISPLAYDEBUG","G+ switch disabled");
+            for (int i = 0; i < switchModels.size(); i++) {
+                if (switchModels.get(i).getTag().equals("go")) {
+                    switchModels.remove(i);
+                }
+            }
+        }
+        return switchModels;
+    }
+
+    public boolean allowRefresh = false;
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if (allowRefresh) {
+            allowRefresh = false;
+            getFragmentManager().beginTransaction().detach(this).attach(this).commit();
         }
     }
 }

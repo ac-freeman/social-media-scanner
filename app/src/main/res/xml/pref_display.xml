@@ -29,7 +29,7 @@
      when checked/unchecked. -->
     <SwitchPreference
         android:defaultValue="true"
-        android:key="notifications_new_message"
+        android:key="show_gplus_switch"
         android:title="@string/pref_title_google_plus" />
 
 </PreferenceScreen>

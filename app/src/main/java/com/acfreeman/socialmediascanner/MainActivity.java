@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
     public static final String firstMainActivityPref = "firstMainActivity";
     Boolean firstMainActivity;
     ShowfriendsFragment showfriendsFragment = new ShowfriendsFragment();
+    ShowcodeFragment showcodeFragment = new ShowcodeFragment();
 
     /**
      * Called when activity begins
@@ -238,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         // get fragment manager
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.content, new ShowcodeFragment());
+        ft.replace(R.id.content, showcodeFragment);
         ft.commit();
     }
 
@@ -650,6 +651,9 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
     @Override
     public void onResume() {
+        if(showcodeFragment!=null){
+            showcodeFragment.allowRefresh=true;
+        }
         super.onResume();
     }
 }

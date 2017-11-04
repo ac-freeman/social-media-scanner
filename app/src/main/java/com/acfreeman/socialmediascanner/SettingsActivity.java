@@ -316,11 +316,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Cus
             addPreferencesFromResource(R.xml.pref_display);
             setHasOptionsMenu(true);
 
+
+
+
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-//            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+//            bindPreferenceSummaryToValue(findPreference("show_gplus_switch"));
         }
 
 //        @Override
