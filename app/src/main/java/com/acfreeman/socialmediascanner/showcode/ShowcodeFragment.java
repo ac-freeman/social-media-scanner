@@ -11,6 +11,7 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -172,5 +173,21 @@ public class ShowcodeFragment extends Fragment {
             allowRefresh = false;
             getFragmentManager().beginTransaction().detach(this).attach(this).commit();
         }
+
+        if(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("max_brightness", true))
+        {
+            WindowManager.LayoutParams layout = getActivity().getWindow().getAttributes();
+            layout.screenBrightness = 1F;
+            getActivity().getWindow().setAttributes(layout);
+        }
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        Log.i("BRIGHTDEBUG","On pause");
+        WindowManager.LayoutParams layout = getActivity().getWindow().getAttributes();
+        layout.screenBrightness =  android.provider.Settings.System.getInt(getActivity().getContentResolver(), android.provider.Settings.System.SCREEN_BRIGHTNESS,-1);
+        getActivity().getWindow().setAttributes(layout);
     }
 }

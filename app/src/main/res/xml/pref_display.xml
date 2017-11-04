@@ -22,7 +22,7 @@
      when checked/unchecked. -->
     <SwitchPreference
         android:defaultValue="true"
-        android:key="notifications_new_message"
+        android:key="max_brightness"
         android:title="@string/pref_title_max_brightness" />
 
     <!-- A 'parent' preference, which enables/disables child preferences (below)
