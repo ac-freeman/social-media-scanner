@@ -330,7 +330,7 @@ public class RegistrationInformation extends AppCompatActivity {
                         database.addOwner(owner);
 
                         if(emails.size()>0) {
-                            database.deleteEmails(emails.get(0));
+                            database.deleteUserEmails(owner.getId());
                         }
 
 

@@ -4,6 +4,7 @@ package com.acfreeman.socialmediascanner;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -13,13 +14,18 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
+import android.widget.Toast;
+
+import com.acfreeman.socialmediascanner.db.LocalDatabase;
 
 import java.util.List;
 
@@ -34,7 +40,7 @@ import java.util.List;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class SettingsActivity extends AppCompatPreferenceActivity {
+public class SettingsActivity extends AppCompatPreferenceActivity implements CustomDialogFragment.NoticeDialogListener {
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -174,6 +180,48 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 || DisplayFragment.class.getName().equals(fragmentName);
     }
 
+
+    public static final String deleteAllContactsPref= "deleteAllContacts";
+    Boolean deleting;
+    @Override
+    public void onDialogPositiveClick(android.app.DialogFragment dialog) {
+        Bundle mArgs = dialog.getArguments();
+        String name = mArgs.getString("name");
+        String action = mArgs.getString("action");
+        String uri;
+
+        switch (action) {
+            case "delete":
+                LocalDatabase db = new LocalDatabase(getApplicationContext());
+                db.deleteAllContacts();
+//                SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+//                // second argument is the default to use if the preference can't be found
+//                deleting = mPrefs.getBoolean(deleteAllContactsPref, false);
+//                    SharedPreferences.Editor editor = mPrefs.edit();
+//                    editor.putBoolean(deleteAllContactsPref, true);
+//                    editor.commit(); // Very important to save the preference
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onDialogNegativeClick(android.app.DialogFragment dialog) {
+        Bundle mArgs = dialog.getArguments();
+        String name = mArgs.getString("name");
+        String action = mArgs.getString("action");
+        switch (action) {
+            case "delete":
+                break;
+            default:
+                break;
+        }
+    }
+
     /**
      * This fragment shows general preferences only. It is used when the
      * activity is showing a two-pane settings UI.
@@ -210,18 +258,39 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * activity is showing a two-pane settings UI.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class DisplayFragment extends PreferenceFragment {
+    public static class ContactsFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_contacts);
             setHasOptionsMenu(true);
 
+
+            Preference button = findPreference("delete_all_contacts_button");
+            button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    //code for what you want it to do
+                    Log.i("PREFDEBUG","Delete contacts clicked");
+                    android.app.DialogFragment dialog;
+                    Bundle args;
+                    dialog = new CustomDialogFragment();
+                    args = new Bundle();
+                    args.putString("dialog_title", "Delete all contacts?");
+                    args.putString("action", "delete");
+
+                    dialog.setArguments(args);
+                    dialog.show(getFragmentManager(), "CustomDialogFragment");
+
+                    return true;
+                }
+            });
+
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
+//            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
         }
 
         @Override
@@ -240,7 +309,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * activity is showing a two-pane settings UI.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class ContactsFragment extends PreferenceFragment {
+    public static class DisplayFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -251,7 +320,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+//            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
         }
 
         @Override

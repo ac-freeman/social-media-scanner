@@ -298,6 +298,10 @@ public class ShowfriendsFragment extends Fragment{
             }
         });
 
+
+
+
+
         return view;
     }
 

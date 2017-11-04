@@ -588,10 +588,16 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
 //********************************************************************************************
     // Deleting a user
-    public void deletePhones(Phone phone) {
+//    public void deletePhone(Phone phone) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        db.delete(TABLE_PHONES, KEY_ID + " = ?",
+//        new String[] { String.valueOf(phone.getId()) });
+//        db.close();
+//    }
+    public void deleteUserPhones(Contact contact) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_PHONES, KEY_ID + " = ?",
-        new String[] { String.valueOf(phone.getId()) });
+                new String[] { String.valueOf(contact.getId()) });
         db.close();
     }
 
@@ -609,14 +615,45 @@ public class LocalDatabase extends SQLiteOpenHelper{
         db.close();
     }
 
-    public void deleteEmails(Email email) {
+//    public void deleteEmail(Email email) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        db.delete(TABLE_EMAILS, KEY_ID + " = ?",
+//                new String[] { String.valueOf(email.getId()) });
+//        db.close();
+//    }
+    public void deleteUserEmails(Contact contact) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_EMAILS, KEY_ID + " = ?",
-                new String[] { String.valueOf(email.getId()) });
+                new String[] { String.valueOf(contact.getId()) });
+        db.close();
+    }
+    public void deleteUserEmails(long id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_EMAILS, KEY_ID + " = ?",
+                new String[] { String.valueOf(id)});
+        db.close();
+    }
+    public void deleteUserSocials(Contact contact) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_SOCIAL, KEY_ID + " = ?",
+                new String[] { String.valueOf(contact.getId())});
         db.close();
     }
 
-    public void deleteContacts(Contact contact) {
+    public void deleteAllContacts() {
+
+        List<Contact> contacts = getAllContacts();
+        for(Contact c : contacts){
+            deleteUserPhones(c);
+            deleteUserEmails(c);
+            deleteUserSocials(c);
+        }
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from "+ TABLE_CONTACTS);
+        db.close();
+    }
+
+    public void deleteContact(Contact contact) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_CONTACTS, KEY_ID + " = ?",
                 new String[] { String.valueOf(contact.getId()) });

@@ -299,7 +299,36 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.content, showfriendsFragment);
-        ft.commit();
+        ft.commitAllowingStateLoss();
+
+
+//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//        // Use instance field for listener
+//// It will not be gc'd as long as this instance is kept referenced
+//        SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+//            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+//                // Implementation
+//                if(key.equals("deleteAllContacts")){
+//                    if(prefs.getBoolean("deleteAllContacts", false)){
+//                        Log.i("DELETEDEBUG", "Delete button pressed");
+////                        if(showfriendsFragment.adapter!=null) {
+////                            showfriendsFragment.adapter.notifyDataSetChanged();
+//                            Log.i("DELETEDEBUG", "Notifying data set");
+////                        getApplicationContext().runOnUiThread(new Runnable() {
+////                            public void run() {
+//                                showFriends();
+////                            }
+////                        });
+////                        }
+//                        SharedPreferences.Editor editor = prefs.edit();
+//                        editor.putBoolean("deleteAllContacts", false);
+//                        editor.commit(); // Very important to save the preference
+//                    }
+//                }
+//            }
+//        };
+//
+//        prefs.registerOnSharedPreferenceChangeListener(listener);
     }
 
 
@@ -617,5 +646,10 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                 }
             }, 2000);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }
