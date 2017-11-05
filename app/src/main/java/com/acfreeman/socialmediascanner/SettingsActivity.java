@@ -4,7 +4,6 @@ package com.acfreeman.socialmediascanner;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -14,7 +13,6 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -23,7 +21,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
-import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 
@@ -238,8 +235,19 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Cus
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
+//            bindPreferenceSummaryToValue(findPreference("example_text"));
+//            bindPreferenceSummaryToValue(findPreference("example_list"));
+
+            Preference info_button= findPreference("personal_info_button");
+            info_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    //code for what you want it to do
+                    Log.i("PREFDEBUG","Info button clicked");
+                    startActivity(new Intent(getActivity(), RegistrationInformation.class));
+                    return true;
+                }
+            });
         }
 
 //        @Override
