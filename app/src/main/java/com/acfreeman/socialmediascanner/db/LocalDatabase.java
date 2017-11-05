@@ -14,7 +14,7 @@ import java.util.List;
  * Created by yzj_0 on 2017/9/19.
  */
 
-public class LocalDatabase extends SQLiteOpenHelper{
+public class LocalDatabase extends SQLiteOpenHelper {
     // Database Version
     private static final int DATABASE_VERSION = 1;
     // Database Name
@@ -38,15 +38,15 @@ public class LocalDatabase extends SQLiteOpenHelper{
     private static final String KEY_USERNAME = "username";
 
     public LocalDatabase(Context context) {
-       super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
- //       String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_USERS + "("
+        //       String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_USERS + "("
 //               + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
- //               + KEY_EM_ADDR + " TEXT" + ")";
+        //               + KEY_EM_ADDR + " TEXT" + ")";
 //        db.execSQL(CREATE_CONTACTS_TABLE);
-
 
 
         String CREATE_OWNER_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_OWNER + "("
@@ -75,6 +75,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
 
     }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 // Drop older table if existed
@@ -106,7 +107,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
         ContentValues values = new ContentValues();
         values.put(KEY_ID, phone.getId()); // id
-        values.put(KEY_PH_NUMBER, phone.getNumber()); // phone number
+        values.put(KEY_PH_NUMBER, String.valueOf(phone.getNumber())); // phone number
         values.put(KEY_PH_TYPE, phone.getType()); // phone number type
 // Inserting Row
         db.insert(TABLE_PHONES, null, values);
@@ -137,9 +138,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
 // Inserting Row
         db.insert(TABLE_CONTACTS, null, values);
         long lastId;
-        String selectQuery = "SELECT ROWID from "+ TABLE_CONTACTS + " order by ROWID DESC limit 1";
-
-
+        String selectQuery = "SELECT ROWID from " + TABLE_CONTACTS + " order by ROWID DESC limit 1";
 
 
         Cursor c = db.rawQuery(selectQuery, null);
@@ -152,13 +151,12 @@ public class LocalDatabase extends SQLiteOpenHelper{
     }
 
 
-
-    public void deleteContactById(long id){
+    public void deleteContactById(long id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        db.execSQL("DELETE FROM " +TABLE_CONTACTS + " WHERE rowid="+id);
-        db.execSQL("DELETE FROM " + TABLE_EMAILS + " WHERE " + KEY_ID +" ="+id);
-        db.execSQL("DELETE FROM " + TABLE_PHONES + " WHERE " + KEY_ID +" ="+id);
-        db.execSQL("DELETE FROM " + TABLE_SOCIAL + " WHERE " + KEY_ID +" ="+id);
+        db.execSQL("DELETE FROM " + TABLE_CONTACTS + " WHERE rowid=" + id);
+        db.execSQL("DELETE FROM " + TABLE_EMAILS + " WHERE " + KEY_ID + " =" + id);
+        db.execSQL("DELETE FROM " + TABLE_PHONES + " WHERE " + KEY_ID + " =" + id);
+        db.execSQL("DELETE FROM " + TABLE_SOCIAL + " WHERE " + KEY_ID + " =" + id);
     }
 
     ///////////
@@ -187,8 +185,8 @@ public class LocalDatabase extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_OWNER, new String[]{KEY_ID,
-                KEY_NAME}, KEY_ID + "=?",
-        new String[]{String.valueOf(id)}, null, null, null, null);
+                        KEY_NAME}, KEY_ID + "=?",
+                new String[]{String.valueOf(id)}, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
@@ -208,7 +206,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
             cursor.moveToFirst();
 
         Phone phoneA = new Phone(Long.parseLong(cursor.getString(0)),
-                Integer.parseInt(cursor.getString(1)), cursor.getString(2));
+                Long.parseLong(cursor.getString(1)), cursor.getString(2));
 // return user
         return phoneA;
     }
@@ -382,18 +380,18 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
     public byte[] getUserImage(long id) {
 
-        String countQuery = "SELECT "+KEY_IMAGE+" FROM " + TABLE_CONTACTS +" WHERE " + "ROWID " + " = " + id;
+        String countQuery = "SELECT " + KEY_IMAGE + " FROM " + TABLE_CONTACTS + " WHERE " + "ROWID " + " = " + id;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
 
-        Log.i("DATABASEDEBUG",String.valueOf(cursor.getCount()));
+        Log.i("DATABASEDEBUG", String.valueOf(cursor.getCount()));
 
         byte[] image;
 
         if (cursor != null)
             cursor.moveToFirst();
 
-        image =  cursor.getBlob(0);
+        image = cursor.getBlob(0);
 
         return image;
     }
@@ -401,11 +399,11 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
     public ArrayList<Email> getUserEmails(long id) {
 
-        String countQuery = "SELECT * FROM " + TABLE_EMAILS +" WHERE " + KEY_ID + " = " + id;
+        String countQuery = "SELECT * FROM " + TABLE_EMAILS + " WHERE " + KEY_ID + " = " + id;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
 
-        Log.i("DATABASEDEBUG",String.valueOf(cursor.getCount()));
+        Log.i("DATABASEDEBUG", String.valueOf(cursor.getCount()));
 
         ArrayList<Email> emails = new ArrayList<>();
 
@@ -421,18 +419,18 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
     public ArrayList<Phone> getUserPhones(long id) {
 
-        String countQuery = "SELECT * FROM " + TABLE_PHONES +" WHERE " + KEY_ID + " = " + id;
+        String countQuery = "SELECT * FROM " + TABLE_PHONES + " WHERE " + KEY_ID + " = " + id;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
 
-        Log.i("DATABASEDEBUG",String.valueOf(cursor.getCount()));
+        Log.i("DATABASEDEBUG", String.valueOf(cursor.getCount()));
 
         ArrayList<Phone> phones = new ArrayList<>();
 
         if (cursor.moveToFirst()) {
             do {
                 Phone phone = new Phone(Long.parseLong(cursor.getString(0)),
-                        cursor.getInt(1), cursor.getString(2));
+                        Long.parseLong(cursor.getString(1)), cursor.getString(2));
                 phones.add(phone);
             } while (cursor.moveToNext());
         }
@@ -441,18 +439,18 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
     public ArrayList<Social> getUserSocials(long id) {
 
-        String countQuery = "SELECT * FROM " + TABLE_SOCIAL +" WHERE " + KEY_ID + " = " + id;
+        String countQuery = "SELECT * FROM " + TABLE_SOCIAL + " WHERE " + KEY_ID + " = " + id;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
 
-        Log.d("DATABASEDEBUG",String.valueOf(cursor.getCount()));
+        Log.d("DATABASEDEBUG", String.valueOf(cursor.getCount()));
 
         ArrayList<Social> socials = new ArrayList<>();
 
         if (cursor.moveToFirst()) {
             do {
                 Social social = new Social(Integer.parseInt(cursor.getString(0)),
-                        cursor.getString(1),cursor.getString(2));
+                        cursor.getString(1), cursor.getString(2));
                 socials.add(social);
             } while (cursor.moveToNext());
         }
@@ -460,9 +458,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
     }
 
 
-
-
-//******************************************************************
+    //******************************************************************
     // Getting users Count
     public int getPhonesCount() {
         String countQuery = "SELECT * FROM " + TABLE_PHONES;
@@ -516,7 +512,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
 
     //***************************************************************************************
-    public int updateImage(Contact contact){
+    public int updateImage(Contact contact) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -527,6 +523,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
         return db.update(TABLE_CONTACTS, values, "ROWID" + " = ?",
                 new String[]{String.valueOf(contact.getId())});
     }
+
     // Updating a user
     public int updatePhones(Phone phone) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -537,7 +534,7 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
 // updating row
         return db.update(TABLE_PHONES, values, KEY_ID + " = ?",
-        new String[]{String.valueOf(phone.getId())});
+                new String[]{String.valueOf(phone.getId())});
     }
 
     public int updateOwner(Owner owner) {
@@ -588,38 +585,86 @@ public class LocalDatabase extends SQLiteOpenHelper{
 
 //********************************************************************************************
     // Deleting a user
-    public void deletePhones(Phone phone) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_PHONES, KEY_ID + " = ?",
-        new String[] { String.valueOf(phone.getId()) });
-        db.close();
-    }
+//    public void deletePhone(Phone phone) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        db.delete(TABLE_PHONES, KEY_ID + " = ?",
+//        new String[] { String.valueOf(phone.getId()) });
+//        db.close();
+//    }
+
 
     public void deleteOwner(Owner owner) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_OWNER, KEY_ID + " = ?",
-                new String[] { String.valueOf(owner.getId()) });
+                new String[]{String.valueOf(owner.getId())});
         db.close();
     }
 
     public void deleteOwner(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_OWNER, KEY_ID + " = ?",
-                new String[] { String.valueOf(id) });
+                new String[]{String.valueOf(id)});
         db.close();
     }
 
-    public void deleteEmails(Email email) {
+    //    public void deleteEmail(Email email) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        db.delete(TABLE_EMAILS, KEY_ID + " = ?",
+//                new String[] { String.valueOf(email.getId()) });
+//        db.close();
+//    }
+    public void deleteUserPhones(Contact contact) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_PHONES, KEY_ID + " = ?",
+                new String[]{String.valueOf(contact.getId())});
+        db.close();
+    }
+
+    public void deleteUserPhones(long id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_PHONES, KEY_ID + " = ?",
+                new String[]{String.valueOf(id)});
+        db.close();
+    }
+
+    public void deleteUserEmails(Contact contact) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_EMAILS, KEY_ID + " = ?",
-                new String[] { String.valueOf(email.getId()) });
+                new String[]{String.valueOf(contact.getId())});
         db.close();
     }
 
-    public void deleteContacts(Contact contact) {
+    public void deleteUserEmails(long id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_EMAILS, KEY_ID + " = ?",
+                new String[]{String.valueOf(id)});
+        db.close();
+    }
+
+    public void deleteUserSocials(Contact contact) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_SOCIAL, KEY_ID + " = ?",
+                new String[]{String.valueOf(contact.getId())});
+        db.close();
+    }
+
+    public void deleteAllContacts() {
+
+        List<Contact> contacts = getAllContacts();
+        for (Contact c : contacts) {
+            deleteUserPhones(c);
+            deleteUserEmails(c);
+            deleteUserSocials(c);
+        }
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from " + TABLE_CONTACTS);
+        db.close();
+    }
+
+    public void deleteContact(Contact contact) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_CONTACTS, KEY_ID + " = ?",
-                new String[] { String.valueOf(contact.getId()) });
+                new String[]{String.valueOf(contact.getId())});
         db.close();
     }
     //******************************************************************************************

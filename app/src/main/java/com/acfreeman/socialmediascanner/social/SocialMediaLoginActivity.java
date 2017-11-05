@@ -4,7 +4,6 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -22,10 +21,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
 
 import com.acfreeman.socialmediascanner.CustomDialogFragment;
-import com.acfreeman.socialmediascanner.MainActivity;
 import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.RegistrationInformation;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
@@ -35,9 +32,6 @@ import com.acfreeman.socialmediascanner.social.login.GoogleFragment;
 import com.acfreeman.socialmediascanner.social.login.LinkedInFragment;
 import com.acfreeman.socialmediascanner.social.login.SpotifyFragment;
 import com.acfreeman.socialmediascanner.social.login.TwitterFragment;
-import com.facebook.CallbackManager;
-import com.facebook.login.widget.LoginButton;
-import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import java.util.List;
 

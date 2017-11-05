@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -70,6 +73,7 @@ public class ShowcodeFragment extends Fragment {
         for (Social s : sociallist) {
             switchModels.add(new SwitchModel(s.getType(), s.getUsername()));
         }
+        switchModels = showGPlusOption(switchModels);
 
         showcodeAdapter = new ShowcodeAdapter(switchModels, getActivity());
         codeListView.setAdapter(showcodeAdapter);
@@ -145,5 +149,45 @@ public class ShowcodeFragment extends Fragment {
         } catch (WriterException e) {
             e.printStackTrace();
         }
+    }
+
+    private ArrayList<SwitchModel> showGPlusOption(ArrayList<SwitchModel> switchModels){
+
+        if(!PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("show_gplus_switch", true)) {
+            Log.i("DISPLAYDEBUG","G+ switch disabled");
+            for (int i = 0; i < switchModels.size(); i++) {
+                if (switchModels.get(i).getTag().equals("go")) {
+                    switchModels.remove(i);
+                }
+            }
+        }
+        return switchModels;
+    }
+
+    public boolean allowRefresh = false;
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if (allowRefresh) {
+            allowRefresh = false;
+            getFragmentManager().beginTransaction().detach(this).attach(this).commit();
+        }
+
+        if(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("max_brightness", true))
+        {
+            WindowManager.LayoutParams layout = getActivity().getWindow().getAttributes();
+            layout.screenBrightness = 1F;
+            getActivity().getWindow().setAttributes(layout);
+        }
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        Log.i("BRIGHTDEBUG","On pause");
+        WindowManager.LayoutParams layout = getActivity().getWindow().getAttributes();
+        layout.screenBrightness =  android.provider.Settings.System.getInt(getActivity().getContentResolver(), android.provider.Settings.System.SCREEN_BRIGHTNESS,-1);
+        getActivity().getWindow().setAttributes(layout);
     }
 }

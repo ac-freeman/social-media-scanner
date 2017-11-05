@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
     public static final String firstMainActivityPref = "firstMainActivity";
     Boolean firstMainActivity;
     ShowfriendsFragment showfriendsFragment = new ShowfriendsFragment();
+    ShowcodeFragment showcodeFragment = new ShowcodeFragment();
 
     /**
      * Called when activity begins
@@ -161,6 +162,13 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
                 dialog.setArguments(args);
                 dialog.show(getFragmentManager(), "CustomDialogFragment");
+                return true;
+            case R.id.action_settings:
+                //TODO
+                Intent startIntent = new Intent(getApplicationContext(), SettingsActivity.class);
+//                startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(startIntent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -231,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         // get fragment manager
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.content, new ShowcodeFragment());
+        ft.replace(R.id.content, showcodeFragment);
         ft.commit();
     }
 
@@ -292,7 +300,36 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.content, showfriendsFragment);
-        ft.commit();
+        ft.commitAllowingStateLoss();
+
+
+//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//        // Use instance field for listener
+//// It will not be gc'd as long as this instance is kept referenced
+//        SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+//            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+//                // Implementation
+//                if(key.equals("deleteAllContacts")){
+//                    if(prefs.getBoolean("deleteAllContacts", false)){
+//                        Log.i("DELETEDEBUG", "Delete button pressed");
+////                        if(showfriendsFragment.adapter!=null) {
+////                            showfriendsFragment.adapter.notifyDataSetChanged();
+//                            Log.i("DELETEDEBUG", "Notifying data set");
+////                        getApplicationContext().runOnUiThread(new Runnable() {
+////                            public void run() {
+//                                showFriends();
+////                            }
+////                        });
+////                        }
+//                        SharedPreferences.Editor editor = prefs.edit();
+//                        editor.putBoolean("deleteAllContacts", false);
+//                        editor.commit(); // Very important to save the preference
+//                    }
+//                }
+//            }
+//        };
+//
+//        prefs.registerOnSharedPreferenceChangeListener(listener);
     }
 
 
@@ -610,5 +647,13 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                 }
             }, 2000);
         }
+    }
+
+    @Override
+    public void onResume() {
+        if(showcodeFragment!=null){
+            showcodeFragment.allowRefresh=true;
+        }
+        super.onResume();
     }
 }
