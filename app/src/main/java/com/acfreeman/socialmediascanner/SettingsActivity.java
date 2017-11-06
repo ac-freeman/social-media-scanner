@@ -248,6 +248,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Cus
                     return true;
                 }
             });
+
+            Preference social_accounts_button= findPreference("connected_social_accounts_button");
+            social_accounts_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    //code for what you want it to do
+                    Log.i("PREFDEBUG","Social accounts button clicked");
+                    startActivity(new Intent(getActivity(), ConnectedAccounts.class));
+                    return true;
+                }
+            });
         }
 
 //        @Override

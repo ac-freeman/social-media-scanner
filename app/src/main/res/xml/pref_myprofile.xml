@@ -34,4 +34,7 @@
         android:key="personal_info_button"
         android:summary="Name/Phones/E-mails"/>
 
+    <Preference android:title="Connected social accounts"
+        android:key="connected_social_accounts_button"/>
+
 </PreferenceScreen>
