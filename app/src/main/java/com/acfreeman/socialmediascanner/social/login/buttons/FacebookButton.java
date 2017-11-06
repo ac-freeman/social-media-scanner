@@ -63,6 +63,7 @@ public class FacebookButton {
                         Log.d("facebook", user.optString("id"));
 
 
+                        //Delete any existing entry for this social
                         ArrayList<Social> socials = database.getUserSocials(owner.getId());
                         for (Social s : socials) {
                             if (s.getType().equals("fb")) {
@@ -74,7 +75,7 @@ public class FacebookButton {
                             Social facebook = new Social(owner.getId(), "fb", facebook_id);
                             database.addSocial(facebook);
                             //////////////////////////////
-                        
+
                     }
                 }).executeAsync();
 
