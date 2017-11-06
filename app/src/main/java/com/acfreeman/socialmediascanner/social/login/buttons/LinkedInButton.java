@@ -26,7 +26,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by Andrew on 11/6/2017.
@@ -38,21 +37,26 @@ public class LinkedInButton {
     private List<Owner> owners;
     private Owner owner;
     public Button button;
+    private Context context;
+    private FragmentActivity activity;
 
-    public LinkedInButton(Context context, final FragmentActivity activity) {
+    public LinkedInButton(Context c, FragmentActivity a) {
+        this.context = c;
+        this.activity = a;
+
         button = new Button(context);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LISessionManager.getInstance(getApplicationContext()).init(activity, buildScope(), new AuthListener() {
+                LISessionManager.getInstance(context).init(activity, buildScope(), new AuthListener() {
                     @Override
                     public void onAuthSuccess() {
 
                         String url = "https://api.linkedin.com/v1/people/~?format=json";
 
 
-                        APIHelper apiHelper = APIHelper.getInstance(getApplicationContext());
-                        apiHelper.getRequest(getApplicationContext(), url, new ApiListener() {
+                        APIHelper apiHelper = APIHelper.getInstance(context);
+                        apiHelper.getRequest(context, url, new ApiListener() {
                             @Override
                             public void onApiSuccess(ApiResponse apiResponse) {
                                 // Success!
@@ -68,7 +72,7 @@ public class LinkedInButton {
                                     Log.i("LINKEDINDEBUG", li_id);
 
 
-                                    database = new LocalDatabase(getApplicationContext());
+                                    database = new LocalDatabase(context);
                                     owners = database.getAllOwner();
                                     owner = owners.get(0);
 
@@ -87,7 +91,7 @@ public class LinkedInButton {
                                     //////////////////////////////
 
                                 } catch (JSONException e) {
-                                    Toast.makeText(getApplicationContext(), "ERROR: Could not login to LinkedIn", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(context, "ERROR: Could not login to LinkedIn", Toast.LENGTH_LONG).show();
                                     e.printStackTrace();
                                 }
 
@@ -96,7 +100,7 @@ public class LinkedInButton {
 
                             @Override
                             public void onApiError(LIApiError liApiError) {
-                                Toast.makeText(getApplicationContext(), "ERROR: Could not login to LinkedIn", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "ERROR: Could not login to LinkedIn", Toast.LENGTH_LONG).show();
                             }
                         });
 
@@ -122,8 +126,8 @@ public class LinkedInButton {
         return Scope.build(Scope.R_BASICPROFILE);
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data, FragmentActivity activity) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //linkedin
-        LISessionManager.getInstance(getApplicationContext()).onActivityResult(activity, requestCode, resultCode, data);
+        LISessionManager.getInstance(context).onActivityResult(activity, requestCode, resultCode, data);
     }
 }

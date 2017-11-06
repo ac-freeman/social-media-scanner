@@ -88,7 +88,7 @@ public class LinkedInFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        linkedInButton.onActivityResult(requestCode,resultCode,data, getActivity());
+        linkedInButton.onActivityResult(requestCode,resultCode,data);
     }
 
 

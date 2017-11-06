@@ -20,7 +20,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by Andrew on 11/6/2017.
@@ -34,9 +33,11 @@ public class GoogleButton {
     private LocalDatabase database;
     private List<Owner> owners;
     private Owner owner;
+    Context context;
 
     public GoogleButton(Context context, FragmentActivity activity){
 
+        this.context = context;
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
@@ -51,6 +52,7 @@ public class GoogleButton {
                 } /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -60,7 +62,7 @@ public class GoogleButton {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
 
-                database = new LocalDatabase(getApplicationContext());
+                database = new LocalDatabase(context);
                 owners = database.getAllOwner();
                 owner = owners.get(0);
 
