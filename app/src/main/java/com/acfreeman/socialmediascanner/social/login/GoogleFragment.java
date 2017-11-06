@@ -82,7 +82,7 @@ public class GoogleFragment extends Fragment {
         visibleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                signInButton.performClick();
+
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleButton.apiClient);
                 startActivityForResult(signInIntent, googleButton.RC_SIGN_IN);
             }
