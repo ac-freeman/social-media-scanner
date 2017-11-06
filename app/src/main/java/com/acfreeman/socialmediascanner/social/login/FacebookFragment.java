@@ -17,6 +17,7 @@ import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Social;
 import com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity;
+import com.acfreeman.socialmediascanner.social.login.buttons.FacebookButton;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -41,11 +42,10 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 public class FacebookFragment extends Fragment {
     private ImageView liButton;
 
-    public LocalDatabase database;
-    public List<Owner> owners;
-    public Owner owner;
+
     Button loginButton;
-    CallbackManager callbackManager = CallbackManager.Factory.create();
+    FacebookButton fbutton;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,9 +55,9 @@ public class FacebookFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_login,
                 container, false);
 
-        database = new LocalDatabase(getApplicationContext());
-        owners = database.getAllOwner();
-        owner = owners.get(0);
+        fbutton = new FacebookButton(getContext());
+
+
 
         RelativeLayout background = view.findViewById(R.id.background);
         background.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.com_facebook_blue));
@@ -73,53 +73,7 @@ public class FacebookFragment extends Fragment {
 
 
 
-        final LoginButton facebookButton = new LoginButton(getContext());
-        facebookButton.setReadPermissions("email");
-        // Other app specific specialization
-
-
-        // Callback registration
-        facebookButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                final AccessToken accessToken = loginResult.getAccessToken();
-
-                GraphRequestAsyncTask request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
-                    @Override
-                    public void onCompleted(JSONObject user, GraphResponse graphResponse) {
-                        String facebook_id = user.optString("id");
-                        Log.d("facebook", user.optString("id"));
-
-
-                        boolean cont = true;
-                        ArrayList<Social> socials = database.getUserSocials(owner.getId());
-                        for(Social s: socials){
-                            if (s.getType().equals("fb")){
-                                cont = false;
-                            }
-                        }
-
-                        if(cont) {
-                            /////add to database//////////
-                            Social facebook = new Social(owner.getId(), "fb", facebook_id);
-                            database.addSocial(facebook);
-                            //////////////////////////////
-                        }
-                    }
-                }).executeAsync();
-
-            }
-
-            @Override
-            public void onCancel() {
-                // App code
-            }
-
-            @Override
-            public void onError(FacebookException exception) {
-                // App code
-            }
-        });
+        final LoginButton facebookButton = fbutton.getButton();
 
         loginButton = (Button) view.findViewById(R.id.login_button);
         loginButton.setText("Sign in with Facebook");
@@ -140,7 +94,7 @@ public class FacebookFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-                callbackManager.onActivityResult(requestCode, resultCode, data);
+                fbutton.callbackManager.onActivityResult(requestCode, resultCode, data);
 
     }
 }

@@ -641,6 +641,12 @@ public class LocalDatabase extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void deleteUserSocial(Social social) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_SOCIAL, KEY_ID + " = ?" + " AND " + KEY_SO_TYPE + " = ?",
+                new String[]{String.valueOf(social.getId()), String.valueOf(social.getType())});
+        db.close();
+    }
     public void deleteUserSocials(Contact contact) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_SOCIAL, KEY_ID + " = ?",
