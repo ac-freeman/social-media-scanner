@@ -21,6 +21,7 @@ import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Social;
 import com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity;
+import com.acfreeman.socialmediascanner.social.login.buttons.TwitterButton;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.Twitter;
@@ -40,8 +41,8 @@ import static com.facebook.FacebookSdk.getApplicationContext;
  */
 
 public class TwitterFragment extends Fragment {
-    TwitterLoginButton loginButton;
 
+    TwitterButton twitterButton;
     public LocalDatabase database;
     public List<Owner> owners;
     public Owner owner;
@@ -54,9 +55,7 @@ public class TwitterFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_login,
                 container, false);
 
-        database = new LocalDatabase(getApplicationContext());
-        owners = database.getAllOwner();
-        owner = owners.get(0);
+
 
         RelativeLayout background = view.findViewById(R.id.background);
         background.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.twitter_blue));
@@ -68,47 +67,8 @@ public class TwitterFragment extends Fragment {
         layoutParams.height = SocialMediaLoginActivity.convertDpToPixel(125, getContext());
         imageView.setLayoutParams(layoutParams);
 
+        twitterButton = new TwitterButton(getContext(), getActivity());
 
-        loginButton = new TwitterLoginButton(getContext());
-        loginButton.setCallback(new Callback<TwitterSession>() {
-            @Override
-            public void success(Result<TwitterSession> result) {
-                // Do something with result, which provides a TwitterSession for making API calls
-                TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
-                TwitterAuthToken authToken = session.getAuthToken();
-
-                Log.i("TWITTERTEST","user_id: " +session.getUserId());
-                Log.i("TWITTERTEST","username: " +session.getUserName());
-
-                boolean cont = true;
-                ArrayList<Social> socials = database.getUserSocials(owner.getId());
-                for(Social s: socials){
-                    if (s.getType().equals("tw")){
-                        cont = false;
-                    }
-                }
-
-                if(cont) {
-                    /////add to database//////////
-                    Social twitter = new Social(owner.getId(), "tw", String.valueOf(session.getUserId()));
-                    database.addSocial(twitter);
-                    //////////////////////////////
-                }
-            }
-
-            @Override
-            public void failure(TwitterException exception) {
-                Toast.makeText(getApplicationContext(), "ERROR: Could not login to Twitter", Toast.LENGTH_LONG).show();
-                try{
-                    ApplicationInfo info = getActivity().getPackageManager().
-                            getApplicationInfo("com.twitter.android", 0 );
-                } catch( PackageManager.NameNotFoundException e ){
-                    // Ask if user would like to install the Twitter app
-//                    showNoticeDialog("Twitter", "https://play.google.com/store/apps/details?id=com.twitter.android");     //TODO TODO
-
-                }
-            }
-        });
 
 
         Button visibleButton = view.findViewById(R.id.login_button);
@@ -117,7 +77,7 @@ public class TwitterFragment extends Fragment {
         visibleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loginButton.performClick();
+                twitterButton.getButton().performClick();
             }
         });
 
@@ -127,6 +87,6 @@ public class TwitterFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode,resultCode,data);
-        loginButton.onActivityResult(requestCode, resultCode, data);
+        twitterButton.getButton().onActivityResult(requestCode, resultCode, data);
     }
 }
