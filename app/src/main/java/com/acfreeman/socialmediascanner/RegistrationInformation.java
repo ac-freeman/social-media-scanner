@@ -146,6 +146,8 @@ public class RegistrationInformation extends AppCompatActivity {
         EditText emailEditText = new EditText(this);
         emailEditText.setHint("Email");
         emailEditText.setWidth(textWidth);
+        emailEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        //emailEditText.setImeOptions(EditorInfo.);
 //        final Button plusEmail = new Button(this);
 //        plusEmail.setText("+");
         final ImageButton plusEmail = new ImageButton(this);
@@ -224,6 +226,7 @@ public class RegistrationInformation extends AppCompatActivity {
 
                     EditText emailEditText = new EditText(getApplicationContext());
                     emailEditText.setHint("Email");
+                    emailEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                     emailEditText.setWidth(textWidth);
                     EmailList.add(emailEditText);
 
