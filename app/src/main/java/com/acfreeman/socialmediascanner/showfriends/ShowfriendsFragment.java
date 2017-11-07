@@ -5,28 +5,23 @@ import android.animation.ObjectAnimator;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Shader;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -45,9 +40,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import static com.acfreeman.socialmediascanner.MainActivity.MY_PERMISSIONS_REQUEST_CONTACTS;
-import static com.acfreeman.socialmediascanner.MainActivity.firstMainActivityPref;
 //import static com.acfreeman.socialmediascanner.MainActivity.socialAdd;
 
 /**
@@ -334,6 +326,9 @@ public class ShowfriendsFragment extends Fragment{
                 } catch (Exception e) {
                     uri = "https://www.facebook.com/" + social.getUsername(); //catches a url to the desired page
                 }
+                break;
+            case "Google+":
+                uri = "plus.google.com/" + social.getUsername();
                 break;
         }
 
