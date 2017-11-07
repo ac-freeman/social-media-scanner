@@ -149,8 +149,6 @@ public class RegistrationInformation extends AppCompatActivity {
 
         ////////email/////////
 
-
-
         final ArrayList<Email> emails = database.getUserEmails(0);
         if (emails.size() > 0) {
             for (int i = 0; i <emails.size() ; i++) {
@@ -170,8 +168,6 @@ public class RegistrationInformation extends AppCompatActivity {
         TableRow submitRow = new TableRow(this);
         submitRow.addView(submitButton);
         table.addView(submitRow);
-
-
 
 
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -368,6 +364,8 @@ public class RegistrationInformation extends AppCompatActivity {
     private void addEmailEditText(final TableLayout table, final int index, String text){
         final EditText emailEditText = new EditText(this);
         emailEditText.setHint("Email");
+        emailEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+      
 
         if(!text.equals(""))
             emailEditText.setText(text);
