@@ -2,6 +2,7 @@ package com.acfreeman.socialmediascanner.scancode;
 
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,6 +11,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -24,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.CustomDialogFragment;
 import com.acfreeman.socialmediascanner.R;
@@ -46,6 +50,7 @@ import me.dm7.barcodescanner.core.ViewFinderView;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 import static android.app.Activity.RESULT_OK;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by Andrew on 10/27/2017.
@@ -56,7 +61,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
     private static ImageView mImageView;
     public me.dm7.barcodescanner.zxing.ZXingScannerView scannerView;
-
+    private boolean connectedInternet = false;
 
     public boolean handleScan = true;
 
@@ -66,7 +71,6 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_scancode,
                 container, false);
-
 
         FrameLayout frameLayout = view.findViewById(R.id.scancode_frame);
         scannerView = new ZXingScannerView(getActivity()) {
@@ -84,6 +88,12 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
         scannerView.setResultHandler(this);
         scannerView.startCamera();
 
+        ConnectivityReceiver cr = new ConnectivityReceiver();
+        cr.onReceive(getApplicationContext(), new Intent());
+        if(!connectedInternet) {
+            Log.e("FFFFFFFFFFFFFF", "Internet not connected");
+            Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+        }
 
         return view;
     }
@@ -501,5 +511,22 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
     }
 
+    public class ConnectivityReceiver extends BroadcastReceiver {
 
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager cm =
+                    (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            boolean isConnected = activeNetwork != null &&
+                    activeNetwork.isConnectedOrConnecting();
+
+            if(isConnected) {
+                connectedInternet = true;
+            } else {
+                connectedInternet = false;
+            }
+        }
+    }
 }
