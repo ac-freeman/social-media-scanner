@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.R;
+import com.acfreeman.socialmediascanner.db.Email;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Social;
@@ -48,6 +49,7 @@ public class GoogleFragment extends Fragment {
     public List<Owner> owners;
     public Owner owner;
     private int RC_SIGN_IN = 9001;
+    GoogleApiClient apiClient;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -75,7 +77,7 @@ public class GoogleFragment extends Fragment {
                 .requestEmail()
                 .build();
 
-        final GoogleApiClient apiClient = new GoogleApiClient.Builder(getContext())
+        apiClient = new GoogleApiClient.Builder(getContext())
                 .enableAutoManage(getActivity() /* FragmentActivity */, new GoogleApiClient.OnConnectionFailedListener() {
                     @Override
                     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -118,6 +120,11 @@ public class GoogleFragment extends Fragment {
                 /////add to database//////////
                 Social google = new Social(owner.getId(),"go",googleId);
                 database.addSocial(google);
+
+                String email = acct.getEmail();
+                Email gmail = new Email((long) owner.getId(), email, "GMail");
+                database.addEmail(gmail);
+
                 //////////////////////////////
 
 //                signed_in = true;
@@ -125,6 +132,15 @@ public class GoogleFragment extends Fragment {
             } else {
                 Log.e("CCCCCCCCCCCCCCC", "Could not login");
             }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(apiClient!=null) {
+            apiClient.stopAutoManage(getActivity());
+            apiClient.disconnect();
         }
     }
 }

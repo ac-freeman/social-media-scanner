@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity;
+
 public class AppLogin extends AppCompatActivity {
 
     @Override
@@ -26,7 +28,7 @@ public class AppLogin extends AppCompatActivity {
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), RegistrationInformation.class);
+                Intent intent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
                 startActivity(intent);
             }
         });
