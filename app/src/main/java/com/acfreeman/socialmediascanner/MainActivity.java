@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
 // finally change the color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.setStatusBarColor(ContextCompat.getColor(this,R.color.primary));
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.primary));
         }
 
 
@@ -621,21 +621,27 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
     @Override
     public void onBackPressed() {
+        Log.i("BACKBUTTON", "Back pressed");
         if (doubleBackToExitPressedOnce) {
-            super.onBackPressed();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                this.finishAffinity();
+            } else {
+                this.finish();
+                System.exit(0);
+            }
             return;
         }
 
-        if(showfriendsFragment.adapter!=null){
-            if(showfriendsFragment.adapter.inEditmode){
-                showfriendsFragment.adapter.inEditmode = false;
-                for(int i = 0; i < showfriendsFragment.adapter.checks.size(); i++){
-                        showfriendsFragment.adapter.checks.set(i,0);
-                }
-                showfriendsFragment.adapter.notifyDataSetChanged();
-                hideAppbarButtons();
+        Log.i("BACKBUTTON", "not null");
+        if (showfriendsFragment.adapter.inEditmode) {
+            showfriendsFragment.adapter.inEditmode = false;
+            for (int i = 0; i < showfriendsFragment.adapter.checks.size(); i++) {
+                showfriendsFragment.adapter.checks.set(i, 0);
             }
+            showfriendsFragment.adapter.notifyDataSetChanged();
+            hideAppbarButtons();
         } else {
+            Log.i("BACKBUTTON", "null");
             this.doubleBackToExitPressedOnce = true;
             Toast.makeText(this, "Press BACK again to exit", Toast.LENGTH_SHORT).show();
 
@@ -651,8 +657,8 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
     @Override
     public void onResume() {
-        if(showcodeFragment!=null){
-            showcodeFragment.allowRefresh=true;
+        if (showcodeFragment != null) {
+            showcodeFragment.allowRefresh = true;
         }
         super.onResume();
     }

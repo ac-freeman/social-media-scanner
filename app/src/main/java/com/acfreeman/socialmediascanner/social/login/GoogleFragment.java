@@ -154,7 +154,6 @@ public class GoogleFragment extends Fragment {
 
 
             Button visibleButton = view.findViewById(R.id.login_button);
-            visibleButton.setText("Disconnect");
             visibleButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

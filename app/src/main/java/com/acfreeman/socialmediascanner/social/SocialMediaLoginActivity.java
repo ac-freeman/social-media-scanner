@@ -35,7 +35,7 @@ import com.acfreeman.socialmediascanner.social.login.TwitterFragment;
 
 import java.util.List;
 
-public class SocialMediaLoginActivity extends AppCompatActivity implements CustomDialogFragment.NoticeDialogListener, GoogleFragment.ConnectionChangedListener {
+public class SocialMediaLoginActivity extends AppCompatActivity implements CustomDialogFragment.NoticeDialogListener, GoogleFragment.ConnectionChangedListener, FacebookFragment.ConnectionChangedListener {
 
 
     public LocalDatabase database;
@@ -200,7 +200,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         Log.i("SOCIALDEBUG", "Fragment: facebook");
                         Intent startIntent = new Intent(getApplicationContext(), RegistrationInformation.class);
 //                        startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(startIntent);
                     }
                 }
@@ -278,13 +278,10 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
     public void onConnectionChanged() {
         List<Fragment> allFragments = getSupportFragmentManager().getFragments();
         for (Fragment fragment : allFragments) {
-            if (fragment instanceof GoogleFragment) {
-               FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.detach(fragment);
-                fragmentTransaction.attach(fragment);
-                fragmentTransaction.commit();
-
-            }
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.detach(fragment);
+            fragmentTransaction.attach(fragment);
+            fragmentTransaction.commit();
         }
     }
 }
