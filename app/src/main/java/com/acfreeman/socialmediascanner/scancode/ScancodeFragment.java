@@ -212,7 +212,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
                     case "go":
                         String google_id = rawArray[i + 1];
-                        uri = "plus.google.com/" + google_id;
+                        uri = "https://plus.google.com/" + google_id;
                         socialAdderArrayList.add(new SocialAdder(uri, "Google+"));
                         Social googlePlusSocial = new Social(contact.getId(), "Google+", google_id);
                         database.addSocial(googlePlusSocial);
