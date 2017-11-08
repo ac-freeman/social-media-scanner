@@ -1,6 +1,5 @@
 package com.acfreeman.socialmediascanner.showcode;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -10,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -25,7 +23,6 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.util.ArrayList;
@@ -50,6 +47,7 @@ public class ShowcodeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_showcode,
                 container, false);
+
 
         qrContainer = view.findViewById(R.id.qr_container);
         qrImage = view.findViewById(R.id.qr_image);

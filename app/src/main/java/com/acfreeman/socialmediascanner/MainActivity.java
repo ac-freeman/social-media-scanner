@@ -27,7 +27,6 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.acfreeman.socialmediascanner.db.Contact;
@@ -58,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
     public static final int MY_PERMISSIONS_REQUEST_CONTACTS = 2;
     public static final int MY_PERMISSIONS_REQUEST_PHONE = 3;
 
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public static final String firstMainActivityPref = "firstMainActivity";
     Boolean firstMainActivity;
@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Twitter.initialize(this);
         setContentView(R.layout.activity_main);
         myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -84,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         navigation.setSelectedItemId(R.id.navigation_friends);
 
         final Window window = this.getWindow();
+
+
 
 // clear FLAG_TRANSLUCENT_STATUS flag:
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
