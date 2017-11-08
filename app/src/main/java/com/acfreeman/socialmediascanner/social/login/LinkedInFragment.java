@@ -34,7 +34,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.view.MotionEvent.ACTION_BUTTON_PRESS;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
@@ -54,7 +53,7 @@ public class LinkedInFragment extends Fragment {
                              Bundle savedInstanceState) {
 
 
-        final View view = inflater.inflate(R.layout.fragment_login,
+        final View view = inflater.inflate(R.layout.fragment_login_connect,
                 container, false);
 
         database = new LocalDatabase(getApplicationContext());

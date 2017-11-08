@@ -51,7 +51,7 @@ public class TwitterFragment extends Fragment {
 
         Twitter.initialize(getActivity());
 
-        final View view = inflater.inflate(R.layout.fragment_login,
+        final View view = inflater.inflate(R.layout.fragment_login_connect,
                 container, false);
 
         database = new LocalDatabase(getApplicationContext());

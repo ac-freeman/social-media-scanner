@@ -53,7 +53,7 @@ public class SpotifyFragment extends Fragment {
                              Bundle savedInstanceState) {
 
 
-        final View view = inflater.inflate(R.layout.fragment_login,
+        final View view = inflater.inflate(R.layout.fragment_login_connect,
                 container, false);
 
         database = new LocalDatabase(getApplicationContext());

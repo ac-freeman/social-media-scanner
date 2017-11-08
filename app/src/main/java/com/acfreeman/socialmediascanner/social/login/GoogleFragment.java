@@ -1,10 +1,7 @@
 package com.acfreeman.socialmediascanner.social.login;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.db.Email;
@@ -30,7 +26,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 
@@ -77,6 +72,7 @@ public class GoogleFragment extends Fragment {
     public Owner owner;
     private int RC_SIGN_IN = 9001;
     GoogleApiClient apiClient;
+    View view;
     Boolean connected = false;
     Social googleSocial;
 
@@ -85,8 +81,6 @@ public class GoogleFragment extends Fragment {
                              Bundle savedInstanceState) {
         connected = false;
 
-        final View view = inflater.inflate(R.layout.fragment_login,
-                container, false);
 
         database = new LocalDatabase(getApplicationContext());
         owners = database.getAllOwner();
@@ -101,6 +95,14 @@ public class GoogleFragment extends Fragment {
             }
         }
 
+        if (!connected) {
+            view = inflater.inflate(R.layout.fragment_login_connect,
+                    container, false);
+        } else {
+            view = inflater.inflate(R.layout.fragment_login_disconnect,
+                    container, false);
+        }
+
         RelativeLayout background = view.findViewById(R.id.background);
         background.setBackgroundColor(Color.WHITE);
 
@@ -112,9 +114,16 @@ public class GoogleFragment extends Fragment {
         imageView.setLayoutParams(layoutParams);
 
         if (!connected) {
+
+
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestEmail()
                     .build();
+
+//            if (apiClient!=null && apiClient.hasConnectedApi(Auth.GOOGLE_SIGN_IN_API)) {
+//                Log.i("GOOGLE", "Clearing account");
+//
+//            }
 
             apiClient = new GoogleApiClient.Builder(getContext())
                     .enableAutoManage(getActivity() /* FragmentActivity */, new GoogleApiClient.OnConnectionFailedListener() {
@@ -135,21 +144,27 @@ public class GoogleFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
 //                signInButton.performClick();
+                    Auth.GoogleSignInApi.signOut(apiClient);
                     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient);
                     startActivityForResult(signInIntent, RC_SIGN_IN);
                 }
             });
 
         } else {
+
+
             Button visibleButton = view.findViewById(R.id.login_button);
             visibleButton.setText("Disconnect");
-            visibleButton.setTextColor(ContextCompat.getColor(getContext(), R.color.google_blue));
             visibleButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 //                    connected = false;
                     if (googleSocial != null) {
                         database.deleteUserSocial(googleSocial);
+                    }
+                    if (apiClient != null) {
+                        apiClient.stopAutoManage(getActivity());
+                        apiClient.disconnect();
                     }
                     mCallback.onConnectionChanged();
                 }
@@ -181,12 +196,12 @@ public class GoogleFragment extends Fragment {
                 Email gmail = new Email((long) owner.getId(), email, "GMail");
                 ArrayList<Email> userEmails = database.getUserEmails(owner.getId());
                 Boolean addEmail = true;
-                for(Email e : userEmails){
-                    if(e.getEmail().equals(email)){
+                for (Email e : userEmails) {
+                    if (e.getEmail().equals(email)) {
                         addEmail = false;
                     }
                 }
-                if(addEmail){
+                if (addEmail) {
                     database.addEmail(gmail);
                 }
                 connected = true;
