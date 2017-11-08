@@ -409,7 +409,7 @@ public class LocalDatabase extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
-                Email email = new Email(Long.parseLong(cursor.getString(0)),
+                Email email = new Email(id,
                         cursor.getString(1), cursor.getString(2));
                 emails.add(email);
             } while (cursor.moveToNext());
@@ -641,6 +641,12 @@ public class LocalDatabase extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void deleteUserSocial(Social social) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_SOCIAL, KEY_ID + " = ?" + " AND " + KEY_SO_TYPE + " = ?",
+                new String[]{String.valueOf(social.getId()), String.valueOf(social.getType())});
+        db.close();
+    }
     public void deleteUserSocials(Contact contact) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_SOCIAL, KEY_ID + " = ?",

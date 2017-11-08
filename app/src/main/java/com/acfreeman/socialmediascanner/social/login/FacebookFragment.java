@@ -39,7 +39,6 @@ import static com.facebook.FacebookSdk.getApplicationContext;
  */
 
 public class FacebookFragment extends Fragment {
-    private ImageView liButton;
 
     public LocalDatabase database;
     public List<Owner> owners;
