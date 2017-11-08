@@ -35,7 +35,7 @@ import com.acfreeman.socialmediascanner.social.login.TwitterFragment;
 
 import java.util.List;
 
-public class SocialMediaLoginActivity extends AppCompatActivity implements CustomDialogFragment.NoticeDialogListener, GoogleFragment.ConnectionChangedListener, FacebookFragment.ConnectionChangedListener {
+public class SocialMediaLoginActivity extends AppCompatActivity implements CustomDialogFragment.NoticeDialogListener, GoogleFragment.ConnectionChangedListener, FacebookFragment.ConnectionChangedListener, TwitterFragment.ConnectionChangedListener {
 
 
     public LocalDatabase database;

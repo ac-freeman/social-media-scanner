@@ -134,16 +134,15 @@ public class FacebookFragment extends Fragment {
                         ArrayList<Social> socials = database.getUserSocials(owner.getId());
                         for (Social s : socials) {
                             if (s.getType().equals("fb")) {
-                                cont = false;
+                                database.deleteUserSocial(s);
                             }
-                        }//TODO TODO
-
-                        if (cont) {
-                            /////add to database//////////
-                            Social facebook = new Social(owner.getId(), "fb", facebook_id);
-                            database.addSocial(facebook);
-                            //////////////////////////////
                         }
+
+                        /////add to database//////////
+                        Social facebook = new Social(owner.getId(), "fb", facebook_id);
+                        database.addSocial(facebook);
+                        //////////////////////////////
+
                         connected = true;
                         mCallback.onConnectionChanged();
                     }
@@ -181,7 +180,7 @@ public class FacebookFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
 //                    facebookButton.performClick();
-                    Log.i("FACEBOOK","Logging out");
+                    Log.i("FACEBOOK", "Logging out");
 
                     if (facebookSocial != null) {
                         database.deleteUserSocial(facebookSocial);
