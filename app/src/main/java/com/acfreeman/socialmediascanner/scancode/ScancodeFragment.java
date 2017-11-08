@@ -27,7 +27,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.CustomDialogFragment;
 import com.acfreeman.socialmediascanner.R;
@@ -64,6 +63,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
     private boolean connectedInternet = false;
 
     public boolean handleScan = true;
+    private CustomDialogFragment internetWarning;
 
 
     @Override
@@ -92,7 +92,15 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
         cr.onReceive(getApplicationContext(), new Intent());
         if(!connectedInternet) {
             Log.e("FFFFFFFFFFFFFF", "Internet not connected");
-            Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+            internetWarning = new CustomDialogFragment();
+
+            Bundle args = new Bundle();
+            args.putString("dialog_title", "No Internet Connection Detected");
+            args.putString("action", "acknowledge");
+
+            internetWarning.setArguments(args);
+            internetWarning.show(getFragmentManager(), "CustomDialogFragment");
         }
 
         return view;
