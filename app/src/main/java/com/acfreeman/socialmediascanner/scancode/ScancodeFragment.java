@@ -64,6 +64,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
     public boolean handleScan = true;
     private CustomDialogFragment internetWarning;
+    private boolean showAddDialog = true;
 
 
     @Override
@@ -101,6 +102,10 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
             internetWarning.setArguments(args);
             internetWarning.show(getFragmentManager(), "CustomDialogFragment");
+
+            showAddDialog = false;
+        } else {
+            showAddDialog = true;
         }
 
         return view;
@@ -488,7 +493,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
 
     public void showSocialAddDialog(String name) {
-        if (!socialAdderArrayList.isEmpty()) {
+        if (!socialAdderArrayList.isEmpty() && showAddDialog) {
             handleScan = false;
             // Create an instance of the dialog fragment and show it
             DialogFragment dialog = new CustomDialogFragment();
