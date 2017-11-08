@@ -90,7 +90,7 @@ public class TwitterFragment extends Fragment {
 
         List<Social> socials = database.getUserSocials(owner.getId());
         for (Social s : socials) {
-            if (s.getType().equals("fb")) {
+            if (s.getType().equals("tw")) {
                 twitterSocial = s;
                 connected = true;
             }
