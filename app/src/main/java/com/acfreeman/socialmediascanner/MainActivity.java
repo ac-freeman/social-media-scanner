@@ -56,14 +56,15 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
     private ZXingScannerView mScannerView;
     private boolean camera;
 
-    private static Toolbar myToolbar;
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
     public static final int MY_PERMISSIONS_REQUEST_CONTACTS = 2;
     public static final int MY_PERMISSIONS_REQUEST_PHONE = 3;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public static final String firstMainActivityPref = "firstMainActivity";
+    public static final String firstProfileCreationPref = "firstProfileCreation";
     Boolean firstMainActivity;
+    Boolean firstProfileCreation;
     ShowfriendsFragment showfriendsFragment = new ShowfriendsFragment();
     ShowcodeFragment showcodeFragment = new ShowcodeFragment();
 
@@ -78,65 +79,50 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         super.onCreate(savedInstanceState);
         Twitter.initialize(this);
         setContentView(R.layout.activity_main);
-        myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
 
         mTextMessage = findViewById(R.id.message);
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_friends);
-
-        final Window window = this.getWindow();
-
-// clear FLAG_TRANSLUCENT_STATUS flag:
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
-// finally change the color
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.setStatusBarColor(ContextCompat.getColor(this, R.color.primary));
-        }
-
-
     }
 
+    private Menu menu;
+    boolean hideMenuButtons = true;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.appbar, menu);
+        this.menu = menu;
+        MenuItem deleteButton =  menu.findItem(R.id.action_delete);
+        MenuItem saveContactsButton = menu.findItem(R.id.action_save_contact);
+        if(hideMenuButtons){
+            if (deleteButton != null && saveContactsButton != null) {
+                deleteButton.setVisible(false);
+                saveContactsButton.setVisible(false);
+            }
+        } else {
+            if (deleteButton != null && saveContactsButton != null) {
+                deleteButton.setVisible(true);
+                saveContactsButton.setVisible(true);
+            }
+        }
         return true;
     }
 
-    public static void hideAppbarButtons() {
-        MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
-        MenuItem saveContactsButton = myToolbar.getMenu().findItem(R.id.action_save_contact);
-        if (deleteButton != null && saveContactsButton != null) {
-            deleteButton.setVisible(false);
-            saveContactsButton.setVisible(false);
-        }
+    public void hideAppbarButtons() {
+        hideMenuButtons = true;
+        invalidateOptionsMenu();
     }
 
-    public static void showAppbarButtons() {
-        MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
-        MenuItem saveContactsButton = myToolbar.getMenu().findItem(R.id.action_save_contact);
-        if (deleteButton != null && saveContactsButton != null) {
-            deleteButton.setVisible(true);
-            saveContactsButton.setVisible(true);
-        }
+    public void showAppbarButtons() {
+        hideMenuButtons = false;
+        invalidateOptionsMenu();
     }
 
-    public static void toggleAppbarButtons() {
-        MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
-        MenuItem saveContactsButton = myToolbar.getMenu().findItem(R.id.action_save_contact);
-        if (deleteButton != null && saveContactsButton != null) {
-            if (deleteButton.isVisible() || saveContactsButton.isVisible())
-                hideAppbarButtons();
-            else
-                showAppbarButtons();
-        }
+    public void toggleAppbarButtons() {
+        hideMenuButtons = !hideMenuButtons;
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -293,12 +279,17 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         firstMainActivity = mPrefs.getBoolean(firstMainActivityPref, true);
         if (firstMainActivity) {
             addDummyData();
+            SharedPreferences.Editor editor = mPrefs.edit();
+            editor.putBoolean(firstMainActivityPref, false);
+            editor.commit(); // Very important to save the preference
+        }
+        firstProfileCreation = mPrefs.getBoolean(firstProfileCreationPref, true);
+        if(firstProfileCreation){
             Intent intent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             intent.putExtra("caller", "com.acfreeman.socialmediascanner.MainActivity");
             startActivity(intent);
         }
-
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.content, showfriendsFragment);
@@ -484,7 +475,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
             case "delete":
                 showfriendsFragment.deleteContacts();
 
-                MainActivity.hideAppbarButtons();
+                hideAppbarButtons();
                 break;
             case "saveContact":
                 if (ContextCompat.checkSelfPermission(this,
@@ -497,7 +488,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                     showfriendsFragment.saveContactsToDevice();
                 }
 
-                MainActivity.hideAppbarButtons();
+                hideAppbarButtons();
                 break;
         }
     }

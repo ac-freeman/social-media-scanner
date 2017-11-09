@@ -43,8 +43,6 @@ import com.acfreeman.socialmediascanner.social.login.TwitterFragment;
 
 import java.util.List;
 
-import static com.acfreeman.socialmediascanner.MainActivity.firstMainActivityPref;
-
 public class SocialMediaLoginActivity extends AppCompatActivity implements CustomDialogFragment.NoticeDialogListener,
         GoogleFragment.ConnectionChangedListener, FacebookFragment.ConnectionChangedListener, TwitterFragment.ConnectionChangedListener,
         LinkedInFragment.ConnectionChangedListener, SpotifyFragment.ConnectionChangedListener {
@@ -78,28 +76,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
         Owner owner = new Owner(0);
         database.addOwner(owner);
 
-
-        final Window window = this.getWindow();
-
-// clear FLAG_TRANSLUCENT_STATUS flag:
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-// finally change the color
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.setStatusBarColor(ContextCompat.getColor(this, R.color.google_blue));
-
-        }
-
-
         setContentView(R.layout.activity_social_media_login_container);
-
-        myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
 
         GoogleFragment googleFragment = new GoogleFragment();
 
@@ -181,9 +158,9 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         ft.replace(R.id.content, twitterFragment);
                         ft.commit();
 
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.twitter_blue));
-                        }
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                            window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.twitter_blue));
+//                        }
                     } else if (fragment instanceof TwitterFragment) {
                         Log.i("SOCIALDEBUG", "Fragment: twitter");
                         LinkedInFragment linkedinFragment = new LinkedInFragment();
@@ -195,9 +172,9 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         ft.replace(R.id.content, linkedinFragment);
                         ft.commit();
 
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.linkedin_blue));
-                        }
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                            window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.linkedin_blue));
+//                        }
                     } else if (fragment instanceof LinkedInFragment) {
                         Log.i("SOCIALDEBUG", "Fragment: linkedin");
                         SpotifyFragment spotifyFragment = new SpotifyFragment();
@@ -209,9 +186,9 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         ft.replace(R.id.content, spotifyFragment);
                         ft.commit();
 
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.spotify_green));
-                        }
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                            window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.spotify_green));
+//                        }
                     } else if (fragment instanceof SpotifyFragment) {
                         FacebookFragment facebookFragment = new FacebookFragment();
 
@@ -221,9 +198,9 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         ft.addToBackStack("facebook");
                         ft.replace(R.id.content, facebookFragment);
                         ft.commit();
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.com_facebook_blue));
-                        }
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                            window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.com_facebook_blue));
+//                        }
                     } else if (fragment instanceof FacebookFragment) {
                         Log.i("SOCIALDEBUG", "Fragment: facebook");
                         if (callerClass.getName().equals("com.acfreeman.socialmediascanner.MainActivity")) {

@@ -94,7 +94,8 @@ public class ShowfriendsFragment extends Fragment{
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                MainActivity.toggleAppbarButtons();
+
+                ((MainActivity)getActivity()).toggleAppbarButtons();
 
                 Log.i("CONTACTDEBUG", "Long click");
                 adapter.toggleEditMode();

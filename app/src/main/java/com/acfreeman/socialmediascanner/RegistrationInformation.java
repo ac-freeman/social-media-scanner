@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.acfreeman.socialmediascanner.MainActivity.firstMainActivityPref;
+import static com.acfreeman.socialmediascanner.MainActivity.firstProfileCreationPref;
 
 
 public class RegistrationInformation extends AppCompatActivity {
@@ -65,11 +65,7 @@ public class RegistrationInformation extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     SharedPreferences mPrefs;
-    final String firstLaunchPref = "firstLaunch";
 
-
-    public int plus1count = 0;
-    public int plus2count = 0;
     int textWidth;
 
     String caller;
@@ -92,32 +88,10 @@ public class RegistrationInformation extends AppCompatActivity {
         }
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-//        // second argument is the default to use if the preference can't be found
-//        Boolean firstLaunch = mPrefs.getBoolean(firstLaunchPref, true);
-//
-//        if(firstLaunch) {
-//
-//        SharedPreferences.Editor editor = mPrefs.edit();
-//        editor.putBoolean(firstLaunchPref, false);
-//        editor.commit(); // Very important to save the preference
-//        }
-//
-//        else {
-//        Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
-//            startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//         startActivity(startIntent);
-//        }
-
-
-        final TableLayout table = (TableLayout) findViewById(R.id.table_main);
+                final TableLayout table = (TableLayout) findViewById(R.id.table_main);
 
 
         TableRow tableRow;
-        TextView t1;
-        Switch t2;
-
-
         //////
         List texts = new ArrayList();
         LocalDatabase db = new LocalDatabase(getApplicationContext());
@@ -310,7 +284,7 @@ public class RegistrationInformation extends AppCompatActivity {
                     if (callerClass != null && callerClass.getName().equals("com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity")) {
                         SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                         SharedPreferences.Editor editor = mPrefs.edit();
-                        editor.putBoolean(firstMainActivityPref, false);
+                        editor.putBoolean(firstProfileCreationPref, false);
                         editor.commit(); // Very important to save the preference
                     }
 
