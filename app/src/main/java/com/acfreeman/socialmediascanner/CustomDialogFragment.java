@@ -57,6 +57,10 @@ public class CustomDialogFragment extends DialogFragment {
             case "appInstall":
                 positive = "Install";
                 negative = "Not now";
+                break;
+            case "acknowledge":
+                positive = "Ok";
+                break;
             default:
                 positive = "Ok";
                 negative = "Cancel";

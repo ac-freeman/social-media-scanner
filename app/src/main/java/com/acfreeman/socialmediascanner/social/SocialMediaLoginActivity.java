@@ -4,12 +4,12 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -22,25 +22,26 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.acfreeman.socialmediascanner.CustomDialogFragment;
 import com.acfreeman.socialmediascanner.MainActivity;
 import com.acfreeman.socialmediascanner.R;
+import com.acfreeman.socialmediascanner.RegistrationInformation;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.social.login.FacebookFragment;
+import com.acfreeman.socialmediascanner.social.login.GoogleFragment;
 import com.acfreeman.socialmediascanner.social.login.LinkedInFragment;
 import com.acfreeman.socialmediascanner.social.login.SpotifyFragment;
 import com.acfreeman.socialmediascanner.social.login.TwitterFragment;
-import com.facebook.CallbackManager;
-import com.facebook.login.widget.LoginButton;
-import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import java.util.List;
 
-public class SocialMediaLoginActivity extends AppCompatActivity implements CustomDialogFragment.NoticeDialogListener {
-
+public class SocialMediaLoginActivity extends AppCompatActivity implements CustomDialogFragment.NoticeDialogListener,
+        GoogleFragment.ConnectionChangedListener, FacebookFragment.ConnectionChangedListener, TwitterFragment.ConnectionChangedListener,
+        LinkedInFragment.ConnectionChangedListener, SpotifyFragment.ConnectionChangedListener {
 
 
     public LocalDatabase database;
@@ -49,95 +50,120 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 
     private static Toolbar myToolbar;
 
+    String caller;
+    Class callerClass;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        caller = getIntent().getStringExtra("caller");
+        try {
+            callerClass = Class.forName(caller);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
         database = new LocalDatabase(getApplicationContext());
-        owners = database.getAllOwner();
-        owner = owners.get(0);
+
+        LocalDatabase database = new LocalDatabase(getApplicationContext());
+        if (database.getAllOwner().size() > 0)
+            database.deleteOwner(0);
+        Owner owner = new Owner(0);
+        database.addOwner(owner);
 
         final Window window = this.getWindow();
-
-// clear FLAG_TRANSLUCENT_STATUS flag:
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-// finally change the color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.setStatusBarColor(ContextCompat.getColor(this,R.color.twitter_blue));
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.google_blue));
 
         }
 
 
         setContentView(R.layout.activity_social_media_login_container);
 
-        myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
-
-        TwitterFragment twitterFragment = new TwitterFragment();
+        GoogleFragment googleFragment = new GoogleFragment();
 
         FragmentManager fm = getSupportFragmentManager();
 
         fm.addOnBackStackChangedListener(
                 new FragmentManager.OnBackStackChangedListener() {
                     public void onBackStackChanged() {
+
+                        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+                        Animation slide = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_out_bottom);
+                        fab.startAnimation(slide);
+
+                        Drawable d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_white_24dp);
+                        final Drawable d2 = d.getConstantState().newDrawable();
+
                         List<Fragment> allFragments = getSupportFragmentManager().getFragments();
-                        Log.i("BACKSTACK","Backstack entry count: " + getSupportFragmentManager().getBackStackEntryCount());
+                        Log.i("BACKSTACK", "Backstack entry count: " + getSupportFragmentManager().getBackStackEntryCount());
                         for (Fragment fragment : allFragments) {
-                            if (fragment instanceof TwitterFragment) {
-                                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
-                                Drawable d = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_arrow_forward_white_24dp);
-                                Drawable d2 = d.getConstantState().newDrawable();
-                                d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(),R.color.twitter_blue), PorterDuff.Mode.MULTIPLY);
-                                fab.setImageDrawable(d2);
+                            if (fragment instanceof GoogleFragment) {
+                                d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.google_blue), PorterDuff.Mode.MULTIPLY);
+                            } else if (fragment instanceof TwitterFragment) {
+                                d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.twitter_blue), PorterDuff.Mode.MULTIPLY);
                             } else if (fragment instanceof LinkedInFragment) {
-                                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
-                                Drawable d = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_arrow_forward_white_24dp);
-                                Drawable d2 = d.getConstantState().newDrawable();
-                                d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(),R.color.linkedin_blue), PorterDuff.Mode.MULTIPLY);
-                                fab.setImageDrawable(d2);
+                                d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.linkedin_blue), PorterDuff.Mode.MULTIPLY);
                             } else if (fragment instanceof SpotifyFragment) {
-                                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
-                                Drawable d = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_arrow_forward_white_24dp);
-                                Drawable d2 = d.getConstantState().newDrawable();
-                                d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(),R.color.spotify_green), PorterDuff.Mode.MULTIPLY);
-                                fab.setImageDrawable(d2);
+                                d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.spotify_green), PorterDuff.Mode.MULTIPLY);
                             } else if (fragment instanceof FacebookFragment) {
-                                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
-                                Drawable d = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_arrow_forward_white_24dp);
-                                Drawable d2 = d.getConstantState().newDrawable();
-                                d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(),R.color.com_facebook_blue), PorterDuff.Mode.MULTIPLY);
-                                fab.setImageDrawable(d2);
+                                d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.com_facebook_blue), PorterDuff.Mode.MULTIPLY);
                             }
                         }
+
+                        new Handler().postDelayed(new Runnable(){
+                            @Override
+                            public void run() {
+                                fab.setVisibility(View.VISIBLE);
+                                fab.setImageDrawable(d2);
+                                Animation slide = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_in_bottom);
+                                fab.startAnimation(slide);
+                            }
+                        }, 250);
+
                     }
                 });
 
 
         FragmentTransaction ft = fm.beginTransaction();
         ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
-        ft.addToBackStack("twitter");
-        ft.replace(R.id.content, twitterFragment);
+        ft.addToBackStack("google");
+        ft.replace(R.id.content, googleFragment);
         ft.commit();
 
 
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
-        Drawable d = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_arrow_forward_white_24dp);
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+        Drawable d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_white_24dp);
         Drawable d2 = d.getConstantState().newDrawable();
-        d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(),R.color.twitter_blue), PorterDuff.Mode.MULTIPLY);
+        d2.mutate().
+
+                setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.google_blue), PorterDuff.Mode.MULTIPLY);
         fab.setImageDrawable(d2);
-        fab.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View v) {
+
                 List<Fragment> allFragments = getSupportFragmentManager().getFragments();
                 for (Fragment fragment : allFragments) {
-                    if (fragment instanceof TwitterFragment) {
+                    if (fragment instanceof GoogleFragment) {
+                        Log.i("SOCIALDEBUG", "Fragment: google");
+                        TwitterFragment twitterFragment = new TwitterFragment();
+
+                        FragmentManager fm = getSupportFragmentManager();
+                        FragmentTransaction ft = fm.beginTransaction();
+                        ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
+                        ft.addToBackStack("twitter");
+                        ft.replace(R.id.content, twitterFragment);
+                        ft.commit();
+                    } else if (fragment instanceof TwitterFragment) {
+                        Log.i("SOCIALDEBUG", "Fragment: twitter");
                         LinkedInFragment linkedinFragment = new LinkedInFragment();
 
                         FragmentManager fm = getSupportFragmentManager();
@@ -146,11 +172,8 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         ft.addToBackStack("linkedin");
                         ft.replace(R.id.content, linkedinFragment);
                         ft.commit();
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(),R.color.linkedin_blue));
-                        }
                     } else if (fragment instanceof LinkedInFragment) {
+                        Log.i("SOCIALDEBUG", "Fragment: linkedin");
                         SpotifyFragment spotifyFragment = new SpotifyFragment();
 
                         FragmentManager fm = getSupportFragmentManager();
@@ -159,10 +182,6 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         ft.addToBackStack("spotify");
                         ft.replace(R.id.content, spotifyFragment);
                         ft.commit();
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(),R.color.spotify_green));
-                        }
                     } else if (fragment instanceof SpotifyFragment) {
                         FacebookFragment facebookFragment = new FacebookFragment();
 
@@ -172,12 +191,19 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         ft.addToBackStack("facebook");
                         ft.replace(R.id.content, facebookFragment);
                         ft.commit();
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(),R.color.com_facebook_blue));
+                    } else if (fragment instanceof FacebookFragment) {
+                        Log.i("SOCIALDEBUG", "Fragment: facebook");
+                        if (callerClass.getName().equals("com.acfreeman.socialmediascanner.MainActivity")) {
+                            Log.i("CRASHDEBUG", "Caller class MainActivity");
+                            Intent startIntent = new Intent(getApplicationContext(), RegistrationInformation.class);
+                            startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startIntent.putExtra("caller", "com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity");
+                            startActivity(startIntent);
+                        } else {
+                            Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+                            startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(startIntent);
                         }
-                    } else {
-                        Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(startIntent);
                     }
                 }
             }
@@ -192,7 +218,9 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 
         List<android.support.v4.app.Fragment> allFragments = getSupportFragmentManager().getFragments();
         for (android.support.v4.app.Fragment fragment : allFragments) {
-            if (fragment instanceof TwitterFragment) {
+            if (fragment instanceof GoogleFragment) {
+                ((GoogleFragment) fragment).onActivityResult(requestCode, resultCode, data);
+            } else if (fragment instanceof TwitterFragment) {
                 ((TwitterFragment) fragment).onActivityResult(requestCode, resultCode, data);
             } else if (fragment instanceof LinkedInFragment) {
                 ((LinkedInFragment) fragment).onActivityResult(requestCode, resultCode, data);
@@ -228,8 +256,6 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 
         Intent startIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
         startActivity(startIntent);
-
-
     }
 
     @Override
@@ -248,7 +274,14 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
     }
 
 
+    @Override
+    public void onConnectionChanged() {
+        List<Fragment> allFragments = getSupportFragmentManager().getFragments();
+        for (Fragment fragment : allFragments) {
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.detach(fragment);
+            fragmentTransaction.attach(fragment);
+            fragmentTransaction.commit();
+        }
+    }
 }
-
-
-

@@ -16,4 +16,10 @@
         android:title="@string/title_delete"
         app:showAsAction="always"
         android:visible="false"/>
+
+    <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        app:showAsAction="never"
+        />
 </menu>

@@ -11,6 +11,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -24,11 +25,8 @@ import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.db.Contact;
 import com.acfreeman.socialmediascanner.db.Email;
@@ -39,6 +37,7 @@ import com.acfreeman.socialmediascanner.db.Social;
 import com.acfreeman.socialmediascanner.scancode.ScancodeFragment;
 import com.acfreeman.socialmediascanner.showcode.ShowcodeFragment;
 import com.acfreeman.socialmediascanner.showfriends.ShowfriendsFragment;
+import com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity;
 import com.twitter.sdk.android.core.Twitter;
 
 import java.util.ArrayList;
@@ -53,15 +52,17 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
     private ZXingScannerView mScannerView;
     private boolean camera;
 
-    private static Toolbar myToolbar;
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
     public static final int MY_PERMISSIONS_REQUEST_CONTACTS = 2;
     public static final int MY_PERMISSIONS_REQUEST_PHONE = 3;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public static final String firstMainActivityPref = "firstMainActivity";
+    public static final String firstProfileCreationPref = "firstProfileCreation";
     Boolean firstMainActivity;
+    Boolean firstProfileCreation;
     ShowfriendsFragment showfriendsFragment = new ShowfriendsFragment();
+    ShowcodeFragment showcodeFragment = new ShowcodeFragment();
 
     /**
      * Called when activity begins
@@ -74,65 +75,50 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         super.onCreate(savedInstanceState);
         Twitter.initialize(this);
         setContentView(R.layout.activity_main);
-        myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
 
         mTextMessage = findViewById(R.id.message);
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_friends);
-
-        final Window window = this.getWindow();
-
-// clear FLAG_TRANSLUCENT_STATUS flag:
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
-// finally change the color
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.setStatusBarColor(ContextCompat.getColor(this,R.color.primary));
-        }
-
-
     }
 
+    private Menu menu;
+    boolean hideMenuButtons = true;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.appbar, menu);
+        this.menu = menu;
+        MenuItem deleteButton =  menu.findItem(R.id.action_delete);
+        MenuItem saveContactsButton = menu.findItem(R.id.action_save_contact);
+        if(hideMenuButtons){
+            if (deleteButton != null && saveContactsButton != null) {
+                deleteButton.setVisible(false);
+                saveContactsButton.setVisible(false);
+            }
+        } else {
+            if (deleteButton != null && saveContactsButton != null) {
+                deleteButton.setVisible(true);
+                saveContactsButton.setVisible(true);
+            }
+        }
         return true;
     }
 
-    public static void hideAppbarButtons() {
-        MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
-        MenuItem saveContactsButton = myToolbar.getMenu().findItem(R.id.action_save_contact);
-        if (deleteButton != null && saveContactsButton != null) {
-            deleteButton.setVisible(false);
-            saveContactsButton.setVisible(false);
-        }
+    public void hideAppbarButtons() {
+        hideMenuButtons = true;
+        invalidateOptionsMenu();
     }
 
-    public static void showAppbarButtons() {
-        MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
-        MenuItem saveContactsButton = myToolbar.getMenu().findItem(R.id.action_save_contact);
-        if (deleteButton != null && saveContactsButton != null) {
-            deleteButton.setVisible(true);
-            saveContactsButton.setVisible(true);
-        }
+    public void showAppbarButtons() {
+        hideMenuButtons = false;
+        invalidateOptionsMenu();
     }
 
-    public static void toggleAppbarButtons() {
-        MenuItem deleteButton = myToolbar.getMenu().findItem(R.id.action_delete);
-        MenuItem saveContactsButton = myToolbar.getMenu().findItem(R.id.action_save_contact);
-        if (deleteButton != null && saveContactsButton != null) {
-            if (deleteButton.isVisible() || saveContactsButton.isVisible())
-                hideAppbarButtons();
-            else
-                showAppbarButtons();
-        }
+    public void toggleAppbarButtons() {
+        hideMenuButtons = !hideMenuButtons;
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -142,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         switch (item.getItemId()) {
             case R.id.action_delete:
                 dialog = new CustomDialogFragment();
-
                 args = new Bundle();
                 args.putString("dialog_title", "Delete selected contacts?");
                 args.putString("action", "delete");
@@ -159,6 +144,11 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
                 dialog.setArguments(args);
                 dialog.show(getFragmentManager(), "CustomDialogFragment");
+                return true;
+            case R.id.action_settings:
+                Intent startIntent = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(startIntent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -173,11 +163,9 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            FrameLayout frameLayout = findViewById(R.id.content);
             switch (item.getItemId()) {
                 case R.id.navigation_show:
                     if (!showCode) {
-//                        frameLayout.removeAllViews();
                         if (camera) {
                             camera = false;
                             if (mScannerView != null)
@@ -189,12 +177,8 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                     return true;
 
                 case R.id.navigation_friends:
-//                    frameLayout.removeAllViews();
                     if (camera) {
                         camera = false;
-//                        mScannerView.stopCamera();
-//                        frameLayout.removeAllViews();
-
                     }
                     showCode = false;
                     showFriends();
@@ -203,9 +187,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                     return true;
 
                 case R.id.navigation_camera:
-//                    frameLayout.removeAllViews();
                     camera = true;
-
                     showCode = false;
                     scanCode();
                     hideAppbarButtons();
@@ -229,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         // get fragment manager
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.content, new ShowcodeFragment());
+        ft.replace(R.id.content, showcodeFragment);
         ft.commit();
     }
 
@@ -286,11 +268,18 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
             editor.putBoolean(firstMainActivityPref, false);
             editor.commit(); // Very important to save the preference
         }
-
+        firstProfileCreation = mPrefs.getBoolean(firstProfileCreationPref, true);
+        if(firstProfileCreation){
+            Intent intent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.putExtra("caller", "com.acfreeman.socialmediascanner.MainActivity");
+            startActivity(intent);
+        }
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.content, showfriendsFragment);
-        ft.commit();
+        ft.commitAllowingStateLoss();
+
     }
 
 
@@ -471,7 +460,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
             case "delete":
                 showfriendsFragment.deleteContacts();
 
-                MainActivity.hideAppbarButtons();
+                hideAppbarButtons();
                 break;
             case "saveContact":
                 if (ContextCompat.checkSelfPermission(this,
@@ -484,7 +473,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                     showfriendsFragment.saveContactsToDevice();
                 }
 
-                MainActivity.hideAppbarButtons();
+                hideAppbarButtons();
                 break;
         }
     }
@@ -576,5 +565,51 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+    }
+
+    boolean doubleBackToExitPressedOnce = false;
+
+    @Override
+    public void onBackPressed() {
+        Log.i("BACKBUTTON", "Back pressed");
+        if (doubleBackToExitPressedOnce) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                this.finishAffinity();
+            } else {
+                this.finish();
+                System.exit(0);
+            }
+            return;
+        }
+
+        Log.i("BACKBUTTON", "not null");
+        if (showfriendsFragment.adapter.inEditmode) {
+            showfriendsFragment.adapter.inEditmode = false;
+            for (int i = 0; i < showfriendsFragment.adapter.checks.size(); i++) {
+                showfriendsFragment.adapter.checks.set(i, 0);
+            }
+            showfriendsFragment.adapter.notifyDataSetChanged();
+            hideAppbarButtons();
+        } else {
+            Log.i("BACKBUTTON", "null");
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, "Press BACK again to exit", Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 2000);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        if (showcodeFragment != null) {
+            showcodeFragment.allowRefresh = true;
+        }
+        super.onResume();
     }
 }

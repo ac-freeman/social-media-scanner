@@ -30,17 +30,20 @@ import com.acfreeman.socialmediascanner.db.Email;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Phone;
+import com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.acfreeman.socialmediascanner.MainActivity.firstProfileCreationPref;
+
 
 public class RegistrationInformation extends AppCompatActivity {
-   // private LinearLayout mLayout;
-   // private EditText mEditText;
-   // private Button  addEmailBtn;
+    // private LinearLayout mLayout;
+    // private EditText mEditText;
+    // private Button  addEmailBtn;
     //FrameLayout frameLayout = findViewById(R.id.content);
     //mTextMessage = new TextView(this);
 
@@ -62,11 +65,11 @@ public class RegistrationInformation extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     SharedPreferences mPrefs;
-    final String firstLaunchPref= "firstLaunch";
 
+    int textWidth;
 
-    public int plus1count = 0;
-    public int plus2count = 0;
+    String caller;
+    Class callerClass;
 
     @Override
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -75,40 +78,38 @@ public class RegistrationInformation extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration_information);
 
+        caller = getIntent().getStringExtra("caller");
+        if(caller!=null) {
+            try {
+                callerClass = Class.forName(caller);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        // second argument is the default to use if the preference can't be found
-        Boolean firstLaunch = mPrefs.getBoolean(firstLaunchPref, true);
-
-        if(firstLaunch) {
-
-        SharedPreferences.Editor editor = mPrefs.edit();
-        editor.putBoolean(firstLaunchPref, false);
-        editor.commit(); // Very important to save the preference
-        }
-
-        else {
-        Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
-         startActivity(startIntent);
-        }
-
-
-        final TableLayout table = (TableLayout) findViewById(R.id.table_main);
+                final TableLayout table = (TableLayout) findViewById(R.id.table_main);
 
 
         TableRow tableRow;
-        TextView t1;
-        Switch t2;
-
-
         //////
         List texts = new ArrayList();
         LocalDatabase db = new LocalDatabase(getApplicationContext());
 
-        Display display = getWindowManager().getDefaultDisplay(); Point size = new Point(); display.getSize(size); width = size.x; height = size.y;
-        final int textWidth = width/2;
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        width = size.x;
+        height = size.y;
+        textWidth = (width * 3) / 4;
+
+        LocalDatabase database = new LocalDatabase(getApplicationContext());
+        Owner owner = database.getOwner(0);
 
         final EditText nameEditText = new EditText(this);
+        if(owner.getName() != null){
+            nameEditText.setText(owner.getName());
+        }
         nameEditText.setHint("Name");
         nameEditText.setWidth(textWidth);
         tableRow = new TableRow(this);
@@ -116,48 +117,38 @@ public class RegistrationInformation extends AppCompatActivity {
         table.addView(tableRow);
 
         ////////phone/////////
-        final EditText phoneEditText = new EditText(this);
-        phoneEditText.setHint("Phone");
-        phoneEditText.setInputType(InputType.TYPE_CLASS_PHONE);
-        phoneEditText.setWidth(textWidth);
-        phoneEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
-        phoneEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(16)});
 
-        final ImageButton plusPhone = new ImageButton(this);
-//        final Button plusPhone = new Button(this);
-//        plusPhone.setText("+");
-        plusPhone.setImageResource(R.drawable.ic_add_circle_green_24px);
-        TypedValue typedValue = new TypedValue();
-        getTheme().resolveAttribute(R.attr.selectableItemBackground, typedValue, true);
-        plusPhone.setBackgroundResource(typedValue.resourceId);
+
+        final ArrayList<Phone> phones = database.getUserPhones(0);
+        int index = 1;
+        if (phones.size() > 0) {
+            for (int i = 0; i <phones.size() ; i++) {
+                addPhoneEditText(table,index,phones.get(i).getNumber());
+                index++;
+            }
+        }
+
+        addPhoneEditText(table,index, -1);
+        index++;
+
         plusPhoneCnt = 0;
-
-        final TableRow phoneRow = new TableRow(this);
-        phoneRow.addView(phoneEditText);
-        phoneRow.addView(plusPhone);
-        table.addView(phoneRow);
-
-        PhoneList.add(phoneEditText);
         ////////phone/////////
 
 
         ////////email/////////
-        EditText emailEditText = new EditText(this);
-        emailEditText.setHint("Email");
-        emailEditText.setWidth(textWidth);
-//        final Button plusEmail = new Button(this);
-//        plusEmail.setText("+");
-        final ImageButton plusEmail = new ImageButton(this);
-        plusEmail.setImageResource(R.drawable.ic_add_circle_green_24px);
-        plusEmail.setBackgroundResource(typedValue.resourceId);
+
+        final ArrayList<Email> emails = database.getUserEmails(0);
+        if (emails.size() > 0) {
+            for (int i = 0; i <emails.size() ; i++) {
+                addEmailEditText(table,index,emails.get(i).getEmail());
+                index++;
+            }
+        }
+
+        addEmailEditText(table,index, "");
+        index++;
+
         plusEmailCnt = 0;
-
-        TableRow emailRow = new TableRow(this);
-        emailRow.addView(emailEditText);
-        emailRow.addView(plusEmail);
-        table.addView(emailRow);
-
-        EmailList.add(emailEditText);
         ////////email/////////
 
         final Button submitButton = new Button(this);
@@ -166,77 +157,6 @@ public class RegistrationInformation extends AppCompatActivity {
         submitRow.addView(submitButton);
         table.addView(submitRow);
 
-        plusPhone.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onClick(View view) {
-                if(plusPhoneCnt<2) {
-
-                    TableRow curRow = (TableRow) view.getParent();
-                    // It's index
-                    int index = table.indexOfChild(curRow);
-                    curRow.removeView(plusPhone);
-
-
-//                    Button minusPhone = new Button(getApplicationContext());
-//                    minusPhone.setText("-");
-//                    minusPhone.setWidth(LayoutParams.WRAP_CONTENT);  //Doesn't work
-//                    curRow.addView(minusPhone);
-//
-//                    minusPhone.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//
-//                        }
-//                    });
-
-                    EditText phoneEditText = new EditText(getApplicationContext());
-                    phoneEditText.setHint("Phone");
-                    phoneEditText.setInputType(InputType.TYPE_CLASS_PHONE);
-                    phoneEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
-                    phoneEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(16)});
-                    phoneEditText.setWidth(textWidth);
-                    PhoneList.add(phoneEditText);
-
-                    TableRow newPhoneRow = new TableRow(getApplicationContext());
-                    newPhoneRow.addView(phoneEditText);
-                    newPhoneRow.addView(plusPhone);
-
-                    table.addView(newPhoneRow, index + 1);
-
-                    plusPhoneCnt++;
-                }
-            }
-        });
-
-        plusEmail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if(plusEmailCnt < 2) {
-
-
-                    TableRow curRow = (TableRow) view.getParent();
-                    // It's index
-                    int index = table.indexOfChild(curRow);
-                    curRow.removeView(plusEmail);
-
-                    EditText emailEditText = new EditText(getApplicationContext());
-                    emailEditText.setHint("Email");
-                    emailEditText.setWidth(textWidth);
-                    EmailList.add(emailEditText);
-
-
-                    TableRow newEmailRow = new TableRow(getApplicationContext());
-                    newEmailRow.addView(emailEditText);
-                    newEmailRow.addView(plusEmail);
-
-                    table.addView(newEmailRow, index + 1);
-
-                    plusEmailCnt++;
-                }
-            }
-        });
 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -260,8 +180,8 @@ public class RegistrationInformation extends AppCompatActivity {
 
                         ")+";
 
-                 String validPhone = "^\\(?([0-9]{3})\\)?[-.\\s]?([0-9]{3})[-.\\s]?([0-9]{4})$";
-                 String validInterPhone = "^\\+(?:[0-9] ?){6,14}[0-9]$";
+                String validPhone = "^\\(?([0-9]{3})\\)?[-.\\s]?([0-9]{3})[-.\\s]?([0-9]{4})$";
+                String validInterPhone = "^\\+(?:[0-9] ?){6,14}[0-9]$";
 
                 if (nameEditText.getText().toString().trim().equals("")) {
                     Toast.makeText(getApplicationContext(), "Name is required!", Toast.LENGTH_SHORT).show();
@@ -271,75 +191,108 @@ public class RegistrationInformation extends AppCompatActivity {
 
                 ////
 
-                    for (EditText p : PhoneList) {
+                for (EditText p : PhoneList) {
 
-                        matcher1= Pattern.compile(validPhone).matcher(p.getText().toString());
-                        matcher2 = Pattern.compile(validInterPhone).matcher(p.getText().toString());
+                    matcher1 = Pattern.compile(validPhone).matcher(p.getText().toString());
+                    matcher2 = Pattern.compile(validInterPhone).matcher(p.getText().toString());
 
-                        number = p.getText().toString();
-                        numFormated = number.replaceAll("[^0-9]", "");
-                        if (p.getText().toString().trim().equals("")) {
-                            //Toast.makeText(getApplicationContext(), "Phone number is required!", Toast.LENGTH_SHORT).show();
-                            p.setError("Phone number is required!");
-                            error = true;
-                        } else if(numFormated.length() < 7 || numFormated.length() > 7 && !matcher1.matches() && !matcher2.matches()){
-                            Toast.makeText(getApplicationContext(), "Phone number is not valid!", Toast.LENGTH_SHORT).show();
+                    number = p.getText().toString();
+                    numFormated = number.replaceAll("[^0-9]", "");
+                     if (numFormated.length() < 7 || numFormated.length() > 7 && !matcher1.matches() && !matcher2.matches()) {
+                         if(numFormated.length() != 0) {
+                             Toast.makeText(getApplicationContext(), "Phone number is not valid!", Toast.LENGTH_SHORT).show();
 
-                            if (numFormated.length() > 10){
-                                p.setError("For International Numbers Use (+). US Country Code Not Needed.");
-                            }
-                            else {p.setError("Enter a vaild phone number!");}
-                            error = true;}
-                        else {
-//                            Phone phone = new Phone(owner.getId(), Long.parseLong(numFormated), "Cell");
-//                            database.addPhone(phone);
-//                            Toast.makeText(getApplicationContext(), "Phone number stored as: " + numFormated, Toast.LENGTH_SHORT).show();
-                          
+                             if (numFormated.length() > 10) {
+                                 p.setError("For International Numbers Use (+). US Country Code Not Needed.");
+                             } else {
+                                 p.setError("Enter a vaild phone number!");
+                             }
+                             error = true;
+                         } else{
+                             p.setTag("DELETE");
+                         }
+                    }
+                }
+                for (int i = 0; i < PhoneList.size(); i++) {
+                    if(PhoneList.get(i).getTag() != null) {
+                        if (PhoneList.get(i).getTag().equals("DELETE")) {
+                            PhoneList.remove(i);
+                            i--;
                         }
                     }
+                }
 
-                    for (EditText e : EmailList) {
-                        matcher1= Pattern.compile(validEmail).matcher(e.getText().toString());
-                        Log.i("Email Debug", "Email address: " + e.getText().toString());
-                        if (e.getText().toString().trim().equals("")) {
-                            Toast.makeText(getApplicationContext(), "Email is required!", Toast.LENGTH_SHORT).show();
-                            e.setError("Email is required!");
-                            error = true;
-                        }else if(!matcher1.matches()){
-                            Toast.makeText(getApplicationContext(),"Email address is not valid!",Toast.LENGTH_LONG).show();
+                for (EditText e : EmailList) {
+                    matcher1 = Pattern.compile(validEmail).matcher(e.getText().toString());
+                    Log.i("Email Debug", "Email address: " + e.getText().toString());
+                    if(e.getText().length()!= 0) {
+                        if (!matcher1.matches()) {
+                            Toast.makeText(getApplicationContext(), "Email address is not valid!", Toast.LENGTH_LONG).show();
                             e.setError("Enter valid email address!");
                             error = true;
                         }
+                    } else {
+                        e.setTag("DELETE");
                     }
-                    ////
-
-                    if(!error) {
-                        LocalDatabase database = new LocalDatabase(getApplicationContext());
-                        Owner owner = new Owner(0, nameEditText.getText().toString());
-                        database.addOwner(owner);
-
-
-                        for (EditText p : PhoneList) {
-                            //matcher= Pattern.compile(validPhone).matcher(p.getText().toString());
-                            number = p.getText().toString();
-                            numFormated = number.replaceAll("[^0-9]", "");
-                            Phone phone = new Phone(owner.getId(), Long.parseLong(numFormated), "Cell");
-                            database.addPhone(phone);
-                            Toast.makeText(getApplicationContext(), "Phone number stored as: " + numFormated, Toast.LENGTH_SHORT).show();
+                }
+                for (int i = 0; i < EmailList.size(); i++) {
+                    if(EmailList.get(i).getTag() != null) {
+                        if (EmailList.get(i).getTag().equals("DELETE")) {
+                            EmailList.remove(i);
+                            i--;
                         }
-
-                        for (EditText e : EmailList) {
-
-                            Email email = new Email((long) owner.getId(), e.getText().toString(), "Work");
-                            database.addEmail(email);
-                            Toast.makeText(getApplicationContext(), "Email stored as: " + email.getEmail(), Toast.LENGTH_SHORT).show();
-                        }
-
-
-                        Intent startIntent = new Intent(getApplicationContext(), GoogleLoginActivity.class);
-
-                        startActivity(startIntent);
                     }
+                }
+                ////
+
+                if (!error) {
+                    LocalDatabase database = new LocalDatabase(getApplicationContext());
+                    Owner owner = database.getOwner(0);
+                    database.deleteOwner(owner);
+                    owner = new Owner(0, nameEditText.getText().toString());
+                    database.addOwner(owner);
+
+                    final ArrayList<Email> emails = database.getUserEmails(0);
+                    if (emails.size() > 0) {
+                        database.deleteUserEmails(owner.getId());
+                    }
+
+                    final ArrayList<Phone> phones = database.getUserPhones(0);
+                    if(phones.size() > 0) {
+                        database.deleteUserPhones(owner.getId());
+                    }
+
+
+                    for (EditText p : PhoneList) {
+                        //matcher= Pattern.compile(validPhone).matcher(p.getText().toString());
+                        number = p.getText().toString();
+                        numFormated = number.replaceAll("[^0-9]", "");
+                        Phone phone = new Phone(owner.getId(), Long.parseLong(numFormated), "Cell");
+                        Log.i("PHONEDEBUG",String.valueOf(phone.getNumber()));
+                        database.addPhone(phone);
+                        Toast.makeText(getApplicationContext(), "Phone number stored as: " + numFormated, Toast.LENGTH_SHORT).show();
+                    }
+
+                    for (EditText e : EmailList) {
+
+                        Email email = new Email((long) owner.getId(), e.getText().toString(), "Work");
+                        database.addEmail(email);
+                        Toast.makeText(getApplicationContext(), "Email stored as: " + email.getEmail(), Toast.LENGTH_SHORT).show();
+                    }
+
+
+                    if (callerClass != null && callerClass.getName().equals("com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity")) {
+                        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                        SharedPreferences.Editor editor = mPrefs.edit();
+                        editor.putBoolean(firstProfileCreationPref, false);
+                        editor.commit(); // Very important to save the preference
+                    }
+
+                    Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+                    startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+                    startActivity(startIntent);
+                }
 
             }
         });
@@ -347,26 +300,116 @@ public class RegistrationInformation extends AppCompatActivity {
 
     }
 
+    private void addPhoneEditText(final TableLayout table, final int index, long number) {
+        final EditText phoneEditText = new EditText(this);
+        phoneEditText.setHint("Phone");
+        phoneEditText.setInputType(InputType.TYPE_CLASS_PHONE);
+        phoneEditText.setWidth(textWidth);
+        phoneEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+        phoneEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(16)});
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    private EditText createEditText(String text, LayoutParams param) {
-        //name box
-        EditText edit = new EditText(this);
-        edit.setId(View.generateViewId());
-        edit.setHint(text);
-        //param
-        param.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        param.width = width/2;
+        final ImageButton phoneButton = new ImageButton(this);
+//        final Button plusPhone = new Button(this);
+//        plusPhone.setText("+");
+        TypedValue typedValue = new TypedValue();
+        getTheme().resolveAttribute(R.attr.selectableItemBackground, typedValue, true);
+        phoneButton.setBackgroundResource(typedValue.resourceId);
 
-        return edit;
+
+        if(number !=-1) {
+            phoneEditText.setText(String.valueOf(number));
+            phoneButton.setImageResource(R.drawable.ic_remove_circle_red_24dp);
+            phoneButton.setTag("remove");
+        } else {
+
+            phoneButton.setImageResource(R.drawable.ic_add_circle_green_24px);
+            phoneButton.setTag("add");
+        }
+
+
+        final TableRow phoneRow = new TableRow(this);
+        phoneRow.addView(phoneEditText);
+        phoneRow.addView(phoneButton);
+        table.addView(phoneRow, index);
+
+        PhoneList.add(phoneEditText);
+
+
+        phoneButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onClick(View view) {
+
+                if(phoneButton.getTag().equals("add")) {
+                    addPhoneEditText(table, table.indexOfChild(phoneRow)+1, -1);
+                    phoneButton.setImageResource(R.drawable.ic_remove_circle_red_24dp);/////
+                    phoneButton.setTag("remove");
+
+                    plusPhoneCnt++;
+                } else {
+                    table.removeView(phoneRow);
+                    PhoneList.remove(phoneEditText);
+                }
+
+            }
+        });
+
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    private Button createPlusButton(LayoutParams param, EditText edit) {
-        Button button = new Button(this);
-        button.setId(View.generateViewId());
-        button.setText("+");
-        param.addRule(RelativeLayout.RIGHT_OF, edit.getId());
-        return button;
+    private void addEmailEditText(final TableLayout table, final int index, String text){
+        final EditText emailEditText = new EditText(this);
+        emailEditText.setHint("Email");
+        emailEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+      
+
+        if(!text.equals(""))
+            emailEditText.setText(text);
+        emailEditText.setWidth(textWidth);
+//        final Button plusEmail = new Button(this);
+//        plusEmail.setText("+");
+        final ImageButton emailButton = new ImageButton(this);
+        TypedValue typedValue = new TypedValue();
+        getTheme().resolveAttribute(R.attr.selectableItemBackground, typedValue, true);
+        emailButton.setBackgroundResource(typedValue.resourceId);
+
+        if(!text.equals("")) {
+            emailEditText.setText(text);
+            emailButton.setImageResource(R.drawable.ic_remove_circle_red_24dp);
+            emailButton.setTag("remove");
+        } else {
+
+            emailButton.setImageResource(R.drawable.ic_add_circle_green_24px);
+            emailButton.setTag("add");
+        }
+
+
+        final TableRow emailRow = new TableRow(this);
+        emailRow.addView(emailEditText);
+        emailRow.addView(emailButton);
+        table.addView(emailRow, index);
+
+        EmailList.add(emailEditText);
+
+
+        emailButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                if(emailButton.getTag().equals("add")) {
+                    addEmailEditText(table, table.indexOfChild(emailRow)+1,"");
+                    emailButton.setImageResource(R.drawable.ic_remove_circle_red_24dp);/////
+                    emailButton.setTag("remove");
+
+                    plusEmailCnt++;
+                } else {
+                    table.removeView(emailRow);
+                    EmailList.remove(emailEditText);
+                }
+
+            }
+        });
+
     }
+
 }

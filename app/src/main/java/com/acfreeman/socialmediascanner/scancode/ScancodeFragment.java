@@ -2,6 +2,7 @@ package com.acfreeman.socialmediascanner.scancode;
 
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,51 +11,37 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.content.FileProvider;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import com.acfreeman.socialmediascanner.CustomDialogFragment;
-import com.acfreeman.socialmediascanner.MainActivity;
 import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.db.Contact;
 import com.acfreeman.socialmediascanner.db.Email;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
-import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Phone;
 import com.acfreeman.socialmediascanner.db.Social;
-import com.acfreeman.socialmediascanner.showcode.ShowcodeAdapter;
-import com.acfreeman.socialmediascanner.showcode.SwitchModel;
 import com.acfreeman.socialmediascanner.social.SocialAdder;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.Result;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import me.dm7.barcodescanner.core.IViewFinder;
@@ -62,6 +49,7 @@ import me.dm7.barcodescanner.core.ViewFinderView;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 import static android.app.Activity.RESULT_OK;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by Andrew on 10/27/2017.
@@ -72,9 +60,11 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
     private static ImageView mImageView;
     public me.dm7.barcodescanner.zxing.ZXingScannerView scannerView;
-
+    private boolean connectedInternet = false;
 
     public boolean handleScan = true;
+    private CustomDialogFragment internetWarning;
+    private boolean showAddDialog = true;
 
 
     @Override
@@ -82,7 +72,6 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_scancode,
                 container, false);
-
 
         FrameLayout frameLayout = view.findViewById(R.id.scancode_frame);
         scannerView = new ZXingScannerView(getActivity()) {
@@ -100,6 +89,24 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
         scannerView.setResultHandler(this);
         scannerView.startCamera();
 
+        ConnectivityReceiver cr = new ConnectivityReceiver();
+        cr.onReceive(getApplicationContext(), new Intent());
+        if(!connectedInternet) {
+            Log.e("FFFFFFFFFFFFFF", "Internet not connected");
+            //Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+            internetWarning = new CustomDialogFragment();
+
+            Bundle args = new Bundle();
+            args.putString("dialog_title", "No Internet Connection Detected");
+            args.putString("action", "acknowledge");
+
+            internetWarning.setArguments(args);
+            internetWarning.show(getFragmentManager(), "CustomDialogFragment");
+
+            showAddDialog = false;
+        } else {
+            showAddDialog = true;
+        }
 
         return view;
     }
@@ -203,6 +210,13 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
                         database.addSocial(facebookSocial);
                         break;
 
+                    case "go":
+                        String google_id = rawArray[i + 1];
+                        uri = "https://plus.google.com/" + google_id;
+                        socialAdderArrayList.add(new SocialAdder(uri, "Google+"));
+                        Social googlePlusSocial = new Social(contact.getId(), "Google+", google_id);
+                        database.addSocial(googlePlusSocial);
+                        break;
                 }
 
             }
@@ -479,7 +493,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
 
     public void showSocialAddDialog(String name) {
-        if (!socialAdderArrayList.isEmpty()) {
+        if (!socialAdderArrayList.isEmpty() && showAddDialog) {
             handleScan = false;
             // Create an instance of the dialog fragment and show it
             DialogFragment dialog = new CustomDialogFragment();
@@ -510,5 +524,22 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
     }
 
+    public class ConnectivityReceiver extends BroadcastReceiver {
 
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager cm =
+                    (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            boolean isConnected = activeNetwork != null &&
+                    activeNetwork.isConnectedOrConnecting();
+
+            if(isConnected) {
+                connectedInternet = true;
+            } else {
+                connectedInternet = false;
+            }
+        }
+    }
 }

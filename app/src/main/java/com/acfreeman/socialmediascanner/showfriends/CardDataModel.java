@@ -51,6 +51,9 @@ public class CardDataModel{
                 case 's':
                     Log.i("CARDDEBUG","Type: " + this.social.getType());
                     switch (this.social.getType()){
+                        case "Google+":
+                            this.image = R.drawable.google_plus_24dp;
+                            break;
                         case "Twitter":
                             this.image = R.drawable.icons8_twitter;
                             break;

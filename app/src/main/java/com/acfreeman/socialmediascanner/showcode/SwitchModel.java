@@ -49,8 +49,8 @@ public class SwitchModel {
                 this.switchImage = R.drawable.fb_24dp;
                 break;
             case "go":
-                this.switchName = "Google";
-                this.switchImage = R.drawable.icons8_twitter;
+                this.switchName = "Google+";
+                this.switchImage = R.drawable.google_plus_24dp;
                 break;
 
             default:

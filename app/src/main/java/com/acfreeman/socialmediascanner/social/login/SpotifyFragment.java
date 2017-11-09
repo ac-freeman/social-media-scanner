@@ -1,5 +1,6 @@
 package com.acfreeman.socialmediascanner.social.login;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -39,6 +40,35 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class SpotifyFragment extends Fragment {
 
+    LinkedInFragment.ConnectionChangedListener mCallback;
+
+    // Container Activity must implement this interface
+    public interface ConnectionChangedListener {
+        public void onConnectionChanged();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        super.onAttach(context);
+        if (context instanceof LinkedInFragment.ConnectionChangedListener) {
+            mCallback = (LinkedInFragment.ConnectionChangedListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement ConnectionChangedListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallback = null;
+    }
+
+    View view;
+    Boolean connected = false;
+    Social spotifySocial;
+
     public LocalDatabase database;
     public List<Owner> owners;
     public Owner owner;
@@ -53,12 +83,26 @@ public class SpotifyFragment extends Fragment {
                              Bundle savedInstanceState) {
 
 
-        final View view = inflater.inflate(R.layout.fragment_login,
-                container, false);
-
         database = new LocalDatabase(getApplicationContext());
         owners = database.getAllOwner();
         owner = owners.get(0);
+
+        List<Social> socials = database.getUserSocials(owner.getId());
+        for (Social s : socials) {
+            if (s.getType().equals("sp")) {
+                spotifySocial = s;
+                connected = true;
+            }
+        }
+
+        if (!connected) {
+            view = inflater.inflate(R.layout.fragment_login_connect,
+                    container, false);
+        } else {
+            view = inflater.inflate(R.layout.fragment_login_disconnect,
+                    container, false);
+        }
+
 
         RelativeLayout background = view.findViewById(R.id.background);
         background.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.spotify_green));
@@ -71,24 +115,39 @@ public class SpotifyFragment extends Fragment {
         imageView.setLayoutParams(layoutParams);
 
         spotifyButton = view.findViewById(R.id.login_button);
-        spotifyButton.setText("Sign in with Spotify");
-        spotifyButton.setTextColor(ContextCompat.getColor(getContext(), R.color.spotify_green));
 
-        spotifyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AuthenticationRequest.Builder builder =
-                        new AuthenticationRequest.Builder(SPOTIFY_CLIENT_ID, AuthenticationResponse.Type.TOKEN, SPOTIFY_REDIRECT_URI);
+        if (!connected) {
+            spotifyButton.setText("Sign in with Spotify");
+            spotifyButton.setTextColor(ContextCompat.getColor(getContext(), R.color.spotify_green));
 
-                builder.setScopes(new String[]{"user-follow-modify", "user-read-private"});
-                AuthenticationRequest request = builder.build();
+            spotifyButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AuthenticationRequest.Builder builder =
+                            new AuthenticationRequest.Builder(SPOTIFY_CLIENT_ID, AuthenticationResponse.Type.TOKEN, SPOTIFY_REDIRECT_URI);
 
-                AuthenticationClient.openLoginActivity(getActivity(), SPOTIFY_REQUEST_CODE, request);
+                    builder.setScopes(new String[]{"user-follow-modify", "user-read-private"});
+                    AuthenticationRequest request = builder.build();
+
+                    AuthenticationClient.openLoginActivity(getActivity(), SPOTIFY_REQUEST_CODE, request);
 
 
+                }
+            });
+        } else {
+            spotifyButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (spotifySocial != null) {
+                        database.deleteUserSocial(spotifySocial);
+                    }
+                    connected = false;
+                    mCallback.onConnectionChanged();
 
-            }
-        });
+
+                }
+            });
+        }
 
         return view;
     }
@@ -98,7 +157,7 @@ public class SpotifyFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
 
-        //        // Check if result comes from the correct activity
+        // Check if result comes from the correct activity
         if (requestCode == SPOTIFY_REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
             switch (response.getType()) {
@@ -122,7 +181,7 @@ public class SpotifyFragment extends Fragment {
 
                                 StringBuilder sb = new StringBuilder();
                                 String line;
-                                while((line = bufferedReader.readLine()) != null) {
+                                while ((line = bufferedReader.readLine()) != null) {
                                     sb.append(line);
                                 }
 
@@ -132,26 +191,22 @@ public class SpotifyFragment extends Fragment {
 
                                 Log.e("SDKFJ", user_id);
 
-                                boolean cont = true;
                                 ArrayList<Social> socials = database.getUserSocials(owner.getId());
-                                for(Social s: socials){
-                                    if (s.getType().equals("sp")){
-                                        cont = false;
+                                for (Social s : socials) {
+                                    if (s.getType().equals("sp")) {
+                                        database.deleteUserSocial(s);
                                     }
                                 }
 
-                                if(cont) {
-
-                                    /////add to database//////////
-                                    Social spotify = new Social(owner.getId(), "sp", user_id);
-                                    database.addSocial(spotify);
-                                    //////////////////////////////
-                                }
-
+                                /////add to database//////////
+                                Social spotify = new Social(owner.getId(), "sp", user_id);
+                                database.addSocial(spotify);
+                                //////////////////////////////
+                                connected = true;
+                                mCallback.onConnectionChanged();
 
 
-                            }
-                            catch (Exception ex) {
+                            } catch (Exception ex) {
                                 Log.e("Exception: ", ex.toString());
                             }
                             return null;
