@@ -41,6 +41,7 @@ import com.acfreeman.socialmediascanner.db.Social;
 import com.acfreeman.socialmediascanner.scancode.ScancodeFragment;
 import com.acfreeman.socialmediascanner.showcode.ShowcodeFragment;
 import com.acfreeman.socialmediascanner.showfriends.ShowfriendsFragment;
+import com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity;
 import com.twitter.sdk.android.core.Twitter;
 
 import java.util.ArrayList;
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
 // finally change the color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.setStatusBarColor(ContextCompat.getColor(this,R.color.primary));
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.primary));
         }
 
 
@@ -295,6 +296,9 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
             SharedPreferences.Editor editor = mPrefs.edit();
             editor.putBoolean(firstMainActivityPref, false);
             editor.commit(); // Very important to save the preference
+            Intent intent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
+            intent.putExtra("caller", "com.acfreeman.socialmediascanner.MainActivity");
+            startActivity(intent);
         }
 
         FragmentManager fm = getFragmentManager();
@@ -302,34 +306,6 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         ft.replace(R.id.content, showfriendsFragment);
         ft.commitAllowingStateLoss();
 
-
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-//        // Use instance field for listener
-//// It will not be gc'd as long as this instance is kept referenced
-//        SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-//            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-//                // Implementation
-//                if(key.equals("deleteAllContacts")){
-//                    if(prefs.getBoolean("deleteAllContacts", false)){
-//                        Log.i("DELETEDEBUG", "Delete button pressed");
-////                        if(showfriendsFragment.adapter!=null) {
-////                            showfriendsFragment.adapter.notifyDataSetChanged();
-//                            Log.i("DELETEDEBUG", "Notifying data set");
-////                        getApplicationContext().runOnUiThread(new Runnable() {
-////                            public void run() {
-//                                showFriends();
-////                            }
-////                        });
-////                        }
-//                        SharedPreferences.Editor editor = prefs.edit();
-//                        editor.putBoolean("deleteAllContacts", false);
-//                        editor.commit(); // Very important to save the preference
-//                    }
-//                }
-//            }
-//        };
-//
-//        prefs.registerOnSharedPreferenceChangeListener(listener);
     }
 
 
@@ -621,21 +597,27 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
     @Override
     public void onBackPressed() {
+        Log.i("BACKBUTTON", "Back pressed");
         if (doubleBackToExitPressedOnce) {
-            super.onBackPressed();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                this.finishAffinity();
+            } else {
+                this.finish();
+                System.exit(0);
+            }
             return;
         }
 
-        if(showfriendsFragment.adapter!=null){
-            if(showfriendsFragment.adapter.inEditmode){
-                showfriendsFragment.adapter.inEditmode = false;
-                for(int i = 0; i < showfriendsFragment.adapter.checks.size(); i++){
-                        showfriendsFragment.adapter.checks.set(i,0);
-                }
-                showfriendsFragment.adapter.notifyDataSetChanged();
-                hideAppbarButtons();
+        Log.i("BACKBUTTON", "not null");
+        if (showfriendsFragment.adapter.inEditmode) {
+            showfriendsFragment.adapter.inEditmode = false;
+            for (int i = 0; i < showfriendsFragment.adapter.checks.size(); i++) {
+                showfriendsFragment.adapter.checks.set(i, 0);
             }
+            showfriendsFragment.adapter.notifyDataSetChanged();
+            hideAppbarButtons();
         } else {
+            Log.i("BACKBUTTON", "null");
             this.doubleBackToExitPressedOnce = true;
             Toast.makeText(this, "Press BACK again to exit", Toast.LENGTH_SHORT).show();
 
@@ -651,8 +633,8 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
     @Override
     public void onResume() {
-        if(showcodeFragment!=null){
-            showcodeFragment.allowRefresh=true;
+        if (showcodeFragment != null) {
+            showcodeFragment.allowRefresh = true;
         }
         super.onResume();
     }
