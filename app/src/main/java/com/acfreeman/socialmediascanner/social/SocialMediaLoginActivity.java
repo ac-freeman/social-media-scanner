@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,6 +22,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 
 import com.acfreeman.socialmediascanner.CustomDialogFragment;
 import com.acfreeman.socialmediascanner.MainActivity;
@@ -99,41 +104,41 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
         fm.addOnBackStackChangedListener(
                 new FragmentManager.OnBackStackChangedListener() {
                     public void onBackStackChanged() {
+
+                        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+                        Animation slide = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_out_bottom);
+                        fab.startAnimation(slide);
+
+                        Drawable d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_white_24dp);
+                        final Drawable d2 = d.getConstantState().newDrawable();
+
                         List<Fragment> allFragments = getSupportFragmentManager().getFragments();
                         Log.i("BACKSTACK", "Backstack entry count: " + getSupportFragmentManager().getBackStackEntryCount());
                         for (Fragment fragment : allFragments) {
                             if (fragment instanceof GoogleFragment) {
-                                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
-                                Drawable d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_white_24dp);
-                                Drawable d2 = d.getConstantState().newDrawable();
                                 d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.google_blue), PorterDuff.Mode.MULTIPLY);
-                                fab.setImageDrawable(d2);
                             } else if (fragment instanceof TwitterFragment) {
-                                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
-                                Drawable d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_white_24dp);
-                                Drawable d2 = d.getConstantState().newDrawable();
                                 d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.twitter_blue), PorterDuff.Mode.MULTIPLY);
-                                fab.setImageDrawable(d2);
                             } else if (fragment instanceof LinkedInFragment) {
-                                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
-                                Drawable d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_white_24dp);
-                                Drawable d2 = d.getConstantState().newDrawable();
                                 d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.linkedin_blue), PorterDuff.Mode.MULTIPLY);
-                                fab.setImageDrawable(d2);
                             } else if (fragment instanceof SpotifyFragment) {
-                                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
-                                Drawable d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_white_24dp);
-                                Drawable d2 = d.getConstantState().newDrawable();
                                 d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.spotify_green), PorterDuff.Mode.MULTIPLY);
-                                fab.setImageDrawable(d2);
                             } else if (fragment instanceof FacebookFragment) {
-                                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
-                                Drawable d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_white_24dp);
-                                Drawable d2 = d.getConstantState().newDrawable();
                                 d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.com_facebook_blue), PorterDuff.Mode.MULTIPLY);
-                                fab.setImageDrawable(d2);
                             }
                         }
+
+
+
+                        new Handler().postDelayed(new Runnable(){
+                            @Override
+                            public void run() {
+                                fab.setImageDrawable(d2);
+                                Animation slide = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_in_bottom);
+                                fab.startAnimation(slide);
+                            }
+                        }, 250);
+
                     }
                 });
 
@@ -145,14 +150,19 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
         ft.commit();
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         Drawable d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_white_24dp);
         Drawable d2 = d.getConstantState().newDrawable();
-        d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.google_blue), PorterDuff.Mode.MULTIPLY);
+        d2.mutate().
+
+                setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.google_blue), PorterDuff.Mode.MULTIPLY);
         fab.setImageDrawable(d2);
-        fab.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View v) {
+
                 List<Fragment> allFragments = getSupportFragmentManager().getFragments();
                 for (Fragment fragment : allFragments) {
                     if (fragment instanceof GoogleFragment) {
@@ -211,8 +221,8 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         }
                     } else if (fragment instanceof FacebookFragment) {
                         Log.i("SOCIALDEBUG", "Fragment: facebook");
-                        if(callerClass.getName().equals("MainActivity")) {
-                            Log.i("CRASHDEBUG","Caller class MainActivity");
+                        if (callerClass.getName().equals("MainActivity")) {
+                            Log.i("CRASHDEBUG", "Caller class MainActivity");
                             Intent startIntent = new Intent(getApplicationContext(), RegistrationInformation.class);
                             startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(startIntent);
