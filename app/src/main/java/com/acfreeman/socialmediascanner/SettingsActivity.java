@@ -256,7 +256,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Cus
                 public boolean onPreferenceClick(Preference preference) {
                     //code for what you want it to do
                     Log.i("PREFDEBUG","Social accounts button clicked");
-                    startActivity(new Intent(getActivity(), SocialMediaLoginActivity.class));
+                    startActivity(new Intent(getActivity(), SocialMediaLoginActivity.class).putExtra("caller","com.acfreeman.socialmediascanner.SettingsActivity"));
                     return true;
                 }
             });

@@ -23,6 +23,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.acfreeman.socialmediascanner.CustomDialogFragment;
+import com.acfreeman.socialmediascanner.MainActivity;
 import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.RegistrationInformation;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
@@ -37,8 +38,7 @@ import java.util.List;
 
 public class SocialMediaLoginActivity extends AppCompatActivity implements CustomDialogFragment.NoticeDialogListener,
         GoogleFragment.ConnectionChangedListener, FacebookFragment.ConnectionChangedListener, TwitterFragment.ConnectionChangedListener,
-    LinkedInFragment.ConnectionChangedListener
-{
+        LinkedInFragment.ConnectionChangedListener, SpotifyFragment.ConnectionChangedListener {
 
 
     public LocalDatabase database;
@@ -47,9 +47,19 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 
     private static Toolbar myToolbar;
 
+    String caller;
+    Class callerClass;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        caller = getIntent().getStringExtra("caller");
+        try {
+            callerClass = Class.forName(caller);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
         database = new LocalDatabase(getApplicationContext());
 
@@ -201,10 +211,18 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         }
                     } else if (fragment instanceof FacebookFragment) {
                         Log.i("SOCIALDEBUG", "Fragment: facebook");
-                        Intent startIntent = new Intent(getApplicationContext(), RegistrationInformation.class);
+                        if(callerClass.getName().equals("MainActivity")) {
+                            Log.i("CRASHDEBUG","Caller class MainActivity");
+                            Intent startIntent = new Intent(getApplicationContext(), RegistrationInformation.class);
+                            startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(startIntent);
+                        } else {
+                            Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+                            startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(startIntent);
+                        }
 //                        startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(startIntent);
+
                     }
                 }
             }
