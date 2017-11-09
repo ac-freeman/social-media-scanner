@@ -38,6 +38,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_alignParentBottom="true"
                     android:layout_margin="20dp"
+                    android:visibility="invisible"
                     app:backgroundTint="@color/white"
                     android:src="@drawable/ic_arrow_forward_white_24dp"/>
             </RelativeLayout>

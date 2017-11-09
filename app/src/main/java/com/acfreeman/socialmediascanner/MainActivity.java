@@ -293,10 +293,8 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         firstMainActivity = mPrefs.getBoolean(firstMainActivityPref, true);
         if (firstMainActivity) {
             addDummyData();
-            SharedPreferences.Editor editor = mPrefs.edit();
-            editor.putBoolean(firstMainActivityPref, false);
-            editor.commit(); // Very important to save the preference
             Intent intent = new Intent(getApplicationContext(), SocialMediaLoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             intent.putExtra("caller", "com.acfreeman.socialmediascanner.MainActivity");
             startActivity(intent);
         }

@@ -3,6 +3,7 @@ package com.acfreeman.socialmediascanner.social;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -10,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -40,6 +42,8 @@ import com.acfreeman.socialmediascanner.social.login.SpotifyFragment;
 import com.acfreeman.socialmediascanner.social.login.TwitterFragment;
 
 import java.util.List;
+
+import static com.acfreeman.socialmediascanner.MainActivity.firstMainActivityPref;
 
 public class SocialMediaLoginActivity extends AppCompatActivity implements CustomDialogFragment.NoticeDialogListener,
         GoogleFragment.ConnectionChangedListener, FacebookFragment.ConnectionChangedListener, TwitterFragment.ConnectionChangedListener,
@@ -133,6 +137,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         new Handler().postDelayed(new Runnable(){
                             @Override
                             public void run() {
+                                fab.setVisibility(View.VISIBLE);
                                 fab.setImageDrawable(d2);
                                 Animation slide = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_in_bottom);
                                 fab.startAnimation(slide);
@@ -221,10 +226,11 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         }
                     } else if (fragment instanceof FacebookFragment) {
                         Log.i("SOCIALDEBUG", "Fragment: facebook");
-                        if (callerClass.getName().equals("MainActivity")) {
+                        if (callerClass.getName().equals("com.acfreeman.socialmediascanner.MainActivity")) {
                             Log.i("CRASHDEBUG", "Caller class MainActivity");
                             Intent startIntent = new Intent(getApplicationContext(), RegistrationInformation.class);
                             startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startIntent.putExtra("caller", "com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity");
                             startActivity(startIntent);
                         } else {
                             Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);

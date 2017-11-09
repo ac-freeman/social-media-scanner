@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.acfreeman.socialmediascanner.MainActivity.firstMainActivityPref;
+
 
 public class RegistrationInformation extends AppCompatActivity {
     // private LinearLayout mLayout;
@@ -70,12 +72,24 @@ public class RegistrationInformation extends AppCompatActivity {
     public int plus2count = 0;
     int textWidth;
 
+    String caller;
+    Class callerClass;
+
     @Override
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     //
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration_information);
+
+        caller = getIntent().getStringExtra("caller");
+        if(caller!=null) {
+            try {
+                callerClass = Class.forName(caller);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -292,6 +306,13 @@ public class RegistrationInformation extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Email stored as: " + email.getEmail(), Toast.LENGTH_SHORT).show();
                     }
 
+
+                    if (callerClass != null && callerClass.getName().equals("com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity")) {
+                        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                        SharedPreferences.Editor editor = mPrefs.edit();
+                        editor.putBoolean(firstMainActivityPref, false);
+                        editor.commit(); // Very important to save the preference
+                    }
 
                     Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
                     startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
