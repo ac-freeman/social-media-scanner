@@ -328,7 +328,7 @@ public class ShowfriendsFragment extends Fragment{
                 }
                 break;
             case "Google+":
-                uri = "plus.google.com/" + social.getUsername();
+                uri = "https://plus.google.com/" + social.getUsername();
                 break;
         }
 
