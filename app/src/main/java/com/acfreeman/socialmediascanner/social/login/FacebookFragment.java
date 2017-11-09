@@ -22,13 +22,11 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphRequestAsyncTask;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 
 import org.json.JSONObject;
 
@@ -168,7 +166,6 @@ public class FacebookFragment extends Fragment {
             loginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    facebookButton.performClick();
                     LoginManager.getInstance().logInWithReadPermissions(
                             getActivity(),
                             Arrays.asList("email"));
@@ -179,9 +176,7 @@ public class FacebookFragment extends Fragment {
             loginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    facebookButton.performClick();
                     Log.i("FACEBOOK", "Logging out");
-
                     if (facebookSocial != null) {
                         database.deleteUserSocial(facebookSocial);
                     }

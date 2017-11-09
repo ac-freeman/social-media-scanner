@@ -146,14 +146,12 @@ public class LinkedInFragment extends Fragment {
 
                                         Log.i("LINKEDINDEBUG", li_id);
 
-
                                         ArrayList<Social> socials = database.getUserSocials(owner.getId());
                                         for (Social s : socials) {
                                             if (s.getType().equals("li")) {
                                                 database.deleteUserSocial(s);
                                             }
                                         }
-
 
                                         /////add to database//////////
                                         Social linkedin = new Social(owner.getId(), "li", li_id);
@@ -166,8 +164,6 @@ public class LinkedInFragment extends Fragment {
                                         Toast.makeText(getApplicationContext(), "ERROR: Could not login to LinkedIn", Toast.LENGTH_LONG).show();
                                         e.printStackTrace();
                                     }
-
-
                                 }
 
                                 @Override
@@ -175,8 +171,6 @@ public class LinkedInFragment extends Fragment {
                                     Toast.makeText(getApplicationContext(), "ERROR: Could not login to LinkedIn", Toast.LENGTH_LONG).show();
                                 }
                             });
-
-
                         }
 
                         @Override
@@ -198,8 +192,7 @@ public class LinkedInFragment extends Fragment {
                 }
             });
         }
-
-
+        
         return view;
     }
 
@@ -215,5 +208,3 @@ public class LinkedInFragment extends Fragment {
         return Scope.build(Scope.R_BASICPROFILE);
     }
 }
-
-

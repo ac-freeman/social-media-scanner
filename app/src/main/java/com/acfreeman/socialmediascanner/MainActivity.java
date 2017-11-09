@@ -25,10 +25,6 @@ import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -132,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         switch (item.getItemId()) {
             case R.id.action_delete:
                 dialog = new CustomDialogFragment();
-
                 args = new Bundle();
                 args.putString("dialog_title", "Delete selected contacts?");
                 args.putString("action", "delete");
@@ -151,9 +146,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                 dialog.show(getFragmentManager(), "CustomDialogFragment");
                 return true;
             case R.id.action_settings:
-                //TODO
                 Intent startIntent = new Intent(getApplicationContext(), SettingsActivity.class);
-//                startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(startIntent);
                 return true;
             default:
@@ -170,11 +163,9 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            FrameLayout frameLayout = findViewById(R.id.content);
             switch (item.getItemId()) {
                 case R.id.navigation_show:
                     if (!showCode) {
-//                        frameLayout.removeAllViews();
                         if (camera) {
                             camera = false;
                             if (mScannerView != null)
@@ -186,12 +177,8 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                     return true;
 
                 case R.id.navigation_friends:
-//                    frameLayout.removeAllViews();
                     if (camera) {
                         camera = false;
-//                        mScannerView.stopCamera();
-//                        frameLayout.removeAllViews();
-
                     }
                     showCode = false;
                     showFriends();
@@ -200,9 +187,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                     return true;
 
                 case R.id.navigation_camera:
-//                    frameLayout.removeAllViews();
                     camera = true;
-
                     showCode = false;
                     scanCode();
                     hideAppbarButtons();

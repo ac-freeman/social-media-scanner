@@ -13,7 +13,6 @@ public class SocialAdder {
     public SocialAdder(String uri, String type){
         this.uri = uri;
         this.type = type;
-
     }
 
     public String getType() {

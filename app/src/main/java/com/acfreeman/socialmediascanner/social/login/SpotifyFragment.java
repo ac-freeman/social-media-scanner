@@ -157,7 +157,7 @@ public class SpotifyFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
 
-        //        // Check if result comes from the correct activity
+        // Check if result comes from the correct activity
         if (requestCode == SPOTIFY_REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
             switch (response.getType()) {

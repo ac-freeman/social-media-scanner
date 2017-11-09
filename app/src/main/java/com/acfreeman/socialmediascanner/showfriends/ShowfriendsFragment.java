@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-//import static com.acfreeman.socialmediascanner.MainActivity.socialAdd;
 
 /**
  * Created by Andrew on 10/23/2017.

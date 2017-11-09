@@ -120,11 +120,6 @@ public class GoogleFragment extends Fragment {
                     .requestEmail()
                     .build();
 
-//            if (apiClient!=null && apiClient.hasConnectedApi(Auth.GOOGLE_SIGN_IN_API)) {
-//                Log.i("GOOGLE", "Clearing account");
-//
-//            }
-
             apiClient = new GoogleApiClient.Builder(getContext())
                     .enableAutoManage(getActivity() /* FragmentActivity */, new GoogleApiClient.OnConnectionFailedListener() {
                         @Override
@@ -143,7 +138,6 @@ public class GoogleFragment extends Fragment {
             visibleButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                signInButton.performClick();
                     Auth.GoogleSignInApi.signOut(apiClient);
                     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient);
                     startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -157,7 +151,6 @@ public class GoogleFragment extends Fragment {
             visibleButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    connected = false;
                     if (googleSocial != null) {
                         database.deleteUserSocial(googleSocial);
                     }
@@ -168,7 +161,6 @@ public class GoogleFragment extends Fragment {
                     mCallback.onConnectionChanged();
                 }
             });
-
         }
 
         return view;
