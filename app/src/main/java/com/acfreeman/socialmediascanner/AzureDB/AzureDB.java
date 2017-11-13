@@ -82,9 +82,12 @@ public class AzureDB extends Activity {
      */
     private EditText mTextNewCONTACTS;
     private EditText mTextNewEMAILS;
+    private EditText mTextNewEmailType;
     private EditText mTextNewOwner;
     private EditText mTextNewPHONES;
+    private EditText mTextNewPhoneType;
     private EditText mTextNewSOCIAL;
+    private EditText mTextNewSocialType;
 
     /**
      * Progress spinner to use for table operations
@@ -440,13 +443,13 @@ public class AzureDB extends Activity {
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    final ToDoItem entity = addItemInTable(item);
+                    final CONTACTS entity = addCONTACTSInTable(contacts);
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             if(!entity.isComplete()){
-                                mAdapter.add(entity);
+                                mCONTACTSAdapter.add(entity);
                             }
                         }
                     });
@@ -459,19 +462,59 @@ public class AzureDB extends Activity {
 
         runAsyncTask(task);
 
-        mTextNewToDo.setText("");
+        mTextNewCONTACTS.setText("");
     }
 
 
-    public void addItem(View view) {
+    public void addEMAILS(View view) {
         if (mClient == null) {
             return;
         }
 
         // Create a new item
-        final ToDoItem item = new ToDoItem();
+        final EMAILS emails = new EMAILS();
 
-        item.setText(mTextNewToDo.getText().toString());
+        emails.setEmail(mTextNewEMAILS.getText().toString());
+        emails.setEmail_type(mTextNewEmailType.getText().toString());
+        emails.setComplete(false);
+
+        // Insert the new item
+        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>(){
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    final EMAILS entity = addEMAILSInTable(emails);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(!entity.isComplete()){
+                                mEMAILSAdapter.add(entity);
+                            }
+                        }
+                    });
+                } catch (final Exception e) {
+                    createAndShowDialogFromTask(e, "Error");
+                }
+                return null;
+            }
+        };
+
+        runAsyncTask(task);
+
+        mTextNewEMAILS.setText("");
+        mTextNewEmailType.setText("");
+    }
+
+    public void addOwner(View view) {
+        if (mClient == null) {
+            return;
+        }
+
+        // Create a new item
+        final Owner item = new Owner();
+
+        item.setName(mTextNewOwner.getText().toString());
         item.setComplete(false);
 
         // Insert the new item
@@ -479,13 +522,13 @@ public class AzureDB extends Activity {
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    final ToDoItem entity = addItemInTable(item);
+                    final Owner entity = addOwnerInTable(item);
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             if(!entity.isComplete()){
-                                mAdapter.add(entity);
+                                mOwnerAdapter.add(entity);
                             }
                         }
                     });
@@ -498,54 +541,16 @@ public class AzureDB extends Activity {
 
         runAsyncTask(task);
 
-        mTextNewToDo.setText("");
+        mTextNewOwner.setText("");
     }
 
-    public void addItem(View view) {
+    public void addPHONES(View view) {
         if (mClient == null) {
             return;
         }
 
         // Create a new item
-        final ToDoItem item = new ToDoItem();
-
-        item.setText(mTextNewToDo.getText().toString());
-        item.setComplete(false);
-
-        // Insert the new item
-        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>(){
-            @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    final ToDoItem entity = addItemInTable(item);
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(!entity.isComplete()){
-                                mAdapter.add(entity);
-                            }
-                        }
-                    });
-                } catch (final Exception e) {
-                    createAndShowDialogFromTask(e, "Error");
-                }
-                return null;
-            }
-        };
-
-        runAsyncTask(task);
-
-        mTextNewToDo.setText("");
-    }
-
-    public void addItem(View view) {
-        if (mClient == null) {
-            return;
-        }
-
-        // Create a new item
-        final ToDoItem item = new ToDoItem();
+        final PHONES item = new PHONES();
 
         item.setText(mTextNewToDo.getText().toString());
         item.setComplete(false);
@@ -620,10 +625,32 @@ public class AzureDB extends Activity {
      * @param item
      *            The item to Add
      */
-    public ToDoItem addItemInTable(ToDoItem item) throws ExecutionException, InterruptedException {
-        ToDoItem entity = mToDoTable.insert(item).get();
+    public CONTACTS addCONTACTSInTable(CONTACTS item) throws ExecutionException, InterruptedException {
+        CONTACTS entity = mCONTACTSTable.insert(item).get();
         return entity;
     }
+
+    public EMAILS addEMAILSInTable(EMAILS item) throws ExecutionException, InterruptedException {
+        EMAILS entity = mEMAILSTable.insert(item).get();
+        return entity;
+    }
+
+    public Owner addOwnerInTable(Owner item) throws ExecutionException, InterruptedException {
+        Owner entity = mOwnerTable.insert(item).get();
+        return entity;
+    }
+
+    public PHONES addPHONESInTable(PHONES item) throws ExecutionException, InterruptedException {
+        PHONES entity = mPHONESTable.insert(item).get();
+        return entity;
+    }
+
+    public SOCIAL addSOCIALInTable(SOCIAL item) throws ExecutionException, InterruptedException {
+        SOCIAL entity = mSOCIALTable.insert(item).get();
+        return entity;
+    }
+
+
 
     /**
      * Refresh the list with the items in the Table
