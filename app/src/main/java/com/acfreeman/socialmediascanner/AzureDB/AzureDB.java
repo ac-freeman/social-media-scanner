@@ -552,7 +552,7 @@ public class AzureDB extends Activity {
         // Create a new item
         final PHONES item = new PHONES();
 
-        item.setText(mTextNewToDo.getText().toString());
+        item.setNumber(mTextNewPHONES.getText().toString());
         item.setComplete(false);
 
         // Insert the new item
@@ -560,13 +560,13 @@ public class AzureDB extends Activity {
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    final ToDoItem entity = addItemInTable(item);
+                    final PHONES entity = addPHONESInTable(item);
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             if(!entity.isComplete()){
-                                mAdapter.add(entity);
+                                mPHONESAdapter.add(entity);
                             }
                         }
                     });
@@ -579,18 +579,19 @@ public class AzureDB extends Activity {
 
         runAsyncTask(task);
 
-        mTextNewToDo.setText("");
+        mTextNewPHONES.setText("");
+        mTextNewPhoneType.setText("");
     }
 
-    public void addItem(View view) {
+    public void addSOCIAL(View view) {
         if (mClient == null) {
             return;
         }
 
         // Create a new item
-        final ToDoItem item = new ToDoItem();
+        final SOCIAL item = new SOCIAL();
 
-        item.setText(mTextNewToDo.getText().toString());
+        item.setUsername(mTextNewSOCIAL.getText().toString());
         item.setComplete(false);
 
         // Insert the new item
@@ -598,13 +599,13 @@ public class AzureDB extends Activity {
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    final ToDoItem entity = addItemInTable(item);
+                    final SOCIAL entity = addSOCIALInTable(item);
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             if(!entity.isComplete()){
-                                mAdapter.add(entity);
+                                mSOCIALAdapter.add(entity);
                             }
                         }
                     });
@@ -617,7 +618,8 @@ public class AzureDB extends Activity {
 
         runAsyncTask(task);
 
-        mTextNewToDo.setText("");
+        mTextNewSOCIAL.setText("");
+        mTextNewSocialType.setText("");
     }
     /**
      * Add an item to the Mobile Service Table
@@ -715,8 +717,28 @@ public class AzureDB extends Activity {
      * Refresh the list with the items in the Mobile Service Table
      */
 
-    private List<ToDoItem> refreshItemsFromMobileServiceTable() throws ExecutionException, InterruptedException {
-        return mToDoTable.where().field("complete").
+    private List<CONTACTS> refreshCONTACTSFromMobileServiceTable() throws ExecutionException, InterruptedException {
+        return mCONTACTSTable.where().field("complete").
+                eq(val(false)).execute().get();
+    }
+
+    private List<EMAILS> refreshEMAILSFromMobileServiceTable() throws ExecutionException, InterruptedException {
+        return mEMAILSTable.where().field("complete").
+                eq(val(false)).execute().get();
+    }
+
+    private List<Owner> refreshOwnerFromMobileServiceTable() throws ExecutionException, InterruptedException {
+        return mOwnerTable.where().field("complete").
+                eq(val(false)).execute().get();
+    }
+
+    private List<PHONES> refreshPHONESFromMobileServiceTable() throws ExecutionException, InterruptedException {
+        return mPHONESTable.where().field("complete").
+                eq(val(false)).execute().get();
+    }
+
+    private List<SOCIAL> refreshSOCIALFromMobileServiceTable() throws ExecutionException, InterruptedException {
+        return mSOCIALTable.where().field("complete").
                 eq(val(false)).execute().get();
     }
 
@@ -753,12 +775,43 @@ public class AzureDB extends Activity {
 
                     SQLiteLocalStore localStore = new SQLiteLocalStore(mClient.getContext(), "OfflineStore", null, 1);
 
-                    Map<String, ColumnDataType> tableDefinition = new HashMap<String, ColumnDataType>();
-                    tableDefinition.put("id", ColumnDataType.String);
-                    tableDefinition.put("text", ColumnDataType.String);
-                    tableDefinition.put("complete", ColumnDataType.Boolean);
+                    Map<String, ColumnDataType> CONTACTStableDefinition = new HashMap<String, ColumnDataType>();
+                    CONTACTStableDefinition.put("person_Id", ColumnDataType.int);
+                    CONTACTStableDefinition.put("name", ColumnDataType.String);
+                    CONTACTStableDefinition.put("complete", ColumnDataType.Boolean);
 
-                    localStore.defineTable("ToDoItem", tableDefinition);
+                    localStore.defineTable("CONTACTS", tableDefinition);
+
+                    Map<String, ColumnDataType> EMAILStableDefinition = new HashMap<String, ColumnDataType>();
+                    EMAILStableDefinition.put("person_Id", ColumnDataType.int);
+                    EMAILStableDefinition.put("email", ColumnDataType.String);
+                    EMAILStableDefinition.put("email_type", ColumnDataType.String);
+                    EMAILStableDefinition.put("complete", ColumnDataType.Boolean);
+
+                    localStore.defineTable("EMAILS", tableDefinition);
+
+                    Map<String, ColumnDataType> OwnertableDefinition = new HashMap<String, ColumnDataType>();
+                    OwnertableDefinition.put("person_Id", ColumnDataType.int);
+                    OwnertableDefinition.put("name", ColumnDataType.String);
+                    OwnertableDefinition.put("complete", ColumnDataType.Boolean);
+
+                    localStore.defineTable("Owner", tableDefinition);
+
+                    Map<String, ColumnDataType> PHONEStableDefinition = new HashMap<String, ColumnDataType>();
+                    PHONEStableDefinition.put("person_Id", ColumnDataType.int);
+                    PHONEStableDefinition.put("number", ColumnDataType.String);
+                    PHONEStableDefinition.put("type", ColumnDataType.String);
+                    PHONEStableDefinition.put("complete", ColumnDataType.Boolean);
+
+                    localStore.defineTable("PHONES", tableDefinition);
+
+                    Map<String, ColumnDataType> SOCIALtableDefinition = new HashMap<String, ColumnDataType>();
+                    SOCIALtableDefinition.put("person_Id", ColumnDataType.int);
+                    SOCIALtableDefinition.put("username", ColumnDataType.String);
+                    SOCIALtableDefinition.put("social_type", ColumnDataType.String);
+                    SOCIALtableDefinition.put("complete", ColumnDataType.Boolean);
+
+                    localStore.defineTable("SOCIAL", tableDefinition);
 
                     SimpleSyncHandler handler = new SimpleSyncHandler();
 
