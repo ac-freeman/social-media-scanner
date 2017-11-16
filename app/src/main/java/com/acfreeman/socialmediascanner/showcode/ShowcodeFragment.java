@@ -57,7 +57,7 @@ public class ShowcodeFragment extends Fragment {
         qrContainer = view.findViewById(R.id.qr_container);
         qrImage = view.findViewById(R.id.qr_image);
         Display display = getActivity().getWindowManager().getDefaultDisplay();
-        int width = display.getWidth() * 3 / 4;
+        int width = display.getWidth() * 3 / 5;
         qrContainer.getLayoutParams().width = width;
 
         switchModels = new ArrayList<>();
