@@ -242,7 +242,7 @@ public class AzureDB extends Activity {
     /**
      * Mark an item as completed
      *
-     * @param CONTACTS
+     * @param item
      *            The item to mark
      */
     public void checkCONTACTS(final CONTACTS item) {
@@ -282,7 +282,7 @@ public class AzureDB extends Activity {
     /**
      * Mark an item as completed
      *
-     * @param EMAILS
+     * @param item
      *            The item to mark
      */
     public void checkEMAILS(final EMAILS item) {
@@ -322,7 +322,7 @@ public class AzureDB extends Activity {
     /**
      * Mark an item as completed
      *
-     * @param PHONES
+     * @param item
      *            The item to mark
      */
     public void checkPHONES(final PHONES item) {
@@ -362,7 +362,7 @@ public class AzureDB extends Activity {
     /**
      * Mark an item as completed
      *
-     * @param SOCIAL
+     * @param item
      *            The item to mark
      */
     public void checkSOCIAL(final SOCIAL item) {
@@ -667,11 +667,11 @@ public class AzureDB extends Activity {
             protected Void doInBackground(Void... params) {
 
                 try {
-                    final List<CONTACTS> resultsCONTACTS = refreshItemsFromMobileServiceTable();
-                    final List<EMAILS> resultsEMAILS = refreshItemsFromMobileServiceTable();
-                    final List<Owner> resultsOwner = refreshItemsFromMobileServiceTable();
-                    final List<PHONES> resultsPHONES = refreshItemsFromMobileServiceTable();
-                    final List<SOCIAL> resultsSOCIAL = refreshItemsFromMobileServiceTable();
+                    final List<CONTACTS> resultsCONTACTS = refreshCONTACTSFromMobileServiceTable();
+                    final List<EMAILS> resultsEMAILS = refreshEMAILSFromMobileServiceTable();
+                    final List<Owner> resultsOwner = refreshOwnerFromMobileServiceTable();
+                    final List<PHONES> resultsPHONES = refreshPHONESFromMobileServiceTable();
+                    final List<SOCIAL> resultsSOCIAL = refreshSOCIALFromMobileServiceTable();
 
                     //Offline Sync
                     //final List<ToDoItem> results = refreshItemsFromMobileServiceTableSyncTable();
@@ -776,14 +776,14 @@ public class AzureDB extends Activity {
                     SQLiteLocalStore localStore = new SQLiteLocalStore(mClient.getContext(), "OfflineStore", null, 1);
 
                     Map<String, ColumnDataType> CONTACTStableDefinition = new HashMap<String, ColumnDataType>();
-                    CONTACTStableDefinition.put("person_Id", ColumnDataType.int);
+                    CONTACTStableDefinition.put("person_Id", ColumnDataType.Integer);
                     CONTACTStableDefinition.put("name", ColumnDataType.String);
                     CONTACTStableDefinition.put("complete", ColumnDataType.Boolean);
 
                     localStore.defineTable("CONTACTS", tableDefinition);
 
                     Map<String, ColumnDataType> EMAILStableDefinition = new HashMap<String, ColumnDataType>();
-                    EMAILStableDefinition.put("person_Id", ColumnDataType.int);
+                    EMAILStableDefinition.put("person_Id", ColumnDataType.Integer);
                     EMAILStableDefinition.put("email", ColumnDataType.String);
                     EMAILStableDefinition.put("email_type", ColumnDataType.String);
                     EMAILStableDefinition.put("complete", ColumnDataType.Boolean);
@@ -791,14 +791,14 @@ public class AzureDB extends Activity {
                     localStore.defineTable("EMAILS", tableDefinition);
 
                     Map<String, ColumnDataType> OwnertableDefinition = new HashMap<String, ColumnDataType>();
-                    OwnertableDefinition.put("person_Id", ColumnDataType.int);
+                    OwnertableDefinition.put("person_Id", ColumnDataType.Integer);
                     OwnertableDefinition.put("name", ColumnDataType.String);
                     OwnertableDefinition.put("complete", ColumnDataType.Boolean);
 
                     localStore.defineTable("Owner", tableDefinition);
 
                     Map<String, ColumnDataType> PHONEStableDefinition = new HashMap<String, ColumnDataType>();
-                    PHONEStableDefinition.put("person_Id", ColumnDataType.int);
+                    PHONEStableDefinition.put("person_Id", ColumnDataType.Integer);
                     PHONEStableDefinition.put("number", ColumnDataType.String);
                     PHONEStableDefinition.put("type", ColumnDataType.String);
                     PHONEStableDefinition.put("complete", ColumnDataType.Boolean);
@@ -806,7 +806,7 @@ public class AzureDB extends Activity {
                     localStore.defineTable("PHONES", tableDefinition);
 
                     Map<String, ColumnDataType> SOCIALtableDefinition = new HashMap<String, ColumnDataType>();
-                    SOCIALtableDefinition.put("person_Id", ColumnDataType.int);
+                    SOCIALtableDefinition.put("person_Id", ColumnDataType.Integer);
                     SOCIALtableDefinition.put("username", ColumnDataType.String);
                     SOCIALtableDefinition.put("social_type", ColumnDataType.String);
                     SOCIALtableDefinition.put("complete", ColumnDataType.Boolean);
