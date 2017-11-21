@@ -58,7 +58,7 @@ public class OwnerAdapter extends ArrayAdapter<Owner> {
                     checkBox.setEnabled(false);
                     if (mContext instanceof AzureDB) {
                         AzureDB activity = (AzureDB) mContext;
-                        activity.checkItem(currentItem);
+                        activity.checkOwner(currentItem);
                     }
                 }
             }

@@ -100,12 +100,12 @@ public class AzureDB extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+//        setContentView(R.layout.activity_main);
 
-        mProgressBar = (ProgressBar) findViewById(R.id.loadingProgressBar);
+//        mProgressBar = (ProgressBar) findViewById(R.id.loadingProgressBar);
 
         // Initialize the progress bar
-        mProgressBar.setVisibility(ProgressBar.GONE);
+//        mProgressBar.setVisibility(ProgressBar.GONE);
 
         try {
             // Create the Mobile Service Client instance, using the provided
@@ -140,32 +140,32 @@ public class AzureDB extends Activity {
             //Init local storage
             initLocalStore().get();
 
-            mTextNewCONTACTS = (EditText) findViewById(R.id.textNewCONTACTS);
-            mTextNewEMAILS = (EditText) findViewById(R.id.textNewEMAILS);
-            mTextNewOwner = (EditText) findViewById(R.id.textNewOwner);
-            mTextNewPHONES = (EditText) findViewById(R.id.textNewPHONES);
-            mTextNewSOCIAL = (EditText) findViewById(R.id.textNewSOCIAL);
-
-            // Create an adapter to bind the items with the view !!!! Layout source id needs
-            mCONTACTSAdapter = new CONTACTSAdapter(this, R.layout.row_list_to_do);
-            ListView listViewCONTACT = (ListView) findViewById(R.id.listViewCONTACT);
-            listViewCONTACT.setAdapter(mCONTACTSAdapter);
-
-            mEMAILSAdapter = new EMAILSAdapter(this, R.layout.row_list_to_do);
-            ListView listViewEMAILS = (ListView) findViewById(R.id.listViewEMAILS);
-            listViewEMAILS.setAdapter(mEMAILSAdapter);
-
-            mOwnerAdapter = new OwnerAdapter(this, R.layout.row_list_to_do);
-            ListView listViewOwner = (ListView) findViewById(R.id.listViewOwner);
-            listViewOwner.setAdapter(mOwnerAdapter);
-
-            mPHONESAdapter = new PHONESAdapter(this, R.layout.row_list_to_do);
-            ListView listViewPHONES = (ListView) findViewById(R.id.listViewPHONES);
-            listViewPHONES.setAdapter(mPHONESAdapter);
-
-            mSOCIALAdapter = new SOCIALAdapter(this, R.layout.row_list_to_do);
-            ListView listViewSOCIAL = (ListView) findViewById(R.id.listViewSOCIAL);
-            listViewSOCIAL.setAdapter(mSOCIALAdapter);
+//            mTextNewCONTACTS = (EditText) findViewById(R.id.textNewCONTACTS);
+//            mTextNewEMAILS = (EditText) findViewById(R.id.textNewEMAILS);
+//            mTextNewOwner = (EditText) findViewById(R.id.textNewOwner);
+//            mTextNewPHONES = (EditText) findViewById(R.id.textNewPHONES);
+//            mTextNewSOCIAL = (EditText) findViewById(R.id.textNewSOCIAL);
+//
+//            // Create an adapter to bind the items with the view !!!! Layout source id needs
+//            mCONTACTSAdapter = new CONTACTSAdapter(this, R.layout.row_list_to_do);
+//            ListView listViewCONTACT = (ListView) findViewById(R.id.listViewCONTACT);
+//            listViewCONTACT.setAdapter(mCONTACTSAdapter);
+//
+//            mEMAILSAdapter = new EMAILSAdapter(this, R.layout.row_list_to_do);
+//            ListView listViewEMAILS = (ListView) findViewById(R.id.listViewEMAILS);
+//            listViewEMAILS.setAdapter(mEMAILSAdapter);
+//
+//            mOwnerAdapter = new OwnerAdapter(this, R.layout.row_list_to_do);
+//            ListView listViewOwner = (ListView) findViewById(R.id.listViewOwner);
+//            listViewOwner.setAdapter(mOwnerAdapter);
+//
+//            mPHONESAdapter = new PHONESAdapter(this, R.layout.row_list_to_do);
+//            ListView listViewPHONES = (ListView) findViewById(R.id.listViewPHONES);
+//            listViewPHONES.setAdapter(mPHONESAdapter);
+//
+//            mSOCIALAdapter = new SOCIALAdapter(this, R.layout.row_list_to_do);
+//            ListView listViewSOCIAL = (ListView) findViewById(R.id.listViewSOCIAL);
+//            listViewSOCIAL.setAdapter(mSOCIALAdapter);
 
 
             // Load the items from the Mobile Service
@@ -181,28 +181,28 @@ public class AzureDB extends Activity {
     /**
      * Initializes the activity menu
      */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.activity_main, menu);
+//        return true;
+//    }
 
     /**
      * Select an option from the menu
      */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_refresh) {
-            refreshItemsFromTable();
-        }
-
-        return true;
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        if (item.getItemId() == R.id.menu_refresh) {
+//            refreshItemsFromTable();
+//        }
+//
+//        return true;
+//    }
 
     /**
      * Mark an item as completed
      *
-     * @param owner
+     * @param item
      *            The item to mark
      */
     public void checkOwner(final Owner item) {
@@ -780,7 +780,7 @@ public class AzureDB extends Activity {
                     CONTACTStableDefinition.put("name", ColumnDataType.String);
                     CONTACTStableDefinition.put("complete", ColumnDataType.Boolean);
 
-                    localStore.defineTable("CONTACTS", tableDefinition);
+                    localStore.defineTable("CONTACTS", CONTACTStableDefinition);
 
                     Map<String, ColumnDataType> EMAILStableDefinition = new HashMap<String, ColumnDataType>();
                     EMAILStableDefinition.put("person_Id", ColumnDataType.Integer);
@@ -788,14 +788,14 @@ public class AzureDB extends Activity {
                     EMAILStableDefinition.put("email_type", ColumnDataType.String);
                     EMAILStableDefinition.put("complete", ColumnDataType.Boolean);
 
-                    localStore.defineTable("EMAILS", tableDefinition);
+                    localStore.defineTable("EMAILS", EMAILStableDefinition);
 
                     Map<String, ColumnDataType> OwnertableDefinition = new HashMap<String, ColumnDataType>();
                     OwnertableDefinition.put("person_Id", ColumnDataType.Integer);
                     OwnertableDefinition.put("name", ColumnDataType.String);
                     OwnertableDefinition.put("complete", ColumnDataType.Boolean);
 
-                    localStore.defineTable("Owner", tableDefinition);
+                    localStore.defineTable("Owner", OwnertableDefinition);
 
                     Map<String, ColumnDataType> PHONEStableDefinition = new HashMap<String, ColumnDataType>();
                     PHONEStableDefinition.put("person_Id", ColumnDataType.Integer);
@@ -803,7 +803,7 @@ public class AzureDB extends Activity {
                     PHONEStableDefinition.put("type", ColumnDataType.String);
                     PHONEStableDefinition.put("complete", ColumnDataType.Boolean);
 
-                    localStore.defineTable("PHONES", tableDefinition);
+                    localStore.defineTable("PHONES", PHONEStableDefinition);
 
                     Map<String, ColumnDataType> SOCIALtableDefinition = new HashMap<String, ColumnDataType>();
                     SOCIALtableDefinition.put("person_Id", ColumnDataType.Integer);
@@ -811,7 +811,7 @@ public class AzureDB extends Activity {
                     SOCIALtableDefinition.put("social_type", ColumnDataType.String);
                     SOCIALtableDefinition.put("complete", ColumnDataType.Boolean);
 
-                    localStore.defineTable("SOCIAL", tableDefinition);
+                    localStore.defineTable("SOCIAL", SOCIALtableDefinition);
 
                     SimpleSyncHandler handler = new SimpleSyncHandler();
 
