@@ -71,73 +71,73 @@ public class RegistrationAdapter extends BaseAdapter {
         RelativeLayout rl = view.findViewById(R.id.registration_row_relative_layout);
 
 
-        Button submit = view.findViewById(R.id.submit_button);
-
-        switch (data[position]){
-            case 0:
-                Log.i("REGISTRATION","Case 0");
-                rl.setVisibility(View.VISIBLE);
-                submit.setVisibility(View.INVISIBLE);
-                editText.setHint("Name");
-                spinner.setVisibility(View.INVISIBLE);
-                button.setVisibility(View.INVISIBLE);
-                editText.setText("");
-                break;
-            case 1:
-                rl.setVisibility(View.VISIBLE);
-                submit.setVisibility(View.INVISIBLE);
-                editText.setText("");
-
-                editText.setHint("Phone number");
-
-                spinnerList = new String[]{"Cell","Work","Home","Other"};
-                spinnerArrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, spinnerList);
-                spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down vieww
-                spinner.setAdapter(spinnerArrayAdapter);
-                spinner.setVisibility(View.VISIBLE);
-                button.setVisibility(View.VISIBLE);
-                if(data[position+1] == 2) {
-                    button.setImageResource(R.drawable.ic_add_circle_green_24px);
-
-                } else {
-                    button.setImageResource(R.drawable.ic_remove_circle_red_24dp);
-                    if(phones.size() >0){
-                        editText.setText((int) phones.remove(0).getNumber());
-                    }
-                }
-                break;
-            case 2:
-                rl.setVisibility(View.VISIBLE);
-                submit.setVisibility(View.INVISIBLE);
-                editText.setText("");
-                editText.setHint("E-mail address");
-
-                spinnerList = new String[]{"Personal","Work","School","Other"};
-                spinnerArrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, spinnerList);
-                spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down vieww
-                spinner.setAdapter(spinnerArrayAdapter);
-                spinner.setVisibility(View.VISIBLE);
-                button.setVisibility(View.VISIBLE);
-                if(position+1 <data.length && data[position+1] == 3) {
-                    button.setImageResource(R.drawable.ic_add_circle_green_24px);
-
-                } else {
-                    button.setImageResource(R.drawable.ic_remove_circle_red_24dp);
-                    if(emails.size() >0){
-                        Log.i("REGISTRATION","Emails > 0");
-                        editText.setText( emails.remove(0).getEmail());
-                    }
-                }
-                break;
-            case 3:
-                Log.i("REGISTRATION","Case 3, position "+position);
-                rl.setVisibility(View.INVISIBLE);
-                submit.setVisibility(View.VISIBLE);
-                editText.setText("");
-                break;
-
-        }
-
+//        Button submit = view.findViewById(R.id.submit_button);
+//
+//        switch (data[position]){
+//            case 0:
+//                Log.i("REGISTRATION","Case 0");
+//                rl.setVisibility(View.VISIBLE);
+//                submit.setVisibility(View.INVISIBLE);
+//                editText.setHint("Name");
+//                spinner.setVisibility(View.INVISIBLE);
+//                button.setVisibility(View.INVISIBLE);
+//                editText.setText("");
+//                break;
+//            case 1:
+//                rl.setVisibility(View.VISIBLE);
+//                submit.setVisibility(View.INVISIBLE);
+//                editText.setText("");
+//
+//                editText.setHint("Phone number");
+//
+//                spinnerList = new String[]{"Cell","Work","Home","Other"};
+//                spinnerArrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, spinnerList);
+//                spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down vieww
+//                spinner.setAdapter(spinnerArrayAdapter);
+//                spinner.setVisibility(View.VISIBLE);
+//                button.setVisibility(View.VISIBLE);
+//                if(data[position+1] == 2) {
+//                    button.setImageResource(R.drawable.ic_add_circle_green_24px);
+//
+//                } else {
+//                    button.setImageResource(R.drawable.ic_remove_circle_red_24dp);
+//                    if(phones.size() >0){
+//                        editText.setText((int) phones.remove(0).getNumber());
+//                    }
+//                }
+//                break;
+//            case 2:
+//                rl.setVisibility(View.VISIBLE);
+//                submit.setVisibility(View.INVISIBLE);
+//                editText.setText("");
+//                editText.setHint("E-mail address");
+//
+//                spinnerList = new String[]{"Personal","Work","School","Other"};
+//                spinnerArrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, spinnerList);
+//                spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down vieww
+//                spinner.setAdapter(spinnerArrayAdapter);
+//                spinner.setVisibility(View.VISIBLE);
+//                button.setVisibility(View.VISIBLE);
+//                if(position+1 <data.length && data[position+1] == 3) {
+//                    button.setImageResource(R.drawable.ic_add_circle_green_24px);
+//
+//                } else {
+//                    button.setImageResource(R.drawable.ic_remove_circle_red_24dp);
+//                    if(emails.size() >0){
+//                        Log.i("REGISTRATION","Emails > 0");
+//                        editText.setText( emails.remove(0).getEmail());
+//                    }
+//                }
+//                break;
+//            case 3:
+//                Log.i("REGISTRATION","Case 3, position "+position);
+//                rl.setVisibility(View.INVISIBLE);
+//                submit.setVisibility(View.VISIBLE);
+//                editText.setText("");
+//                break;
+//
+//        }
+//
         return view;
     }
 }

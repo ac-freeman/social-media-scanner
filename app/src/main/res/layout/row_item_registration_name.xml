@@ -18,25 +18,8 @@
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:layout_marginVertical="@dimen/activity_vertical_margin"
-            android:layout_toLeftOf="@+id/spinner"
-            android:hint="Phone number" />
+            android:hint="Name" />
 
-        <Spinner
-            android:id="@+id/spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/row_button"></Spinner>
-
-        <ImageButton
-            android:id="@+id/row_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            android:background="@drawable/ic_add_circle_green_24px" />
     </RelativeLayout>
 
 
