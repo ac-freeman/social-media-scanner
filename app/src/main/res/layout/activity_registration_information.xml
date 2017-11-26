@@ -2,34 +2,28 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_registration_information_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/activity_registration_information_layout"
     tools:context="com.acfreeman.socialmediascanner.RegistrationInformation">
 
-    <ScrollView
-        android:id="@+id/scrollView1"
-        android:paddingVertical="@dimen/activity_vertical_margin"
+
+    <RelativeLayout
+        android:id="@+id/RelativeLayout1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true" >
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <ListView
+            android:id="@+id/listview"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true">
+        </ListView>
 
 
 
-            <RelativeLayout
-                android:id="@+id/RelativeLayout1"
-                android:layout_width="fill_parent"
-                android:layout_gravity="center"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" >
-
-                <TableLayout
-                    android:id="@+id/table_main"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true" >
-                </TableLayout>
-            </RelativeLayout>
-    </ScrollView>
+    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>
