@@ -9,6 +9,11 @@ public class QrModesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr_modes);
+
     }
+
+    //Step 1: Add option to toggle all information
+
+    //Step 2: Add option to toggle information for a business setting
 
 }
