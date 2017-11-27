@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -329,6 +330,11 @@ public class RegistrationInformation extends AppCompatActivity {
 
         final TableRow phoneRow = (TableRow) this.getLayoutInflater().inflate(R.layout.row_item_registration, null,false);
 
+        final ImageView image = phoneRow.findViewById(R.id.image);
+        image.setImageResource(R.drawable.ic_phone_black_24dp);
+        if(PhoneRowList.size()==0){
+            image.setVisibility(View.VISIBLE);
+        }
 
         final EditText phoneEditText = phoneRow.findViewById(R.id.edit_text);
         phoneEditText.setHint("Phone");
@@ -370,7 +376,7 @@ public class RegistrationInformation extends AppCompatActivity {
 
         table.addView(phoneRow, index);
 
-        final PhoneRow row = new PhoneRow(phoneEditText,spinner);
+        final PhoneRow row = new PhoneRow(phoneEditText,spinner, image);
         PhoneRowList.add(row);
 
 
@@ -388,6 +394,7 @@ public class RegistrationInformation extends AppCompatActivity {
                 } else {
                     table.removeView(phoneRow);
                     PhoneRowList.remove(row);
+                    PhoneRowList.get(0).getImage().setVisibility(View.VISIBLE);
                 }
 
             }
@@ -403,6 +410,12 @@ public class RegistrationInformation extends AppCompatActivity {
 
         final TableRow emailRow = (TableRow) this.getLayoutInflater().inflate(R.layout.row_item_registration, null,false);
 
+
+        final ImageView image = emailRow.findViewById(R.id.image);
+        image.setImageResource(R.drawable.ic_email_black_24dp);
+        if(EmailRowList.size()==0){
+            image.setVisibility(View.VISIBLE);
+        }
         final EditText emailEditText = emailRow.findViewById(R.id.edit_text);
         emailEditText.setHint("Email");
         emailEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
@@ -434,7 +447,7 @@ public class RegistrationInformation extends AppCompatActivity {
 
         table.addView(emailRow, index);
 
-        final EmailRow row = new EmailRow(emailEditText,spinner);
+        final EmailRow row = new EmailRow(emailEditText,spinner,image);
         EmailRowList.add(row);
 
         emailButton.setOnClickListener(new View.OnClickListener() {
@@ -450,6 +463,7 @@ public class RegistrationInformation extends AppCompatActivity {
                 } else {
                     table.removeView(emailRow);
                     EmailRowList.remove(row);
+                    EmailRowList.get(0).getImage().setVisibility(View.VISIBLE);
                 }
 
             }
@@ -461,10 +475,12 @@ public class RegistrationInformation extends AppCompatActivity {
 
         EditText editText;
         Spinner spinner;
+        ImageView image;
 
-        PhoneRow(EditText editText, Spinner spinner){
+        PhoneRow(EditText editText, Spinner spinner, ImageView image){
             this.editText = editText;
             this.spinner = spinner;
+            this.image = image;
         }
 
         public EditText getEditText() {
@@ -473,16 +489,19 @@ public class RegistrationInformation extends AppCompatActivity {
         public Spinner getSpinner() {
             return spinner;
         }
+        public ImageView getImage() {return image;}
     }
 
     private class EmailRow{
 
         EditText editText;
         Spinner spinner;
+        ImageView image;
 
-        EmailRow(EditText editText, Spinner spinner){
+        EmailRow(EditText editText, Spinner spinner, ImageView image){
             this.editText = editText;
             this.spinner = spinner;
+            this.image = image;
         }
 
         public EditText getEditText() {
@@ -491,6 +510,7 @@ public class RegistrationInformation extends AppCompatActivity {
         public Spinner getSpinner() {
             return spinner;
         }
+        public ImageView getImage() {return image;}
     }
 //
 }
