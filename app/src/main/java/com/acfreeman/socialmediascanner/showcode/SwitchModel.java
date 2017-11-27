@@ -3,6 +3,8 @@ package com.acfreeman.socialmediascanner.showcode;
 import android.widget.Switch;
 
 import com.acfreeman.socialmediascanner.R;
+import com.acfreeman.socialmediascanner.db.Email;
+import com.acfreeman.socialmediascanner.db.Phone;
 
 /**
  * Created by Andrew on 10/13/2017.
@@ -16,6 +18,8 @@ public class SwitchModel {
     Boolean state;
     Switch switcher;
     String user_id; //not used for phones/emails switches
+    Phone phone;
+    Email email;
 
     public SwitchModel(String switchName, String tag, int switchImage) {
         this.switchName = switchName;
@@ -23,14 +27,33 @@ public class SwitchModel {
         this.switchImage = switchImage;
         this.state = false;
     }
+
+    //phone constructor
+    public SwitchModel(String switchName, String tag, int switchImage, Phone phone) {
+        this.switchName = switchName;
+        this.tag = tag;
+        this.switchImage = switchImage;
+        this.state = false;
+        this.phone = phone;
+    }
+
+    //email constructor
+    public SwitchModel(String switchName, String tag, int switchImage, Email email) {
+        this.switchName = switchName;
+        this.tag = tag;
+        this.switchImage = switchImage;
+        this.state = false;
+        this.email = email;
+    }
+
     public SwitchModel(String tag, String user_id) {
         this.tag = tag;
         this.state = false;
         this.user_id = user_id;
-        setSwitchNAttribs_fromTag(tag);
+        setSwitchAttribs_fromTag(tag);
     }
 
-    private void setSwitchNAttribs_fromTag(String tag){
+    private void setSwitchAttribs_fromTag(String tag){
         switch (tag){
             case "tw":
                 this.switchName = "Twitter";
@@ -88,6 +111,9 @@ public class SwitchModel {
     public String getTag() {return tag;}
 
     public String getUser_id() {return user_id;}
+
+    public Phone getPhone() {return phone;}
+    public Email getEmail() {return email;}
 
 
 

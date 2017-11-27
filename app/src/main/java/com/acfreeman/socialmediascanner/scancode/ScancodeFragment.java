@@ -171,7 +171,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 //                        Toast.makeText(this, "Phone: " + phoneNumber, Toast.LENGTH_SHORT).show();
                         String typePhone = rawArray[i + 2];
                         Log.i("PHONEDEBUG", "Contact id: " + contact.getId());
-                        Phone phone = new Phone(contact.getId(), Integer.parseInt(phoneNumber), typePhone);
+                        Phone phone = new Phone(contact.getId(), Long.parseLong(phoneNumber), typePhone);
                         database.addPhone(phone);
                         break;
 
