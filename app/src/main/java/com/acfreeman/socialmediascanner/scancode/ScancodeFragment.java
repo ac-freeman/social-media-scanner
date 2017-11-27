@@ -16,6 +16,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.util.AttributeSet;
@@ -33,6 +34,7 @@ import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.db.Contact;
 import com.acfreeman.socialmediascanner.db.Email;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
+import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Phone;
 import com.acfreeman.socialmediascanner.db.Social;
 import com.acfreeman.socialmediascanner.social.SocialAdder;
@@ -42,6 +44,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import me.dm7.barcodescanner.core.IViewFinder;
@@ -91,7 +94,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
         ConnectivityReceiver cr = new ConnectivityReceiver();
         cr.onReceive(getApplicationContext(), new Intent());
-        if(!connectedInternet) {
+        if (!connectedInternet) {
             Log.e("FFFFFFFFFFFFFF", "Internet not connected");
             //Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
             internetWarning = new CustomDialogFragment();
@@ -144,6 +147,17 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
             Contact contact = new Contact(userName);
             database.addContact(contact);
 
+            Owner owner = database.getOwner(0);
+            ArrayList<Social> socials = database.getUserSocials(owner.getId());
+            String[] socialNameArray = new String[socials.size()];
+            for (int i = 0; i < socials.size(); i++) {
+                socialNameArray[i] = socials.get(i).getType();
+            }
+            List socialNameList = Arrays.asList(socialNameArray);
+
+
+            Boolean hideUnconnected = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("hide_disconnected_socials_switch", true);
+
             for (int i = 2; i < rawArray.length; i++) {
 
                 t = rawArray[i];
@@ -174,7 +188,10 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
                     case "tw":
                         String twitter_id = rawArray[i + 1];
                         uri = "https://twitter.com/intent/follow?user_id=" + (twitter_id);
-                        socialAdderArrayList.add(new SocialAdder(uri, "Twitter"));
+                        //TODO: Add settings check here
+
+                        if (!hideUnconnected || socialNameList.contains("tw"))
+                            socialAdderArrayList.add(new SocialAdder(uri, "Twitter"));
                         Social twitterSocial = new Social(contact.getId(), "Twitter", twitter_id);
                         database.addSocial(twitterSocial);
                         break;
@@ -182,7 +199,8 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
                         String linkedin_id = rawArray[i + 1];
                         uri = "https://www.linkedin.com/profile/view?id=" + (linkedin_id);
-                        socialAdderArrayList.add(new SocialAdder(uri, "LinkedIn"));
+                        if (!hideUnconnected || socialNameList.contains("li"))
+                            socialAdderArrayList.add(new SocialAdder(uri, "LinkedIn"));
                         Social linkedinSocial = new Social(contact.getId(), "LinkedIn", linkedin_id);
                         database.addSocial(linkedinSocial);
                         break;
@@ -190,7 +208,8 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
                     case "sp":
                         String spotify_id = rawArray[i + 1];
                         uri = "spotify:user:" + spotify_id;
-                        socialAdderArrayList.add(new SocialAdder(uri, "Spotify"));
+                        if (!hideUnconnected || socialNameList.contains("sp"))
+                            socialAdderArrayList.add(new SocialAdder(uri, "Spotify"));
                         Social spotifySocial = new Social(contact.getId(), "Spotify", spotify_id);
                         database.addSocial(spotifySocial);
                         break;
@@ -205,7 +224,8 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
                             uri = "https://www.facebook.com/" + (facebook_id); //catches a url to the desired page
                         }
 
-                        socialAdderArrayList.add(new SocialAdder(uri, "Facebook"));
+                        if (!hideUnconnected || socialNameList.contains("fb"))
+                            socialAdderArrayList.add(new SocialAdder(uri, "Facebook"));
                         Social facebookSocial = new Social(contact.getId(), "Facebook", facebook_id);
                         database.addSocial(facebookSocial);
                         break;
@@ -213,7 +233,8 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
                     case "go":
                         String google_id = rawArray[i + 1];
                         uri = "https://plus.google.com/" + google_id;
-                        socialAdderArrayList.add(new SocialAdder(uri, "Google+"));
+                        if (!hideUnconnected || socialNameList.contains("go"))
+                            socialAdderArrayList.add(new SocialAdder(uri, "Google+"));
                         Social googlePlusSocial = new Social(contact.getId(), "Google+", google_id);
                         database.addSocial(googlePlusSocial);
                         break;
@@ -474,21 +495,20 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
     ArrayList<DialogFragment> dialogsList = new ArrayList<>();
 
     public void showCameraRequestDialog(Contact contact) {
-            handleScan = false;
-            // Create an instance of the dialog fragment and show it
-            DialogFragment dialog = new CustomDialogFragment();
-            dialogsList.add(dialog);
+        handleScan = false;
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new CustomDialogFragment();
+        dialogsList.add(dialog);
 
-            Bundle args = new Bundle();
-            args.putString("dialog_title", "Would you like to take a photo of " + contact.getName() + "?");
-            args.putString("name", contact.getName());
-            args.putString("action", "photoCapture");
-            currentContact = contact;
+        Bundle args = new Bundle();
+        args.putString("dialog_title", "Would you like to take a photo of " + contact.getName() + "?");
+        args.putString("name", contact.getName());
+        args.putString("action", "photoCapture");
+        currentContact = contact;
 
 
-
-            dialog.setArguments(args);
-            dialog.show(getFragmentManager(), "CustomDialogFragment");
+        dialog.setArguments(args);
+        dialog.show(getFragmentManager(), "CustomDialogFragment");
     }
 
 
@@ -529,13 +549,13 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
         @Override
         public void onReceive(Context context, Intent intent) {
             ConnectivityManager cm =
-                    (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                    (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
             boolean isConnected = activeNetwork != null &&
                     activeNetwork.isConnectedOrConnecting();
 
-            if(isConnected) {
+            if (isConnected) {
                 connectedInternet = true;
             } else {
                 connectedInternet = false;

@@ -13,7 +13,8 @@
             android:id="@+id/qr_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"
+            android:padding="12dp"/>
     </RelativeLayout>
 
     <ListView

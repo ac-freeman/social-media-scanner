@@ -53,7 +53,6 @@ public class TwitterFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        super.onAttach(context);
         if (context instanceof ConnectionChangedListener) {
             mCallback = (ConnectionChangedListener) context;
         } else {

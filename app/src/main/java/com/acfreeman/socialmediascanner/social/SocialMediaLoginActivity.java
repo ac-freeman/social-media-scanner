@@ -24,6 +24,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.CustomDialogFragment;
 import com.acfreeman.socialmediascanner.MainActivity;
@@ -33,6 +34,7 @@ import com.acfreeman.socialmediascanner.db.LocalDatabase;
 import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.social.login.FacebookFragment;
 import com.acfreeman.socialmediascanner.social.login.GoogleFragment;
+import com.acfreeman.socialmediascanner.social.login.IntroFragment;
 import com.acfreeman.socialmediascanner.social.login.LinkedInFragment;
 import com.acfreeman.socialmediascanner.social.login.SpotifyFragment;
 import com.acfreeman.socialmediascanner.social.login.TwitterFragment;
@@ -85,7 +87,8 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 
         setContentView(R.layout.activity_social_media_login_container);
 
-        GoogleFragment googleFragment = new GoogleFragment();
+//        GoogleFragment googleFragment = new GoogleFragment();
+        IntroFragment introFragment = new IntroFragment();
 
         FragmentManager fm = getSupportFragmentManager();
 
@@ -103,7 +106,9 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                         List<Fragment> allFragments = getSupportFragmentManager().getFragments();
                         Log.i("BACKSTACK", "Backstack entry count: " + getSupportFragmentManager().getBackStackEntryCount());
                         for (Fragment fragment : allFragments) {
-                            if (fragment instanceof GoogleFragment) {
+                            if (fragment instanceof IntroFragment) {
+                                d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.primary), PorterDuff.Mode.MULTIPLY);
+                            } else if (fragment instanceof GoogleFragment) {
                                 d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.google_blue), PorterDuff.Mode.MULTIPLY);
                             } else if (fragment instanceof TwitterFragment) {
                                 d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.twitter_blue), PorterDuff.Mode.MULTIPLY);
@@ -116,7 +121,7 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
                             }
                         }
 
-                        new Handler().postDelayed(new Runnable(){
+                        new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 fab.setVisibility(View.VISIBLE);
@@ -132,18 +137,22 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 
         FragmentTransaction ft = fm.beginTransaction();
         ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
-        ft.addToBackStack("google");
-        ft.replace(R.id.content, googleFragment);
+//        ft.addToBackStack("intro");
+        ft.replace(R.id.content, introFragment);
         ft.commit();
 
 
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         Drawable d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_white_24dp);
         Drawable d2 = d.getConstantState().newDrawable();
-        d2.mutate().
+        d2.mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.primary), PorterDuff.Mode.MULTIPLY);
 
-                setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.google_blue), PorterDuff.Mode.MULTIPLY);
+        fab.setVisibility(View.VISIBLE);
         fab.setImageDrawable(d2);
+        Animation slide = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_in_bottom);
+        fab.startAnimation(slide);
+
+
         fab.setOnClickListener(new View.OnClickListener()
 
         {
@@ -152,7 +161,19 @@ public class SocialMediaLoginActivity extends AppCompatActivity implements Custo
 
                 List<Fragment> allFragments = getSupportFragmentManager().getFragments();
                 for (Fragment fragment : allFragments) {
-                    if (fragment instanceof GoogleFragment) {
+                    if (fragment instanceof IntroFragment) {
+                        Log.i("SOCIALDEBUG", "Fragment: google");
+                        GoogleFragment googleFragment = new GoogleFragment();
+
+                        FragmentManager fm = getSupportFragmentManager();
+                        FragmentTransaction ft = fm.beginTransaction();
+                        ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
+                        ft.addToBackStack("google");
+                        ft.replace(R.id.content, googleFragment);
+                        ft.commit();
+
+                        Toast.makeText(getApplicationContext(),"Press BACK to return to previous screen",Toast.LENGTH_SHORT).show();
+                    } else if (fragment instanceof GoogleFragment) {
                         Log.i("SOCIALDEBUG", "Fragment: google");
                         TwitterFragment twitterFragment = new TwitterFragment();
 

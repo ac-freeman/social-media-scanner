@@ -57,7 +57,7 @@ public class ShowcodeFragment extends Fragment {
         qrContainer = view.findViewById(R.id.qr_container);
         qrImage = view.findViewById(R.id.qr_image);
         Display display = getActivity().getWindowManager().getDefaultDisplay();
-        int width = display.getWidth() * 3 / 4;
+        int width = display.getWidth() * 3 / 5;
         qrContainer.getLayoutParams().width = width;
 
         switchModels = new ArrayList<>();
@@ -73,7 +73,6 @@ public class ShowcodeFragment extends Fragment {
         for (Social s : sociallist) {
             switchModels.add(new SwitchModel(s.getType(), s.getUsername()));
         }
-        switchModels = showGPlusOption(switchModels);
 
         showcodeAdapter = new ShowcodeAdapter(switchModels, getActivity());
         codeListView.setAdapter(showcodeAdapter);
@@ -151,18 +150,6 @@ public class ShowcodeFragment extends Fragment {
         }
     }
 
-    private ArrayList<SwitchModel> showGPlusOption(ArrayList<SwitchModel> switchModels){
-
-        if(!PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("show_gplus_switch", true)) {
-            Log.i("DISPLAYDEBUG","G+ switch disabled");
-            for (int i = 0; i < switchModels.size(); i++) {
-                if (switchModels.get(i).getTag().equals("go")) {
-                    switchModels.remove(i);
-                }
-            }
-        }
-        return switchModels;
-    }
 
     public boolean allowRefresh = false;
 
