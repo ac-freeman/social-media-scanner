@@ -64,8 +64,6 @@ public class ShowcodeAdapter extends ArrayAdapter<SwitchModel> implements View.O
             viewHolder.info = (ImageView) convertView.findViewById(R.id.item_image);
             viewHolder.switcherText = (TextView) convertView.findViewById(R.id.switcher_text);
             viewHolder.switcher = (Switch) convertView.findViewById(R.id.switcher);
-//            viewHolder.txtType = (TextView) convertView.findViewById(R.id.type);
-
 
             result=convertView;
 
