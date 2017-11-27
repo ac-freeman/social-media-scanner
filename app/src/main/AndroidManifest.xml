@@ -30,7 +30,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".social.SocialMediaLoginActivity"
+        <activity
+            android:name=".social.SocialMediaLoginActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".RegistrationInformation"
@@ -88,6 +89,13 @@
             </intent-filter>
         </receiver>
 
+        <activity
+            android:name=".QrModesActivity"
+            android:parentActivityName = ".MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.AppBarOverlay">
+            >
+        </activity>
     </application>
 
 </manifest>

@@ -19,7 +19,6 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.style.StyleSpan;
 import android.util.Log;
@@ -149,6 +148,10 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                 Intent startIntent = new Intent(getApplicationContext(), SettingsActivity.class);
                 startActivity(startIntent);
                 return true;
+            case R.id.action_qr_mode:
+                Intent qrMode = new Intent(getApplicationContext(),QrModesActivity.class);
+                startActivity(qrMode);
+
             default:
                 return super.onOptionsItemSelected(item);
         }
