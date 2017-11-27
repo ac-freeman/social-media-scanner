@@ -137,7 +137,7 @@ public class ShowfriendsFragment extends Fragment{
                     if(bm != null) {
                         cardImage.setImageBitmap(getCircularBitmapWithWhiteBorder(bm));
                     } else {
-                        cardImage.setImageResource(R.drawable.icons8_user);
+                        cardImage.setImageResource(R.drawable.ic_account_circle_black_24dp);
                     }
 
 

@@ -61,8 +61,8 @@ public class RegistrationInformation extends AppCompatActivity {
     private EditText curEmail;
     private RelativeLayout layout;//initialize the relative layout object
 
-    public ArrayList<EditText> PhoneList = new ArrayList<EditText>();
-    public ArrayList<EditText> EmailList = new ArrayList<EditText>();
+    public ArrayList<PhoneRow> PhoneRowList = new ArrayList<>();
+    public ArrayList<EmailRow> EmailRowList = new ArrayList<>();
 
     public int plusEmailCnt;
     public int plusPhoneCnt;
@@ -141,7 +141,7 @@ public class RegistrationInformation extends AppCompatActivity {
         int index = 1;
         if (phones.size() > 0) {
             for (int i = 0; i < phones.size(); i++) {
-                addPhoneEditText(table, index, phones.get(i).getNumber());
+                addPhoneEditText(table, index, phones.get(i).getNumber(), phones.get(i).getType());
                 index++;
             }
         }
@@ -158,7 +158,7 @@ public class RegistrationInformation extends AppCompatActivity {
         final ArrayList<Email> emails = database.getUserEmails(0);
         if (emails.size() > 0) {
             for (int i = 0; i < emails.size(); i++) {
-                addEmailEditText(table, index, emails.get(i).getEmail());
+                addEmailEditText(table, index, emails.get(i).getEmail(), emails.get(i).getType());
                 index++;
             }
         }
@@ -209,54 +209,54 @@ public class RegistrationInformation extends AppCompatActivity {
 
                 ////
 
-                for (EditText p : PhoneList) {
+                for (PhoneRow p : PhoneRowList) {
 
-                    matcher1 = Pattern.compile(validPhone).matcher(p.getText().toString());
-                    matcher2 = Pattern.compile(validInterPhone).matcher(p.getText().toString());
+                    matcher1 = Pattern.compile(validPhone).matcher(p.getEditText().getText().toString());
+                    matcher2 = Pattern.compile(validInterPhone).matcher(p.getEditText().getText().toString());
 
-                    number = p.getText().toString();
+                    number = p.getEditText().getText().toString();
                     numFormated = number.replaceAll("[^0-9]", "");
                     if (numFormated.length() < 7 || numFormated.length() > 7 && !matcher1.matches() && !matcher2.matches()) {
                         if (numFormated.length() != 0) {
                             Toast.makeText(getApplicationContext(), "Phone number is not valid!", Toast.LENGTH_SHORT).show();
 
                             if (numFormated.length() > 10) {
-                                p.setError("For International Numbers Use (+). US Country Code Not Needed.");
+                                p.getEditText().setError("For International Numbers Use (+). US Country Code Not Needed.");
                             } else {
-                                p.setError("Enter a vaild phone number!");
+                                p.getEditText().setError("Enter a vaild phone number!");
                             }
                             error = true;
                         } else {
-                            p.setTag("DELETE");
+                            p.getEditText().setTag("DELETE");
                         }
                     }
                 }
-                for (int i = 0; i < PhoneList.size(); i++) {
-                    if (PhoneList.get(i).getTag() != null) {
-                        if (PhoneList.get(i).getTag().equals("DELETE")) {
-                            PhoneList.remove(i);
+                for (int i = 0; i < PhoneRowList.size(); i++) {
+                    if (PhoneRowList.get(i).getEditText().getTag() != null) {
+                        if (PhoneRowList.get(i).getEditText().getTag().equals("DELETE")) {
+                            PhoneRowList.remove(i);
                             i--;
                         }
                     }
                 }
 
-                for (EditText e : EmailList) {
-                    matcher1 = Pattern.compile(validEmail).matcher(e.getText().toString());
-                    Log.i("Email Debug", "Email address: " + e.getText().toString());
-                    if (e.getText().length() != 0) {
+                for (EmailRow e : EmailRowList) {
+                    matcher1 = Pattern.compile(validEmail).matcher(e.getEditText().getText().toString());
+                    Log.i("Email Debug", "Email address: " + e.getEditText().getText().toString());
+                    if (e.getEditText().getText().length() != 0) {
                         if (!matcher1.matches()) {
                             Toast.makeText(getApplicationContext(), "Email address is not valid!", Toast.LENGTH_LONG).show();
-                            e.setError("Enter valid email address!");
+                            e.getEditText().setError("Enter valid email address!");
                             error = true;
                         }
                     } else {
-                        e.setTag("DELETE");
+                        e.getEditText().setTag("DELETE");
                     }
                 }
-                for (int i = 0; i < EmailList.size(); i++) {
-                    if (EmailList.get(i).getTag() != null) {
-                        if (EmailList.get(i).getTag().equals("DELETE")) {
-                            EmailList.remove(i);
+                for (int i = 0; i < EmailRowList.size(); i++) {
+                    if (EmailRowList.get(i).getEditText().getTag() != null) {
+                        if (EmailRowList.get(i).getEditText().getTag().equals("DELETE")) {
+                            EmailRowList.remove(i);
                             i--;
                         }
                     }
@@ -281,19 +281,21 @@ public class RegistrationInformation extends AppCompatActivity {
                     }
 
 
-                    for (EditText p : PhoneList) {
+                    for (PhoneRow p : PhoneRowList) {
                         //matcher= Pattern.compile(validPhone).matcher(p.getText().toString());
-                        number = p.getText().toString();
+                        number = p.getEditText().getText().toString();
                         numFormated = number.replaceAll("[^0-9]", "");
-                        Phone phone = new Phone(owner.getId(), Long.parseLong(numFormated), "Cell");
+                        String type = p.getSpinner().getSelectedItem().toString();
+                        Phone phone = new Phone(owner.getId(), Long.parseLong(numFormated), type);
                         Log.i("PHONEDEBUG", String.valueOf(phone.getNumber()));
                         database.addPhone(phone);
                         Toast.makeText(getApplicationContext(), "Phone number stored as: " + numFormated, Toast.LENGTH_SHORT).show();
                     }
 
-                    for (EditText e : EmailList) {
+                    for (EmailRow e : EmailRowList) {
 
-                        Email email = new Email((long) owner.getId(), e.getText().toString(), "Work");
+                        String type = e.getSpinner().getSelectedItem().toString();
+                        Email email = new Email((long) owner.getId(), e.getEditText().getText().toString(), type);
                         database.addEmail(email);
                         Toast.makeText(getApplicationContext(), "Email stored as: " + email.getEmail(), Toast.LENGTH_SHORT).show();
                     }
@@ -319,9 +321,11 @@ public class RegistrationInformation extends AppCompatActivity {
     }
 
 
-
-
     private void addPhoneEditText(final TableLayout table, final int index, long number) {
+        addPhoneEditText(table, index, number, "Cell");
+    }
+
+    private void addPhoneEditText(final TableLayout table, final int index, long number, String type) {
 
         final TableRow phoneRow = (TableRow) this.getLayoutInflater().inflate(R.layout.row_item_registration, null,false);
 
@@ -338,6 +342,7 @@ public class RegistrationInformation extends AppCompatActivity {
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerList);
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down vieww
         spinner.setAdapter(spinnerArrayAdapter);
+        spinner.setSelection(spinnerArrayAdapter.getPosition(type));
 
         final ImageButton phoneButton = phoneRow.findViewById(R.id.row_button);
 //        final Button plusPhone = new Button(this);
@@ -365,7 +370,8 @@ public class RegistrationInformation extends AppCompatActivity {
 
         table.addView(phoneRow, index);
 
-        PhoneList.add(phoneEditText);
+        final PhoneRow row = new PhoneRow(phoneEditText,spinner);
+        PhoneRowList.add(row);
 
 
         phoneButton.setOnClickListener(new View.OnClickListener() {
@@ -381,7 +387,7 @@ public class RegistrationInformation extends AppCompatActivity {
                     plusPhoneCnt++;
                 } else {
                     table.removeView(phoneRow);
-                    PhoneList.remove(phoneEditText);
+                    PhoneRowList.remove(row);
                 }
 
             }
@@ -390,6 +396,10 @@ public class RegistrationInformation extends AppCompatActivity {
     }
 
     private void addEmailEditText(final TableLayout table, final int index, String text) {
+        addEmailEditText(table, index, text, "Personal");
+    }
+
+    private void addEmailEditText(final TableLayout table, final int index, String text, String type) {
 
         final TableRow emailRow = (TableRow) this.getLayoutInflater().inflate(R.layout.row_item_registration, null,false);
 
@@ -402,6 +412,7 @@ public class RegistrationInformation extends AppCompatActivity {
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerList);
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down vieww
         spinner.setAdapter(spinnerArrayAdapter);
+        spinner.setSelection(spinnerArrayAdapter.getPosition(type));
 
         if (!text.equals(""))
             emailEditText.setText(text);
@@ -423,8 +434,8 @@ public class RegistrationInformation extends AppCompatActivity {
 
         table.addView(emailRow, index);
 
-        EmailList.add(emailEditText);
-
+        final EmailRow row = new EmailRow(emailEditText,spinner);
+        EmailRowList.add(row);
 
         emailButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -438,12 +449,48 @@ public class RegistrationInformation extends AppCompatActivity {
                     plusEmailCnt++;
                 } else {
                     table.removeView(emailRow);
-                    EmailList.remove(emailEditText);
+                    EmailRowList.remove(row);
                 }
 
             }
         });
 
+    }
+
+    private class PhoneRow{
+
+        EditText editText;
+        Spinner spinner;
+
+        PhoneRow(EditText editText, Spinner spinner){
+            this.editText = editText;
+            this.spinner = spinner;
+        }
+
+        public EditText getEditText() {
+            return editText;
+        }
+        public Spinner getSpinner() {
+            return spinner;
+        }
+    }
+
+    private class EmailRow{
+
+        EditText editText;
+        Spinner spinner;
+
+        EmailRow(EditText editText, Spinner spinner){
+            this.editText = editText;
+            this.spinner = spinner;
+        }
+
+        public EditText getEditText() {
+            return editText;
+        }
+        public Spinner getSpinner() {
+            return spinner;
+        }
     }
 //
 }
