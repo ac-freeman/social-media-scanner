@@ -45,7 +45,7 @@ public class OwnerAdapter extends ArrayAdapter<Owner> {
         }
 
         row.setTag(currentItem);
-        final CheckBox checkBox = (CheckBox) row.findViewById(currentItem.getPerson_Id());
+        final CheckBox checkBox = (CheckBox) row.findViewById(currentItem.getOwner_Id());
         checkBox.setText(currentItem.getName());
         checkBox.setChecked(false);
         checkBox.setEnabled(true);

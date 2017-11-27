@@ -14,6 +14,12 @@ public class SOCIAL {
      */
     @com.google.gson.annotations.SerializedName("person_Id")
     private int mPerson_Id;
+
+    /**
+     * Item Id
+     */
+    @com.google.gson.annotations.SerializedName("owner_Id")
+    private int mOwner_Id;
     
     /**
      * Item type
@@ -47,12 +53,15 @@ public class SOCIAL {
      *            The item phones
      * @param person_Id
      *            The item id
+     * @param owner_Id
+     *            The owner id
      * @param social_type
      *            The item type
      */
-    public SOCIAL(String username, String social_type, int person_Id) {
+    public SOCIAL(String username, String social_type, int person_Id, int owner_Id) {
         this.setUsername(username);
         this.setPerson_Id(person_Id);
+        this.setOwner_Id(owner_Id);
         this.setSocial_type(social_type);
     }
 
@@ -106,6 +115,23 @@ public class SOCIAL {
      */
     public final void setSocial_type(String social_type) {
         mSocial_type = social_type;
+    }
+
+    /**
+     * Returns the item owner_Id
+     */
+    public int getOwner_Id() {
+        return mOwner_Id;
+    }
+
+    /**
+     * Sets the item owner_Id
+     *
+     * @param owner_Id
+     *            owner_Id to set
+     */
+    public final void setOwner_Id(int owner_Id) {
+        mOwner_Id = owner_Id;
     }
 
     /**

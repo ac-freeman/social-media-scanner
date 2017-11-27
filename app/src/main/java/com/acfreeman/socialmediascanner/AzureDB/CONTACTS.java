@@ -18,6 +18,12 @@ public class CONTACTS {
     private int mPerson_Id;
 
     /**
+     * Item Id
+     */
+    @com.google.gson.annotations.SerializedName("owner_Id")
+    private int mOwner_Id;
+
+    /**
      * Indicates if the item is completed
      */
     @com.google.gson.annotations.SerializedName("complete")
@@ -42,10 +48,12 @@ public class CONTACTS {
      *            The item name
      * @param person_Id
      *            The item person_Id
+     * @param owner_Id
      */
-    public CONTACTS(String name, int person_Id) {
+    public CONTACTS(String name, int person_Id, int owner_Id) {
         this.setName(name);
         this.setPerson_Id(person_Id);
+        this.setOwner_Id(owner_Id);
     }
 
     /**
@@ -85,6 +93,28 @@ public class CONTACTS {
     /**
      * Indicates if the item is marked as completed
      */
+
+    /**
+     * Returns the item owner_Id
+     */
+    public int getOwner_Id() {
+        return mOwner_Id;
+    }
+
+    /**
+     * Sets the item owner_Id
+     *
+     * @param owner_Id
+     *            owner_Id to set
+     */
+    public final void setOwner_Id(int owner_Id) {
+        mOwner_Id = owner_Id;
+    }
+
+    /**
+     * Indicates if the item is marked as completed
+     */
+
     public boolean isComplete() {
         return mComplete;
     }

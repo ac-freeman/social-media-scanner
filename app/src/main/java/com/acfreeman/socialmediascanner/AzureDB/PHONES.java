@@ -14,7 +14,13 @@ public class PHONES {
      */
     @com.google.gson.annotations.SerializedName("person_Id")
     private int mPerson_Id;
-    
+
+    /**
+     * Item Person_Id
+     */
+    @com.google.gson.annotations.SerializedName("owner_Id")
+    private int mOwner_Id;
+
     /**
      * Item type
      */
@@ -47,12 +53,15 @@ public class PHONES {
      *            The item number
      * @param person_Id
      *            The item person_Id
+     * @param owner_Id
+     *            The item owner_Id
      * @param type
      *            The item type
      */
-    public PHONES(String number, String type, int person_Id) {
+    public PHONES(String number, String type, int person_Id, int owner_Id) {
         this.setNumber(number);
         this.setPerson_Id(person_Id);
+        this.setOwner_Id(owner_Id);
         this.setType(type);
     }
 
@@ -106,6 +115,23 @@ public class PHONES {
      */
     public final void setType(String type) {
         mType = type;
+    }
+
+    /**
+     * Returns the item owner_Id
+     */
+    public int getOwner_Id() {
+        return mOwner_Id;
+    }
+
+    /**
+     * Sets the item owner_Id
+     *
+     * @param owner_Id
+     *            owner_Id to set
+     */
+    public final void setOwner_Id(int owner_Id) {
+        mOwner_Id = owner_Id;
     }
 
     /**

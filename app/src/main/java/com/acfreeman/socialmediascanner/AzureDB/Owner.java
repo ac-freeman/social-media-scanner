@@ -12,8 +12,8 @@ public class Owner {
     /**
      * Item Id
      */
-    @com.google.gson.annotations.SerializedName("person_Id")
-    private int mPerson_Id;
+    @com.google.gson.annotations.SerializedName("Owner_Id")
+    private int mOwner_Id;
 
     /**
      * Indicates if the item is completed
@@ -39,12 +39,12 @@ public class Owner {
      *
      * @param name
      *            The item name
-     * @param person_Id
+     * @param owner_Id
      *            The item id
      */
-    public Owner(String name, int person_Id) {
+    public Owner(String name, int owner_Id) {
         this.setName(name);
-        this.setPerson_Id(person_Id);
+        this.setOwner_Id(owner_Id);
     }
 
     /**
@@ -67,18 +67,18 @@ public class Owner {
     /**
      * Returns the item id
      */
-    public int getPerson_Id() {
-        return mPerson_Id;
+    public int getOwner_Id() {
+        return mOwner_Id;
     }
 
     /**
      * Sets the item id
      *
-     * @param person_Id
+     * @param owner_Id
      *            id to set
      */
-    public final void setPerson_Id(int person_Id) {
-        mPerson_Id = person_Id;
+    public final void setOwner_Id(int owner_Id) {
+        mOwner_Id = owner_Id;
     }
 
 
@@ -99,6 +99,6 @@ public class Owner {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof Owner && ((Owner) o).mPerson_Id == mPerson_Id;
+        return o instanceof Owner && ((Owner) o).mOwner_Id == mOwner_Id;
     }
 }
