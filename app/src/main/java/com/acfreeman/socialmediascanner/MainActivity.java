@@ -18,7 +18,9 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.text.SpannableStringBuilder;
 import android.text.style.StyleSpan;
 import android.util.Log;
@@ -102,6 +104,19 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                 saveContactsButton.setVisible(true);
             }
         }
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView =
+                (SearchView) MenuItemCompat.getActionView(searchItem);
+
+//
+//        // Get the SearchView and set the searchable configuration
+//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+//        SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+//        // Assumes current activity is the searchable activity
+//        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+//        searchView.setIconifiedByDefault(true);
+
         return true;
     }
 
@@ -147,6 +162,10 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
             case R.id.action_settings:
                 Intent startIntent = new Intent(getApplicationContext(), SettingsActivity.class);
                 startActivity(startIntent);
+                return true;
+            case R.id.action_search:
+//                Intent startSearchIntent = new Intent(getApplicationContext(), SearchableActivity.class);
+//                startActivity(startSearchIntent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

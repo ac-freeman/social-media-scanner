@@ -1,22 +1,25 @@
 package com.acfreeman.socialmediascanner;
 
-import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-public class SearchableActivity extends ListActivity {
+public class SearchableActivity extends AppCompatActivity {
 
     public ListView resultsView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        resultsView = new ListView(getApplicationContext());
+        resultsView.findViewById(R.id.activity_contact_card_listview);
         setContentView(R.layout.activity_searchable);
 
         // Get the intent, verify the action and get the query
@@ -25,7 +28,6 @@ public class SearchableActivity extends ListActivity {
             String query = intent.getStringExtra(SearchManager.QUERY);
             ListAdapter results = doMySearch(query);
 
-            resultsView = new ListView(getApplicationContext());
             resultsView.setAdapter(results);
         }
 
