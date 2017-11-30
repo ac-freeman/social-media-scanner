@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
     Boolean firstProfileCreation;
     ShowfriendsFragment showfriendsFragment = new ShowfriendsFragment();
     ShowcodeFragment showcodeFragment = new ShowcodeFragment();
+    SearchView searchView;
 
     /**
      * Called when activity begins
@@ -106,16 +107,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         }
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView =
-                (SearchView) MenuItemCompat.getActionView(searchItem);
-
-//
-//        // Get the SearchView and set the searchable configuration
-//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-//        SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
-//        // Assumes current activity is the searchable activity
-//        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-//        searchView.setIconifiedByDefault(true);
+        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         return true;
     }
@@ -164,13 +156,46 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                 startActivity(startIntent);
                 return true;
             case R.id.action_search:
-//                Intent startSearchIntent = new Intent(getApplicationContext(), SearchableActivity.class);
-//                startActivity(startSearchIntent);
-                return true;
+                return searchForQuery();
             default:
                 return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    private boolean searchForQuery() {
+        searchView.setQueryHint("Search Contacts...");
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                querySearch();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                querySearch();
+                return true;
+            }
+        });
+
+        return true;
+    }
+
+    public void querySearch() {
+        LocalDatabase db = new LocalDatabase(getApplicationContext());
+        String query = searchView.getQuery().toString().toLowerCase();
+
+        //Log.e("DDDDDDDDDDDD", query);
+        ArrayList<Contact> contacts = new ArrayList<>(db.getAllContacts());
+
+        for (int i = 0; i < contacts.size(); i++) {
+            //Log.e("DDDDDDDDDDDD", contacts.get(i).getName().toLowerCase());
+            if(contacts.get(i).getName().toLowerCase().contains(query)) {
+                Toast.makeText(getApplicationContext(), query, Toast.LENGTH_LONG).show();
+                //Log.e("EEEEEEEEEEEEEEE", query);
+            }
+        }
     }
 
     /**
