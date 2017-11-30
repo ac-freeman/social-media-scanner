@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -93,7 +94,14 @@ public class AzureDB extends Activity {
      * Progress spinner to use for table operations
      */
     private ProgressBar mProgressBar;
+    // Database Version
+    private static final int DATABASE_VERSION = 1;
+    // Database Name
+    private static final String DATABASE_NAME = "userInfo";
 
+    public AzureDB(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
     /**
      * Initializes the activity
      */
