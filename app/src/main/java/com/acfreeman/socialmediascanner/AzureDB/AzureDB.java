@@ -514,7 +514,7 @@ public class AzureDB extends Activity {
         mTextNewEmailType.setText("");
     }
 
-    public void addOwner(View view) {
+    public void addOwner(Owner owner) {
         if (mClient == null) {
             return;
         }
@@ -522,8 +522,8 @@ public class AzureDB extends Activity {
         // Create a new item
         final Owner item = new Owner();
 
-        item.setName(mTextNewOwner.getText().toString());
-        item.setComplete(false);
+        item.setName(owner.getName());
+        item.setComplete(true);
 
         // Insert the new item
         AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>(){
@@ -535,9 +535,9 @@ public class AzureDB extends Activity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if(!entity.isComplete()){
+
                                 mOwnerAdapter.add(entity);
-                            }
+
                         }
                     });
                 } catch (final Exception e) {
