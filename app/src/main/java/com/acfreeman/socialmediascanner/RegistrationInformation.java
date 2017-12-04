@@ -413,8 +413,8 @@ public class RegistrationInformation extends AppCompatActivity {
 
 
                 ////
-                 //   LocalDatabase database = new LocalDatabase(getApplicationContext());
-                 //   Owner owner = new Owner(0, nameEditText.getText().toString());
+                    LocalDatabase database = new LocalDatabase(getApplicationContext());
+                    Owner owner = new Owner(0, nameEditText.getText().toString());
                 com.acfreeman.socialmediascanner.AzureDB.Owner owner = new com.acfreeman.socialmediascanner.AzureDB.Owner(nameEditText.getText().toString(), 0 );
                     addOwner(owner);
 
