@@ -148,9 +148,6 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                 Intent startIntent = new Intent(getApplicationContext(), SettingsActivity.class);
                 startActivity(startIntent);
                 return true;
-            case R.id.action_qr_mode:
-                Intent qrMode = new Intent(getApplicationContext(),QrModesActivity.class);
-                startActivity(qrMode);
 
             default:
                 return super.onOptionsItemSelected(item);

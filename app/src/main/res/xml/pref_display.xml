@@ -33,5 +33,17 @@
         android:title="@string/pref_title_hide_disconnected_socials"
         android:summary="i.e., Sosha won't ask you to add a user on Facebook if you're not logged in to Facebook, etc."/>
 
+    <SwitchPreference
+
+        android:key="toggle_all_switch"
+        android:title="@string/pref_title_toggle_all_social_media"
+        android:summary="Share all my information with firends"/>
+
+    <SwitchPreference
+
+        android:key="toggle_business_switch"
+        android:title="@string/pref_title_business_social_media"
+        android:summary="Share my professional information"/>
+
 
 </PreferenceScreen>

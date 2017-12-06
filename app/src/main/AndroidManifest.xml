@@ -89,13 +89,6 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name=".QrModesActivity"
-            android:parentActivityName = ".MainActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.AppBarOverlay">
-            >
-        </activity>
     </application>
 
 </manifest>

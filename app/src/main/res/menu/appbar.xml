@@ -22,8 +22,4 @@
         android:title="@string/action_settings"
         app:showAsAction="never"
         />
-    <item android:id="@+id/action_qr_mode"
-        android:title="@string/title_qr_mode"
-        app:showAsAction="never"
-        />
 </menu>

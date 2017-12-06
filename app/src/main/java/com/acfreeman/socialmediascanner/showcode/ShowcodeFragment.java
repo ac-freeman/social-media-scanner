@@ -1,10 +1,8 @@
 package com.acfreeman.socialmediascanner.showcode;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
@@ -13,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -28,7 +25,6 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.util.ArrayList;
@@ -73,6 +69,14 @@ public class ShowcodeFragment extends Fragment {
         for (Social s : sociallist) {
             switchModels.add(new SwitchModel(s.getType(), s.getUsername()));
         }
+        //This is to toggle all social media
+        if(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("toggle_all_switch", true))
+        {
+            for(SwitchModel s: switchModels){
+                  s.setState(true);
+
+            }//end of for loop
+        }//end of is statement
 
         showcodeAdapter = new ShowcodeAdapter(switchModels, getActivity());
         codeListView.setAdapter(showcodeAdapter);
@@ -91,8 +95,24 @@ public class ShowcodeFragment extends Fragment {
             }
         });
 
-        generateCode( switchModels);
+//
+//        //This is to toggle business information
+//        //Not sure how to toggle phone numbers and emails
+//        if(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("toggle_business_switch", true))
+//        {
+//            for(SwitchModel s: switchModels){
+//                String switchName = s.getSwitchName();
+//                switch (switchName){
+//                    case "LinkedIn":
+//                    case "Google+":
+//                        s.getSwitcher().setChecked(true);
+//                        s.setState(true);
+//                        break;
+//                }//end of switch
+//            }//end of for loop
+//        }//end of if statement
 
+        generateCode( switchModels);
 
         return view;
     }

@@ -31,6 +31,8 @@
         based on your message history
     </string>
 
+    <string name="pref_title_business_social_media">Business social information</string>
+    <string name="pref_title_toggle_all_social_media">Show all social information</string>
     <string name="pref_title_display_name">Display name</string>
     <string name="pref_default_display_name">John Smith</string>
 
