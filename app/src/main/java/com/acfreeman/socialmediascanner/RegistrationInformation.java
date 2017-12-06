@@ -413,10 +413,10 @@ public class RegistrationInformation extends AppCompatActivity {
 
 
                 ////
-                    LocalDatabase database = new LocalDatabase(getApplicationContext());
-                    Owner owner = new Owner(0, nameEditText.getText().toString());
-                com.acfreeman.socialmediascanner.AzureDB.Owner owner = new com.acfreeman.socialmediascanner.AzureDB.Owner(nameEditText.getText().toString(), 0 );
-                    addOwner(owner);
+                  LocalDatabase database = new LocalDatabase(getApplicationContext());
+                   Owner owner = new Owner(0, nameEditText.getText().toString());
+
+                    addOwner();
 
 
                     for (EditText p : PhoneList) {
@@ -426,11 +426,11 @@ public class RegistrationInformation extends AppCompatActivity {
                             error = true;
                         } else {
 
-                            //Phone phone = new Phone(owner.getId(), Long.parseLong(p.getText().toString()), "Cell");
-                            //database.addPhone(phone);
+                            Phone phone = new Phone(owner.getId(), Long.parseLong(p.getText().toString()), "Cell");
+                            database.addPhone(phone);
 
-                            PHONES phone = new PHONES(Long.parseLong(p.getText().toString(), "Cell" , p.)
 
+                            addPHONES();
 
                         }
                     }
@@ -443,6 +443,7 @@ public class RegistrationInformation extends AppCompatActivity {
                         } else {
                             Email email = new Email((long)owner.getId(), e.getText().toString(), "Work");
                             database.addEmail(email);
+                            addEMAILS();
                         }
                     }
                     ////
@@ -711,10 +712,10 @@ public class RegistrationInformation extends AppCompatActivity {
     /**
      * Add a new item
      *
-     * @param view
+     *
      *            The view that originated the call
      */
-    public void addCONTACTS(View view) {
+    public void addCONTACTS() {
         if (mClient == null) {
             return;
         }
@@ -723,7 +724,7 @@ public class RegistrationInformation extends AppCompatActivity {
         final CONTACTS contacts = new CONTACTS();
 
         contacts.setName(mTextNewCONTACTS.getText().toString());
-        contacts.setComplete(false);
+        contacts.setComplete(true);
 
         // Insert the new item
         AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>(){
@@ -735,9 +736,9 @@ public class RegistrationInformation extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if(!entity.isComplete()){
+
                                 mCONTACTSAdapter.add(entity);
-                            }
+
                         }
                     });
                 } catch (final Exception e) {
@@ -753,7 +754,7 @@ public class RegistrationInformation extends AppCompatActivity {
     }
 
 
-    public void addEMAILS(View view) {
+    public void addEMAILS() {
         if (mClient == null) {
             return;
         }
@@ -763,7 +764,7 @@ public class RegistrationInformation extends AppCompatActivity {
 
         emails.setEmail(mTextNewEMAILS.getText().toString());
         emails.setEmail_type(mTextNewEmailType.getText().toString());
-        emails.setComplete(false);
+        emails.setComplete(true);
 
         // Insert the new item
         AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>(){
@@ -775,9 +776,9 @@ public class RegistrationInformation extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if(!entity.isComplete()){
+
                                 mEMAILSAdapter.add(entity);
-                            }
+
                         }
                     });
                 } catch (final Exception e) {
@@ -793,7 +794,7 @@ public class RegistrationInformation extends AppCompatActivity {
         mTextNewEmailType.setText("");
     }
 
-    public void addOwner(com.acfreeman.socialmediascanner.AzureDB.Owner owner) {
+    public void addOwner() {
         if (mClient == null) {
             return;
         }
@@ -801,7 +802,7 @@ public class RegistrationInformation extends AppCompatActivity {
         // Create a new item
         final com.acfreeman.socialmediascanner.AzureDB.Owner item = new com.acfreeman.socialmediascanner.AzureDB.Owner();
 
-        item.setName(owner.getName());
+        item.setName(mTextNewOwner.getText().toString());
         item.setComplete(true);
 
         // Insert the new item
@@ -831,7 +832,7 @@ public class RegistrationInformation extends AppCompatActivity {
         mTextNewOwner.setText("");
     }
 
-    public void addPHONES(View view) {
+    public void addPHONES() {
         if (mClient == null) {
             return;
         }
@@ -840,7 +841,7 @@ public class RegistrationInformation extends AppCompatActivity {
         final PHONES item = new PHONES();
 
         item.setNumber(mTextNewPHONES.getText().toString());
-        item.setComplete(false);
+        item.setComplete(true);
 
         // Insert the new item
         AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>(){
@@ -852,9 +853,9 @@ public class RegistrationInformation extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if(!entity.isComplete()){
+
                                 mPHONESAdapter.add(entity);
-                            }
+
                         }
                     });
                 } catch (final Exception e) {
@@ -870,7 +871,7 @@ public class RegistrationInformation extends AppCompatActivity {
         mTextNewPhoneType.setText("");
     }
 
-    public void addSOCIAL(View view) {
+    public void addSOCIAL() {
         if (mClient == null) {
             return;
         }
@@ -891,9 +892,9 @@ public class RegistrationInformation extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if(!entity.isComplete()){
+
                                 mSOCIALAdapter.add(entity);
-                            }
+
                         }
                     });
                 } catch (final Exception e) {
