@@ -205,10 +205,22 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         ArrayList<Contact> contacts = new ArrayList<>(db.getAllContacts());
 
         for (int i = 0; i < contacts.size(); i++) {
-            //Log.e("DDDDDDDDDDDD", contacts.get(i).getName().toLowerCase());
-            if(contacts.get(i).getName().toLowerCase().contains(query)) {
-//                Toast.makeText(getApplicationContext(), query, Toast.LENGTH_LONG).show();
-                //Log.e("EEEEEEEEEEEEEEE", query);
+            boolean match = false;
+            String name = contacts.get(i).getName().toLowerCase();
+            String[] nameWords = name.split(" ");
+            for (String word : nameWords) {
+                if (word.startsWith(query)) {
+                    match = true;
+                }
+            }
+            if (name.startsWith(query)) {
+                match = true;
+            }
+
+            // If our query matches this user
+            if (match) {
+
+                Log.i("EEEEEEEEEEEEEEE", contacts.get(i).getName());
             }
         }
     }
