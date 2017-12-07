@@ -168,16 +168,14 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
                     case "ph":
                         String phoneNumber = rawArray[i + 1];
-//                        Toast.makeText(this, "Phone: " + phoneNumber, Toast.LENGTH_SHORT).show();
                         String typePhone = rawArray[i + 2];
                         Log.i("PHONEDEBUG", "Contact id: " + contact.getId());
-                        Phone phone = new Phone(contact.getId(), Integer.parseInt(phoneNumber), typePhone);
+                        Phone phone = new Phone(contact.getId(), Long.parseLong(phoneNumber), typePhone);
                         database.addPhone(phone);
                         break;
 
                     case "em":
                         String emailStr = rawArray[i + 1];
-//                        Toast.makeText(this, "Email: " + emailStr, Toast.LENGTH_SHORT).show();
                         String typeEmail = rawArray[i + 2];
                         Email email = new Email(contact.getId(), emailStr, typeEmail);
                         database.addEmail(email);
@@ -188,8 +186,6 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
                     case "tw":
                         String twitter_id = rawArray[i + 1];
                         uri = "https://twitter.com/intent/follow?user_id=" + (twitter_id);
-                        //TODO: Add settings check here
-
                         if (!hideUnconnected || socialNameList.contains("tw"))
                             socialAdderArrayList.add(new SocialAdder(uri, "Twitter"));
                         Social twitterSocial = new Social(contact.getId(), "Twitter", twitter_id);
@@ -243,15 +239,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
             }
 
             showCameraRequestDialog(contact);
-//            showCameraPreview(contact);
 
-            //////////////////////////////
-//            BottomNavigationView bottomNavigationView;
-//            bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
-//            bottomNavigationView.setSelectedItemId(R.id.navigation_friends);
-
-//            showNoticeDialog(userName);
-/////////////////////////////////////////
         } else {
 
             scannerView.setResultHandler(this);
@@ -282,39 +270,20 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
             // Continue only if the File was successfully created
             if (photoFile != null) {
 
-
                 Uri photoURI = FileProvider.getUriForFile(getActivity(),
                         "com.acfreeman.socialmediascanner.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
                 List res = new ArrayList();
-//                LocalDatabase db = new LocalDatabase(getApplicationContext());
-//
-//                Bitmap image = BitmapFactory.decodeFile(mCurrentPhotoPath);
-//
-//// convert bitmap to byte
-//
-//                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//
-//                image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-//
-//                byte imageInByte[] = stream.toByteArray();
-//                contact.setImage(imageInByte);
-//                db.updateImage(contact);
             }
         }
-//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-//            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-//        }
     }
 
     String mCurrentPhotoPath;
 
     private File createImageFile() throws IOException {
         // Create an image file name
-//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + "lastcontactscan";
         File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
@@ -413,9 +382,6 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-//            Bundle extras = data.getExtras();
-//            Bitmap imageBitmap = (Bitmap) extras.get("data");
-
             LocalDatabase db = new LocalDatabase(getActivity());
 
             Bitmap image = BitmapFactory.decodeFile(mCurrentPhotoPath);
@@ -454,13 +420,8 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
                 }
             }
 
-//            BottomNavigationView bottomNavigationView;
-//            bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
-//            bottomNavigationView.setSelectedItemId(R.id.navigation_friends);
-
             showSocialAddDialog(currentContact.getName());
 
-//            mImageView.setImageBitmap(imageBitmap);
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             LocalDatabase db = new LocalDatabase(getActivity());
@@ -482,13 +443,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
             currentContact.setBitmap(resizedBitmap2);
             db.updateImage(currentContact);
 
-//            BottomNavigationView bottomNavigationView;
-//            bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
-//            bottomNavigationView.setSelectedItemId(R.id.navigation_friends);
-
             showSocialAddDialog(currentContact.getName());
-
-//            mImageView.setImageBitmap(imageBitmap);
         }
     }
 

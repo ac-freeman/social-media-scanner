@@ -59,12 +59,20 @@ public class ShowcodeFragment extends Fragment {
         switchModels = new ArrayList<>();
         codeListView = view.findViewById(R.id.switch_list);
 
-        switchModels.add(new SwitchModel("Phone number(s)", "ph", R.drawable.ic_phone_black_24dp));
-        switchModels.add(new SwitchModel("Email address(es)", "em", R.drawable.ic_email_black_24dp));
 
-        List socials = new ArrayList();
         LocalDatabase db = new LocalDatabase(getActivity());
         List<Owner> owner = db.getAllOwner();
+
+        for (Phone p : db.getUserPhones(owner.get(0).getId())) {
+            switchModels.add(new SwitchModel(p.getType() + ": " + p.getNumber(), "ph", R.drawable.ic_phone_black_24dp, p));
+        }
+        for (Email e : db.getUserEmails(owner.get(0).getId())) {
+            switchModels.add(new SwitchModel(e.getType() + ": " + e.getEmail(), "em", R.drawable.ic_email_black_24dp, e));
+        }
+
+
+        List socials = new ArrayList();
+
         ArrayList<Social> sociallist = db.getUserSocials(owner.get(0).getId());
         for (Social s : sociallist) {
             switchModels.add(new SwitchModel(s.getType(), s.getUsername()));
@@ -91,10 +99,9 @@ public class ShowcodeFragment extends Fragment {
                 switchModel.getSwitcher().toggle();
                 switchModel.toggleState();
                 Log.i("SWITCHDEBUG", "Switch toggled to " + switchModel.getState());
-                generateCode( switchModels);
+                generateCode(switchModels);
             }
         });
-
 
         generateCode(switchModels);
 
@@ -122,15 +129,10 @@ public class ShowcodeFragment extends Fragment {
                 if (sw.getState()) {
                     switch (sw.getTag()) {
                         case "ph":
-
-                            for (Phone p : ownerPhones) {
-                                builder.append("ph" + "|" + p.getNumber() + "|" + p.getType() + "|");
-                            }
+                            builder.append("ph" + "|" + sw.getPhone().getNumber() + "|" + sw.getPhone().getType() + "|");
                             break;
                         case "em":
-                            for (Email e : ownerEmails) {
-                                builder.append("em" + "|" + e.getEmail() + "|" + e.getType() + "|");
-                            }
+                            builder.append("em" + "|" + sw.getEmail().getEmail() + "|" + sw.getEmail().getType() + "|");
                             break;
                         default:
                             builder.append(sw.getTag() + "|" + sw.getUser_id() + "|");
@@ -158,15 +160,14 @@ public class ShowcodeFragment extends Fragment {
     public boolean allowRefresh = false;
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         if (allowRefresh) {
             allowRefresh = false;
             getFragmentManager().beginTransaction().detach(this).attach(this).commit();
         }
 
-        if(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("max_brightness", true))
-        {
+        if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("max_brightness", true)) {
             WindowManager.LayoutParams layout = getActivity().getWindow().getAttributes();
             layout.screenBrightness = 1F;
             getActivity().getWindow().setAttributes(layout);
@@ -174,11 +175,11 @@ public class ShowcodeFragment extends Fragment {
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
-        Log.i("BRIGHTDEBUG","On pause");
+        Log.i("BRIGHTDEBUG", "On pause");
         WindowManager.LayoutParams layout = getActivity().getWindow().getAttributes();
-        layout.screenBrightness =  android.provider.Settings.System.getInt(getActivity().getContentResolver(), android.provider.Settings.System.SCREEN_BRIGHTNESS,-1);
+        layout.screenBrightness = android.provider.Settings.System.getInt(getActivity().getContentResolver(), android.provider.Settings.System.SCREEN_BRIGHTNESS, -1);
         getActivity().getWindow().setAttributes(layout);
     }
 }

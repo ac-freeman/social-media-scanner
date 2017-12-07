@@ -21,7 +21,11 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_settings">Settings</string>
 
+    <string name="title_search">Search</string>
+
     <!-- Strings related to Settings -->
+
+    <string name="search_hint">Search Contacts</string>
 
     <!-- Example General settings -->
     <string name="pref_header_myprofile">My profile</string>

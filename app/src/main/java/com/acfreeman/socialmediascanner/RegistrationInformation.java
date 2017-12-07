@@ -46,21 +46,9 @@ import static com.acfreeman.socialmediascanner.MainActivity.firstProfileCreation
 
 
 public class RegistrationInformation extends AppCompatActivity {
-    // private LinearLayout mLayout;
-    // private EditText mEditText;
-    // private Button  addEmailBtn;
-    //FrameLayout frameLayout = findViewById(R.id.content);
-    //mTextMessage = new TextView(this);
 
     private int width;
     private int height;
-
-    //Create view and view group objects
-
-    //initialize editText objects which are the text boxes that are displayed in the screen
-    private EditText curPhone;
-    private EditText curEmail;
-    private RelativeLayout layout;//initialize the relative layout object
 
     public ArrayList<PhoneRow> PhoneRowList = new ArrayList<>();
     public ArrayList<EmailRow> EmailRowList = new ArrayList<>();
@@ -93,9 +81,7 @@ public class RegistrationInformation extends AppCompatActivity {
         }
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-//
-//        ListView listview = (ListView) findViewById(R.id.listview);
-//        listview.setAdapter(new RegistrationAdapter(this, new int[] {0,1,1,1,2,3}));
+
         final TableLayout table = (TableLayout) findViewById(R.id.table_main);
 
 
@@ -103,11 +89,6 @@ public class RegistrationInformation extends AppCompatActivity {
 
         final EditText nameEditText = tableRow.findViewById(R.id.edit_text);
         nameEditText.setHint("Name");
-
-//        final Spinner spinner = tableRow.findViewById(R.id.spinner);
-//        spinner.setVisibility(View.INVISIBLE);
-//        final ImageButton rowButton = tableRow.findViewById(R.id.row_button);
-//        rowButton.setVisibility(View.INVISIBLE);
 
         //////
         List texts = new ArrayList();
@@ -124,20 +105,13 @@ public class RegistrationInformation extends AppCompatActivity {
         LocalDatabase database = new LocalDatabase(getApplicationContext());
         Owner owner = database.getOwner(0);
 
-
-//        final EditText nameEditText = new EditText(this);
         if (owner.getName() != null) {
             nameEditText.setText(owner.getName());
         }
-//        nameEditText.setHint("Name");
         nameEditText.setWidth(textWidth);
-//        tableRow = new TableRow(this);
-//        tableRow.addView(nameEditText);
         table.addView(tableRow);
 
         ////////phone/////////
-
-
         final ArrayList<Phone> phones = database.getUserPhones(0);
         int index = 1;
         if (phones.size() > 0) {
@@ -155,7 +129,6 @@ public class RegistrationInformation extends AppCompatActivity {
 
 
         ////////email/////////
-
         final ArrayList<Email> emails = database.getUserEmails(0);
         if (emails.size() > 0) {
             for (int i = 0; i < emails.size(); i++) {
@@ -163,18 +136,15 @@ public class RegistrationInformation extends AppCompatActivity {
                 index++;
             }
         }
-
         addEmailEditText(table, index, "");
         index++;
 
         plusEmailCnt = 0;
         //////email/////////
-//
+
         final TableRow submitRow = (TableRow) this.getLayoutInflater().inflate(R.layout.row_item_registration_button, null,false);
         table.addView(submitRow);
         Button submitButton = submitRow.findViewById(R.id.submit_button);
-//
-//
 
 
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -317,8 +287,6 @@ public class RegistrationInformation extends AppCompatActivity {
 
             }
         });
-//
-//
     }
 
 
@@ -351,8 +319,6 @@ public class RegistrationInformation extends AppCompatActivity {
         spinner.setSelection(spinnerArrayAdapter.getPosition(type));
 
         final ImageButton phoneButton = phoneRow.findViewById(R.id.row_button);
-//        final Button plusPhone = new Button(this);
-//        plusPhone.setText("+");
         TypedValue typedValue = new TypedValue();
         getTheme().resolveAttribute(R.attr.selectableItemBackground, typedValue, true);
         phoneButton.setBackgroundResource(typedValue.resourceId);
@@ -367,12 +333,6 @@ public class RegistrationInformation extends AppCompatActivity {
             phoneButton.setImageResource(R.drawable.ic_add_circle_green_24px);
             phoneButton.setTag("add");
         }
-
-
-
-
-
-
 
         table.addView(phoneRow, index);
 
@@ -396,7 +356,6 @@ public class RegistrationInformation extends AppCompatActivity {
                     PhoneRowList.remove(row);
                     PhoneRowList.get(0).getImage().setVisibility(View.VISIBLE);
                 }
-
             }
         });
 
