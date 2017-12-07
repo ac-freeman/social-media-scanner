@@ -20,7 +20,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+
 import android.support.v7.widget.SearchView;
+
 import android.text.SpannableStringBuilder;
 import android.text.style.StyleSpan;
 import android.util.Log;
@@ -155,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                 Intent startIntent = new Intent(getApplicationContext(), SettingsActivity.class);
                 startActivity(startIntent);
                 return true;
+
             case R.id.action_search:
                 return searchForQuery();
             default:

@@ -1,6 +1,5 @@
 package com.acfreeman.socialmediascanner;
 
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
@@ -109,6 +108,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Cus
      *
      * @see #sBindPreferenceSummaryToValueListener
      */
+
     private static void bindPreferenceSummaryToValue(Preference preference) {
         // Set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
@@ -130,6 +130,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Cus
     /**
      * Set up the {@link android.app.ActionBar}, if the API is available.
      */
+
     private void setupActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -153,6 +154,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Cus
     /**
      * {@inheritDoc}
      */
+
     @Override
     public boolean onIsMultiPane() {
         return isXLargeTablet(this);
@@ -177,7 +179,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Cus
                 || ContactsFragment.class.getName().equals(fragmentName)
                 || DisplayFragment.class.getName().equals(fragmentName);
     }
-
 
     public static final String deleteAllContactsPref= "deleteAllContacts";
     Boolean deleting;
@@ -357,6 +358,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Cus
 //            return super.onOptionsItemSelected(item);
 //        }
     }
+
 
 
     @Override

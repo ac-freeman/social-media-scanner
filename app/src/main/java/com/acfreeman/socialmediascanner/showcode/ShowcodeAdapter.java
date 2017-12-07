@@ -83,6 +83,7 @@ public class ShowcodeAdapter extends ArrayAdapter<SwitchModel> implements View.O
         viewHolder.switcherText.setFocusable(false);
         viewHolder.switcherText.setClickable(false);
         switchModel.setSwitcher(viewHolder.switcher);
+        switchModel.getSwitcher().setChecked(switchModel.getState());
         viewHolder.info.setTag(position);
         viewHolder.info.setImageResource(switchModel.getSwitchImage());
         viewHolder.info.setFocusable(false);
