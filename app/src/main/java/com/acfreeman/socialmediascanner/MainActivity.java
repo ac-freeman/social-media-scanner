@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
     private Menu menu;
     boolean hideMenuButtons = true;
+    boolean showSearchButton = true;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -96,8 +97,15 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         this.menu = menu;
         MenuItem deleteButton =  menu.findItem(R.id.action_delete);
         MenuItem saveContactsButton = menu.findItem(R.id.action_save_contact);
-        if(hideMenuButtons){
-            if (deleteButton != null && saveContactsButton != null) {
+        MenuItem searchButton = menu.findItem(R.id.action_search);
+        searchView = (SearchView) MenuItemCompat.getActionView(searchButton);
+        if (showSearchButton && searchButton != null) {
+            searchButton.setVisible(true);
+        } else if (searchButton != null) {
+            searchButton.setVisible(false);
+        }
+        if (hideMenuButtons){
+            if (deleteButton != null && saveContactsButton != null ) {
                 deleteButton.setVisible(false);
                 saveContactsButton.setVisible(false);
             }
@@ -105,17 +113,20 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
             if (deleteButton != null && saveContactsButton != null) {
                 deleteButton.setVisible(true);
                 saveContactsButton.setVisible(true);
+
             }
         }
-
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         return true;
     }
 
     public void hideAppbarButtons() {
         hideMenuButtons = true;
+        showSearchButton = false;
+        invalidateOptionsMenu();
+    }
+    public void showSearchButton() {
+        showSearchButton = true;
         invalidateOptionsMenu();
     }
 
@@ -126,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
     public void toggleAppbarButtons() {
         hideMenuButtons = !hideMenuButtons;
+        showSearchButton = !showSearchButton;
         invalidateOptionsMenu();
     }
 
@@ -195,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         for (int i = 0; i < contacts.size(); i++) {
             //Log.e("DDDDDDDDDDDD", contacts.get(i).getName().toLowerCase());
             if(contacts.get(i).getName().toLowerCase().contains(query)) {
-                Toast.makeText(getApplicationContext(), query, Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(), query, Toast.LENGTH_LONG).show();
                 //Log.e("EEEEEEEEEEEEEEE", query);
             }
         }
@@ -229,6 +241,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                     showCode = false;
                     showFriends();
                     hideAppbarButtons();
+                    showSearchButton();
 
                     return true;
 
@@ -636,6 +649,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
             }
             showfriendsFragment.adapter.notifyDataSetChanged();
             hideAppbarButtons();
+            showSearchButton();
         } else {
             Log.i("BACKBUTTON", "null");
             this.doubleBackToExitPressedOnce = true;
