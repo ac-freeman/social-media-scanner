@@ -69,14 +69,14 @@ public class ShowcodeFragment extends Fragment {
         for (Social s : sociallist) {
             switchModels.add(new SwitchModel(s.getType(), s.getUsername()));
         }
-        //This is to toggle all social media
+        
+        // Toggle all switches from preference
         if(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("toggle_all_switch", true))
         {
             for(SwitchModel s: switchModels){
                   s.setState(true);
-
-            }//end of for loop
-        }//end of is statement
+            }
+        }
 
         showcodeAdapter = new ShowcodeAdapter(switchModels, getActivity());
         codeListView.setAdapter(showcodeAdapter);
@@ -95,24 +95,8 @@ public class ShowcodeFragment extends Fragment {
             }
         });
 
-//
-//        //This is to toggle business information
-//        //Not sure how to toggle phone numbers and emails
-//        if(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("toggle_business_switch", true))
-//        {
-//            for(SwitchModel s: switchModels){
-//                String switchName = s.getSwitchName();
-//                switch (switchName){
-//                    case "LinkedIn":
-//                    case "Google+":
-//                        s.getSwitcher().setChecked(true);
-//                        s.setState(true);
-//                        break;
-//                }//end of switch
-//            }//end of for loop
-//        }//end of if statement
 
-        generateCode( switchModels);
+        generateCode(switchModels);
 
         return view;
     }

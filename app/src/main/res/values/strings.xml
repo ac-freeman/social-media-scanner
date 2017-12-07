@@ -31,8 +31,7 @@
         based on your message history
     </string>
 
-    <string name="pref_title_business_social_media">Business social information</string>
-    <string name="pref_title_toggle_all_social_media">Show all social information</string>
+
     <string name="pref_title_display_name">Display name</string>
     <string name="pref_default_display_name">John Smith</string>
 
@@ -65,6 +64,8 @@
     <string name="pref_title_max_brightness">Max brightness on code display</string>
     <string name="pref_title_google_plus">Show Google+ toggle</string>
     <string name="pref_title_hide_disconnected_socials">Hide requests for unconnected social media </string>
+    <string name="pref_title_business_social_media">Business social information</string>
+    <string name="pref_title_toggle_all_switches">Share everything by default</string>
 
     <!--<string name="pref_title_sync_frequency">Sync frequency</string>-->
     <!--<string-array name="pref_sync_frequency_titles">-->
