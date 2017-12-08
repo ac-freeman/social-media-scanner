@@ -28,6 +28,7 @@ import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -106,7 +107,11 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         if (showSearchButton && searchButton != null) {
             searchButton.setVisible(true);
         } else if (searchButton != null) {
+            searchButton.collapseActionView();
             searchButton.setVisible(false);
+            searchView.setIconified(true);
+            searchView.setVisibility(View.GONE);
+            searchView.clearFocus();
         }
         if (hideMenuButtons){
             if (deleteButton != null && saveContactsButton != null ) {
