@@ -39,13 +39,17 @@ import com.acfreeman.socialmediascanner.db.Phone;
 import com.acfreeman.socialmediascanner.db.Social;
 import com.acfreeman.socialmediascanner.scancode.ScancodeFragment;
 import com.acfreeman.socialmediascanner.showcode.ShowcodeFragment;
+import com.acfreeman.socialmediascanner.showfriends.DataModel;
 import com.acfreeman.socialmediascanner.showfriends.ShowfriendsFragment;
 import com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity;
 import com.twitter.sdk.android.core.Twitter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
@@ -179,6 +183,10 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
     }
 
     private boolean searchForQuery() {
+        dataModelCopy.clear();
+        for(DataModel d : showfriendsFragment.adapter.dataSet) {
+            dataModelCopy.add(d);
+        }
         searchView.setQueryHint("Search Contacts...");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -197,32 +205,48 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         return true;
     }
 
+    ArrayList<DataModel> dataModelRemoved = new ArrayList<DataModel>();
+    ArrayList<DataModel> dataModelCopy = new ArrayList<DataModel>();
+
     public void querySearch() {
         LocalDatabase db = new LocalDatabase(getApplicationContext());
         String query = searchView.getQuery().toString().toLowerCase();
 
-        //Log.e("DDDDDDDDDDDD", query);
-        ArrayList<Contact> contacts = new ArrayList<>(db.getAllContacts());
+        if (query.length() > 0) {
+            showfriendsFragment.adapter.dataSet.clear();
 
-        for (int i = 0; i < contacts.size(); i++) {
-            boolean match = false;
-            String name = contacts.get(i).getName().toLowerCase();
-            String[] nameWords = name.split(" ");
-            for (String word : nameWords) {
-                if (word.startsWith(query)) {
+            ArrayList<Contact> contacts = new ArrayList<>(db.getAllContacts());
+
+            for (int i = 0; i < dataModelCopy.size(); i++) {
+
+                boolean match = false;
+                String name = dataModelCopy.get(i).getName().toLowerCase();
+                String[] nameWords = name.split(" ");
+                for (String word : nameWords) {
+                    if (word.startsWith(query)) {
+                        match = true;
+                    }
+                }
+                if (name.startsWith(query)) {
                     match = true;
                 }
-            }
-            if (name.startsWith(query)) {
-                match = true;
+
+                // If our query matches this user
+                if (match) {
+                    showfriendsFragment.adapter.dataSet.add(dataModelCopy.get(i));
+                    Log.i("EEEEEEEEEEEEEEE", contacts.get(i).getName());
+                }
             }
 
-            // If our query matches this user
-            if (match) {
-
-                Log.i("EEEEEEEEEEEEEEE", contacts.get(i).getName());
+        } else {
+            showfriendsFragment.adapter.dataSet.clear();
+            for(DataModel d : dataModelCopy) {
+                showfriendsFragment.adapter.dataSet.add(d);
             }
         }
+        showfriendsFragment.adapter.notifyDataSetChanged();
+
+
     }
 
     /**

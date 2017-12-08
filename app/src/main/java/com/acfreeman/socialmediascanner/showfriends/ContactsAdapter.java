@@ -30,7 +30,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class ContactsAdapter extends ArrayAdapter<DataModel> implements View.OnClickListener{
 
-    private ArrayList<DataModel> dataSet;
+    public ArrayList<DataModel> dataSet;
     Context mContext;
 
     // View lookup cache
