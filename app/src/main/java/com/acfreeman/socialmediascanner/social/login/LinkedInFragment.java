@@ -53,7 +53,6 @@ public class LinkedInFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        super.onAttach(context);
         if (context instanceof ConnectionChangedListener) {
             mCallback = (ConnectionChangedListener) context;
         } else {
@@ -192,7 +191,7 @@ public class LinkedInFragment extends Fragment {
                 }
             });
         }
-        
+
         return view;
     }
 

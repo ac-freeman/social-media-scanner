@@ -4,18 +4,18 @@
          dismiss it. -->
     <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
     <!--<ListPreference-->
-        <!--android:defaultValue="180"-->
-        <!--android:entries="@array/pref_sync_frequency_titles"-->
-        <!--android:entryValues="@array/pref_sync_frequency_values"-->
-        <!--android:key="sync_frequency"-->
-        <!--android:negativeButtonText="@null"-->
-        <!--android:positiveButtonText="@null"-->
-        <!--android:title="@string/pref_title_sync_frequency" />-->
+    <!--android:defaultValue="180"-->
+    <!--android:entries="@array/pref_sync_frequency_titles"-->
+    <!--android:entryValues="@array/pref_sync_frequency_values"-->
+    <!--android:key="sync_frequency"-->
+    <!--android:negativeButtonText="@null"-->
+    <!--android:positiveButtonText="@null"-->
+    <!--android:title="@string/pref_title_sync_frequency" />-->
 
     <!-- This preference simply launches an intent when selected. Use this UI sparingly, per
          design guidelines. -->
     <!--<Preference android:title="@string/pref_title_system_sync_settings">-->
-        <!--<intent android:action="android.settings.SYNC_SETTINGS" />-->
+    <!--<intent android:action="android.settings.SYNC_SETTINGS" />-->
     <!--</Preference>-->
 
     <!-- A 'parent' preference, which enables/disables child preferences (below)
@@ -26,10 +26,19 @@
         android:title="@string/pref_title_max_brightness" />
 
     <!-- A 'parent' preference, which enables/disables child preferences (below)
-     when checked/unchecked. -->
+ when checked/unchecked. -->
     <SwitchPreference
         android:defaultValue="true"
-        android:key="show_gplus_switch"
-        android:title="@string/pref_title_google_plus" />
+        android:key="hide_disconnected_socials_switch"
+        android:title="@string/pref_title_hide_disconnected_socials"
+        android:summary="i.e., Sosha won't ask you to add a user on Facebook if you're not logged in to Facebook, etc."/>
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="toggle_all_switch"
+        android:title="@string/pref_title_toggle_all_switches"
+        android:summary="Every switch will be enabled by default when sharing your Sosha code"/>
+
+
 
 </PreferenceScreen>

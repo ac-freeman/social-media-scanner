@@ -14,12 +14,17 @@ import android.text.InputType;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -41,24 +46,12 @@ import static com.acfreeman.socialmediascanner.MainActivity.firstProfileCreation
 
 
 public class RegistrationInformation extends AppCompatActivity {
-    // private LinearLayout mLayout;
-    // private EditText mEditText;
-    // private Button  addEmailBtn;
-    //FrameLayout frameLayout = findViewById(R.id.content);
-    //mTextMessage = new TextView(this);
 
     private int width;
     private int height;
 
-    //Create view and view group objects
-
-    //initialize editText objects which are the text boxes that are displayed in the screen
-    private EditText curPhone;
-    private EditText curEmail;
-    private RelativeLayout layout;//initialize the relative layout object
-
-    public ArrayList<EditText> PhoneList = new ArrayList<EditText>();
-    public ArrayList<EditText> EmailList = new ArrayList<EditText>();
+    public ArrayList<PhoneRow> PhoneRowList = new ArrayList<>();
+    public ArrayList<EmailRow> EmailRowList = new ArrayList<>();
 
     public int plusEmailCnt;
     public int plusPhoneCnt;
@@ -79,7 +72,7 @@ public class RegistrationInformation extends AppCompatActivity {
         setContentView(R.layout.activity_registration_information);
 
         caller = getIntent().getStringExtra("caller");
-        if(caller!=null) {
+        if (caller != null) {
             try {
                 callerClass = Class.forName(caller);
             } catch (ClassNotFoundException e) {
@@ -88,10 +81,15 @@ public class RegistrationInformation extends AppCompatActivity {
         }
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-                final TableLayout table = (TableLayout) findViewById(R.id.table_main);
+
+        final TableLayout table = (TableLayout) findViewById(R.id.table_main);
 
 
-        TableRow tableRow;
+        final TableRow tableRow = (TableRow) this.getLayoutInflater().inflate(R.layout.row_item_registration_name, null,false);
+
+        final EditText nameEditText = tableRow.findViewById(R.id.edit_text);
+        nameEditText.setHint("Name");
+
         //////
         List texts = new ArrayList();
         LocalDatabase db = new LocalDatabase(getApplicationContext());
@@ -101,34 +99,29 @@ public class RegistrationInformation extends AppCompatActivity {
         display.getSize(size);
         width = size.x;
         height = size.y;
-        textWidth = (width * 3) / 4;
+        textWidth = (width * 9) / 10;
 
+//
         LocalDatabase database = new LocalDatabase(getApplicationContext());
         Owner owner = database.getOwner(0);
 
-        final EditText nameEditText = new EditText(this);
-        if(owner.getName() != null){
+        if (owner.getName() != null) {
             nameEditText.setText(owner.getName());
         }
-        nameEditText.setHint("Name");
         nameEditText.setWidth(textWidth);
-        tableRow = new TableRow(this);
-        tableRow.addView(nameEditText);
         table.addView(tableRow);
 
         ////////phone/////////
-
-
         final ArrayList<Phone> phones = database.getUserPhones(0);
         int index = 1;
         if (phones.size() > 0) {
-            for (int i = 0; i <phones.size() ; i++) {
-                addPhoneEditText(table,index,phones.get(i).getNumber());
+            for (int i = 0; i < phones.size(); i++) {
+                addPhoneEditText(table, index, phones.get(i).getNumber(), phones.get(i).getType());
                 index++;
             }
         }
 
-        addPhoneEditText(table,index, -1);
+        addPhoneEditText(table, index, -1);
         index++;
 
         plusPhoneCnt = 0;
@@ -136,26 +129,22 @@ public class RegistrationInformation extends AppCompatActivity {
 
 
         ////////email/////////
-
         final ArrayList<Email> emails = database.getUserEmails(0);
         if (emails.size() > 0) {
-            for (int i = 0; i <emails.size() ; i++) {
-                addEmailEditText(table,index,emails.get(i).getEmail());
+            for (int i = 0; i < emails.size(); i++) {
+                addEmailEditText(table, index, emails.get(i).getEmail(), emails.get(i).getType());
                 index++;
             }
         }
-
-        addEmailEditText(table,index, "");
+        addEmailEditText(table, index, "");
         index++;
 
         plusEmailCnt = 0;
-        ////////email/////////
+        //////email/////////
 
-        final Button submitButton = new Button(this);
-        submitButton.setText("Submit");
-        TableRow submitRow = new TableRow(this);
-        submitRow.addView(submitButton);
+        final TableRow submitRow = (TableRow) this.getLayoutInflater().inflate(R.layout.row_item_registration_button, null,false);
         table.addView(submitRow);
+        Button submitButton = submitRow.findViewById(R.id.submit_button);
 
 
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -191,54 +180,54 @@ public class RegistrationInformation extends AppCompatActivity {
 
                 ////
 
-                for (EditText p : PhoneList) {
+                for (PhoneRow p : PhoneRowList) {
 
-                    matcher1 = Pattern.compile(validPhone).matcher(p.getText().toString());
-                    matcher2 = Pattern.compile(validInterPhone).matcher(p.getText().toString());
+                    matcher1 = Pattern.compile(validPhone).matcher(p.getEditText().getText().toString());
+                    matcher2 = Pattern.compile(validInterPhone).matcher(p.getEditText().getText().toString());
 
-                    number = p.getText().toString();
+                    number = p.getEditText().getText().toString();
                     numFormated = number.replaceAll("[^0-9]", "");
-                     if (numFormated.length() < 7 || numFormated.length() > 7 && !matcher1.matches() && !matcher2.matches()) {
-                         if(numFormated.length() != 0) {
-                             Toast.makeText(getApplicationContext(), "Phone number is not valid!", Toast.LENGTH_SHORT).show();
+                    if (numFormated.length() < 7 || numFormated.length() > 7 && !matcher1.matches() && !matcher2.matches()) {
+                        if (numFormated.length() != 0) {
+                            Toast.makeText(getApplicationContext(), "Phone number is not valid!", Toast.LENGTH_SHORT).show();
 
-                             if (numFormated.length() > 10) {
-                                 p.setError("For International Numbers Use (+). US Country Code Not Needed.");
-                             } else {
-                                 p.setError("Enter a vaild phone number!");
-                             }
-                             error = true;
-                         } else{
-                             p.setTag("DELETE");
-                         }
+                            if (numFormated.length() > 10) {
+                                p.getEditText().setError("For International Numbers Use (+). US Country Code Not Needed.");
+                            } else {
+                                p.getEditText().setError("Enter a vaild phone number!");
+                            }
+                            error = true;
+                        } else {
+                            p.getEditText().setTag("DELETE");
+                        }
                     }
                 }
-                for (int i = 0; i < PhoneList.size(); i++) {
-                    if(PhoneList.get(i).getTag() != null) {
-                        if (PhoneList.get(i).getTag().equals("DELETE")) {
-                            PhoneList.remove(i);
+                for (int i = 0; i < PhoneRowList.size(); i++) {
+                    if (PhoneRowList.get(i).getEditText().getTag() != null) {
+                        if (PhoneRowList.get(i).getEditText().getTag().equals("DELETE")) {
+                            PhoneRowList.remove(i);
                             i--;
                         }
                     }
                 }
 
-                for (EditText e : EmailList) {
-                    matcher1 = Pattern.compile(validEmail).matcher(e.getText().toString());
-                    Log.i("Email Debug", "Email address: " + e.getText().toString());
-                    if(e.getText().length()!= 0) {
+                for (EmailRow e : EmailRowList) {
+                    matcher1 = Pattern.compile(validEmail).matcher(e.getEditText().getText().toString());
+                    Log.i("Email Debug", "Email address: " + e.getEditText().getText().toString());
+                    if (e.getEditText().getText().length() != 0) {
                         if (!matcher1.matches()) {
                             Toast.makeText(getApplicationContext(), "Email address is not valid!", Toast.LENGTH_LONG).show();
-                            e.setError("Enter valid email address!");
+                            e.getEditText().setError("Enter valid email address!");
                             error = true;
                         }
                     } else {
-                        e.setTag("DELETE");
+                        e.getEditText().setTag("DELETE");
                     }
                 }
-                for (int i = 0; i < EmailList.size(); i++) {
-                    if(EmailList.get(i).getTag() != null) {
-                        if (EmailList.get(i).getTag().equals("DELETE")) {
-                            EmailList.remove(i);
+                for (int i = 0; i < EmailRowList.size(); i++) {
+                    if (EmailRowList.get(i).getEditText().getTag() != null) {
+                        if (EmailRowList.get(i).getEditText().getTag().equals("DELETE")) {
+                            EmailRowList.remove(i);
                             i--;
                         }
                     }
@@ -258,24 +247,26 @@ public class RegistrationInformation extends AppCompatActivity {
                     }
 
                     final ArrayList<Phone> phones = database.getUserPhones(0);
-                    if(phones.size() > 0) {
+                    if (phones.size() > 0) {
                         database.deleteUserPhones(owner.getId());
                     }
 
 
-                    for (EditText p : PhoneList) {
+                    for (PhoneRow p : PhoneRowList) {
                         //matcher= Pattern.compile(validPhone).matcher(p.getText().toString());
-                        number = p.getText().toString();
+                        number = p.getEditText().getText().toString();
                         numFormated = number.replaceAll("[^0-9]", "");
-                        Phone phone = new Phone(owner.getId(), Long.parseLong(numFormated), "Cell");
-                        Log.i("PHONEDEBUG",String.valueOf(phone.getNumber()));
+                        String type = p.getSpinner().getSelectedItem().toString();
+                        Phone phone = new Phone(owner.getId(), Long.parseLong(numFormated), type);
+                        Log.i("PHONEDEBUG", String.valueOf(phone.getNumber()));
                         database.addPhone(phone);
                         Toast.makeText(getApplicationContext(), "Phone number stored as: " + numFormated, Toast.LENGTH_SHORT).show();
                     }
 
-                    for (EditText e : EmailList) {
+                    for (EmailRow e : EmailRowList) {
 
-                        Email email = new Email((long) owner.getId(), e.getText().toString(), "Work");
+                        String type = e.getSpinner().getSelectedItem().toString();
+                        Email email = new Email((long) owner.getId(), e.getEditText().getText().toString(), type);
                         database.addEmail(email);
                         Toast.makeText(getApplicationContext(), "Email stored as: " + email.getEmail(), Toast.LENGTH_SHORT).show();
                     }
@@ -296,27 +287,44 @@ public class RegistrationInformation extends AppCompatActivity {
 
             }
         });
-
-
     }
 
+
     private void addPhoneEditText(final TableLayout table, final int index, long number) {
-        final EditText phoneEditText = new EditText(this);
+        addPhoneEditText(table, index, number, "Cell");
+    }
+
+    private void addPhoneEditText(final TableLayout table, final int index, long number, String type) {
+
+        final TableRow phoneRow = (TableRow) this.getLayoutInflater().inflate(R.layout.row_item_registration, null,false);
+
+        final ImageView image = phoneRow.findViewById(R.id.image);
+        image.setImageResource(R.drawable.ic_phone_black_24dp);
+        if(PhoneRowList.size()==0){
+            image.setVisibility(View.VISIBLE);
+        }
+
+        final EditText phoneEditText = phoneRow.findViewById(R.id.edit_text);
         phoneEditText.setHint("Phone");
         phoneEditText.setInputType(InputType.TYPE_CLASS_PHONE);
-        phoneEditText.setWidth(textWidth);
+
         phoneEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
         phoneEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(16)});
 
-        final ImageButton phoneButton = new ImageButton(this);
-//        final Button plusPhone = new Button(this);
-//        plusPhone.setText("+");
+        final Spinner spinner = phoneRow.findViewById(R.id.spinner);
+        String[] spinnerList = new String[]{"Cell","Work","Home","Other"};
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerList);
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down vieww
+        spinner.setAdapter(spinnerArrayAdapter);
+        spinner.setSelection(spinnerArrayAdapter.getPosition(type));
+
+        final ImageButton phoneButton = phoneRow.findViewById(R.id.row_button);
         TypedValue typedValue = new TypedValue();
         getTheme().resolveAttribute(R.attr.selectableItemBackground, typedValue, true);
         phoneButton.setBackgroundResource(typedValue.resourceId);
 
 
-        if(number !=-1) {
+        if (number != -1) {
             phoneEditText.setText(String.valueOf(number));
             phoneButton.setImageResource(R.drawable.ic_remove_circle_red_24dp);
             phoneButton.setTag("remove");
@@ -326,13 +334,10 @@ public class RegistrationInformation extends AppCompatActivity {
             phoneButton.setTag("add");
         }
 
-
-        final TableRow phoneRow = new TableRow(this);
-        phoneRow.addView(phoneEditText);
-        phoneRow.addView(phoneButton);
         table.addView(phoneRow, index);
 
-        PhoneList.add(phoneEditText);
+        final PhoneRow row = new PhoneRow(phoneEditText,spinner, image);
+        PhoneRowList.add(row);
 
 
         phoneButton.setOnClickListener(new View.OnClickListener() {
@@ -340,39 +345,56 @@ public class RegistrationInformation extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if(phoneButton.getTag().equals("add")) {
-                    addPhoneEditText(table, table.indexOfChild(phoneRow)+1, -1);
+                if (phoneButton.getTag().equals("add")) {
+                    addPhoneEditText(table, table.indexOfChild(phoneRow) + 1, -1);
                     phoneButton.setImageResource(R.drawable.ic_remove_circle_red_24dp);/////
                     phoneButton.setTag("remove");
 
                     plusPhoneCnt++;
                 } else {
                     table.removeView(phoneRow);
-                    PhoneList.remove(phoneEditText);
+                    PhoneRowList.remove(row);
+                    PhoneRowList.get(0).getImage().setVisibility(View.VISIBLE);
                 }
-
             }
         });
 
     }
 
-    private void addEmailEditText(final TableLayout table, final int index, String text){
-        final EditText emailEditText = new EditText(this);
+    private void addEmailEditText(final TableLayout table, final int index, String text) {
+        addEmailEditText(table, index, text, "Personal");
+    }
+
+    private void addEmailEditText(final TableLayout table, final int index, String text, String type) {
+
+        final TableRow emailRow = (TableRow) this.getLayoutInflater().inflate(R.layout.row_item_registration, null,false);
+
+
+        final ImageView image = emailRow.findViewById(R.id.image);
+        image.setImageResource(R.drawable.ic_email_black_24dp);
+        if(EmailRowList.size()==0){
+            image.setVisibility(View.VISIBLE);
+        }
+        final EditText emailEditText = emailRow.findViewById(R.id.edit_text);
         emailEditText.setHint("Email");
         emailEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-      
 
-        if(!text.equals(""))
+        final Spinner spinner = emailRow.findViewById(R.id.spinner);
+        String[] spinnerList = new String[]{"Personal","Work","School","Other"};
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerList);
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down vieww
+        spinner.setAdapter(spinnerArrayAdapter);
+        spinner.setSelection(spinnerArrayAdapter.getPosition(type));
+
+        if (!text.equals(""))
             emailEditText.setText(text);
-        emailEditText.setWidth(textWidth);
-//        final Button plusEmail = new Button(this);
-//        plusEmail.setText("+");
-        final ImageButton emailButton = new ImageButton(this);
+
+        final ImageButton emailButton = emailRow.findViewById(R.id.row_button);
         TypedValue typedValue = new TypedValue();
         getTheme().resolveAttribute(R.attr.selectableItemBackground, typedValue, true);
         emailButton.setBackgroundResource(typedValue.resourceId);
 
-        if(!text.equals("")) {
+        if (!text.equals("")) {
             emailEditText.setText(text);
             emailButton.setImageResource(R.drawable.ic_remove_circle_red_24dp);
             emailButton.setTag("remove");
@@ -382,29 +404,25 @@ public class RegistrationInformation extends AppCompatActivity {
             emailButton.setTag("add");
         }
 
-
-        final TableRow emailRow = new TableRow(this);
-        emailRow.addView(emailEditText);
-        emailRow.addView(emailButton);
         table.addView(emailRow, index);
 
-        EmailList.add(emailEditText);
-
+        final EmailRow row = new EmailRow(emailEditText,spinner,image);
+        EmailRowList.add(row);
 
         emailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-
-                if(emailButton.getTag().equals("add")) {
-                    addEmailEditText(table, table.indexOfChild(emailRow)+1,"");
+                if (emailButton.getTag().equals("add")) {
+                    addEmailEditText(table, table.indexOfChild(emailRow) + 1, "");
                     emailButton.setImageResource(R.drawable.ic_remove_circle_red_24dp);/////
                     emailButton.setTag("remove");
 
                     plusEmailCnt++;
                 } else {
                     table.removeView(emailRow);
-                    EmailList.remove(emailEditText);
+                    EmailRowList.remove(row);
+                    EmailRowList.get(0).getImage().setVisibility(View.VISIBLE);
                 }
 
             }
@@ -412,4 +430,46 @@ public class RegistrationInformation extends AppCompatActivity {
 
     }
 
+    private class PhoneRow{
+
+        EditText editText;
+        Spinner spinner;
+        ImageView image;
+
+        PhoneRow(EditText editText, Spinner spinner, ImageView image){
+            this.editText = editText;
+            this.spinner = spinner;
+            this.image = image;
+        }
+
+        public EditText getEditText() {
+            return editText;
+        }
+        public Spinner getSpinner() {
+            return spinner;
+        }
+        public ImageView getImage() {return image;}
+    }
+
+    private class EmailRow{
+
+        EditText editText;
+        Spinner spinner;
+        ImageView image;
+
+        EmailRow(EditText editText, Spinner spinner, ImageView image){
+            this.editText = editText;
+            this.spinner = spinner;
+            this.image = image;
+        }
+
+        public EditText getEditText() {
+            return editText;
+        }
+        public Spinner getSpinner() {
+            return spinner;
+        }
+        public ImageView getImage() {return image;}
+    }
+//
 }

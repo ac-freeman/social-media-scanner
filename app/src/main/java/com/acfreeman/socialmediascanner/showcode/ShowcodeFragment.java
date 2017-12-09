@@ -1,10 +1,8 @@
 package com.acfreeman.socialmediascanner.showcode;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
@@ -13,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -28,7 +25,6 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.util.ArrayList;
@@ -57,23 +53,38 @@ public class ShowcodeFragment extends Fragment {
         qrContainer = view.findViewById(R.id.qr_container);
         qrImage = view.findViewById(R.id.qr_image);
         Display display = getActivity().getWindowManager().getDefaultDisplay();
-        int width = display.getWidth() * 3 / 4;
+        int width = display.getWidth() * 3 / 5;
         qrContainer.getLayoutParams().width = width;
 
         switchModels = new ArrayList<>();
         codeListView = view.findViewById(R.id.switch_list);
 
-        switchModels.add(new SwitchModel("Phone number(s)", "ph", R.drawable.ic_phone_black_24dp));
-        switchModels.add(new SwitchModel("Email address(es)", "em", R.drawable.ic_email_black_24dp));
 
-        List socials = new ArrayList();
         LocalDatabase db = new LocalDatabase(getActivity());
         List<Owner> owner = db.getAllOwner();
+
+        for (Phone p : db.getUserPhones(owner.get(0).getId())) {
+            switchModels.add(new SwitchModel(p.getType() + ": " + p.getNumber(), "ph", R.drawable.ic_phone_black_24dp, p));
+        }
+        for (Email e : db.getUserEmails(owner.get(0).getId())) {
+            switchModels.add(new SwitchModel(e.getType() + ": " + e.getEmail(), "em", R.drawable.ic_email_black_24dp, e));
+        }
+
+
+        List socials = new ArrayList();
+
         ArrayList<Social> sociallist = db.getUserSocials(owner.get(0).getId());
         for (Social s : sociallist) {
             switchModels.add(new SwitchModel(s.getType(), s.getUsername()));
         }
-        switchModels = showGPlusOption(switchModels);
+        
+        // Toggle all switches from preference
+        if(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("toggle_all_switch", true))
+        {
+            for(SwitchModel s: switchModels){
+                  s.setState(true);
+            }
+        }
 
         showcodeAdapter = new ShowcodeAdapter(switchModels, getActivity());
         codeListView.setAdapter(showcodeAdapter);
@@ -88,12 +99,11 @@ public class ShowcodeFragment extends Fragment {
                 switchModel.getSwitcher().toggle();
                 switchModel.toggleState();
                 Log.i("SWITCHDEBUG", "Switch toggled to " + switchModel.getState());
-                generateCode( switchModels);
+                generateCode(switchModels);
             }
         });
 
-        generateCode( switchModels);
-
+        generateCode(switchModels);
 
         return view;
     }
@@ -119,15 +129,10 @@ public class ShowcodeFragment extends Fragment {
                 if (sw.getState()) {
                     switch (sw.getTag()) {
                         case "ph":
-
-                            for (Phone p : ownerPhones) {
-                                builder.append("ph" + "|" + p.getNumber() + "|" + p.getType() + "|");
-                            }
+                            builder.append("ph" + "|" + sw.getPhone().getNumber() + "|" + sw.getPhone().getType() + "|");
                             break;
                         case "em":
-                            for (Email e : ownerEmails) {
-                                builder.append("em" + "|" + e.getEmail() + "|" + e.getType() + "|");
-                            }
+                            builder.append("em" + "|" + sw.getEmail().getEmail() + "|" + sw.getEmail().getType() + "|");
                             break;
                         default:
                             builder.append(sw.getTag() + "|" + sw.getUser_id() + "|");
@@ -151,31 +156,18 @@ public class ShowcodeFragment extends Fragment {
         }
     }
 
-    private ArrayList<SwitchModel> showGPlusOption(ArrayList<SwitchModel> switchModels){
-
-        if(!PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("show_gplus_switch", true)) {
-            Log.i("DISPLAYDEBUG","G+ switch disabled");
-            for (int i = 0; i < switchModels.size(); i++) {
-                if (switchModels.get(i).getTag().equals("go")) {
-                    switchModels.remove(i);
-                }
-            }
-        }
-        return switchModels;
-    }
 
     public boolean allowRefresh = false;
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         if (allowRefresh) {
             allowRefresh = false;
             getFragmentManager().beginTransaction().detach(this).attach(this).commit();
         }
 
-        if(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("max_brightness", true))
-        {
+        if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("max_brightness", true)) {
             WindowManager.LayoutParams layout = getActivity().getWindow().getAttributes();
             layout.screenBrightness = 1F;
             getActivity().getWindow().setAttributes(layout);
@@ -183,11 +175,11 @@ public class ShowcodeFragment extends Fragment {
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
-        Log.i("BRIGHTDEBUG","On pause");
+        Log.i("BRIGHTDEBUG", "On pause");
         WindowManager.LayoutParams layout = getActivity().getWindow().getAttributes();
-        layout.screenBrightness =  android.provider.Settings.System.getInt(getActivity().getContentResolver(), android.provider.Settings.System.SCREEN_BRIGHTNESS,-1);
+        layout.screenBrightness = android.provider.Settings.System.getInt(getActivity().getContentResolver(), android.provider.Settings.System.SCREEN_BRIGHTNESS, -1);
         getActivity().getWindow().setAttributes(layout);
     }
 }

@@ -9,12 +9,12 @@
 
     <header
         android:fragment="com.acfreeman.socialmediascanner.SettingsActivity$ContactsFragment"
-        android:icon="@drawable/ic_notifications_black_24dp"
+        android:icon="@drawable/ic_account_circle_black_24dp"
         android:title="@string/pref_header_contacts" />
 
     <header
         android:fragment="com.acfreeman.socialmediascanner.SettingsActivity$DisplayFragment"
-        android:icon="@drawable/ic_sync_black_24dp"
+        android:icon="@drawable/ic_phone_android_black_24dp"
         android:title="@string/pref_header_display" />
 
 </preference-headers>

@@ -30,7 +30,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class ContactsAdapter extends ArrayAdapter<DataModel> implements View.OnClickListener{
 
-    private ArrayList<DataModel> dataSet;
+    public ArrayList<DataModel> dataSet;
     Context mContext;
 
     // View lookup cache
@@ -167,7 +167,7 @@ public class ContactsAdapter extends ArrayAdapter<DataModel> implements View.OnC
                     if(result != null)
                         v.info.setImageBitmap(ShowfriendsFragment.getCircularBitmapWithWhiteBorder(result));
                     else
-                        v.info.setImageResource(R.drawable.icons8_user);
+                        v.info.setImageResource(R.drawable.ic_account_circle_black_24dp);
                 }
             }
         }.execute(viewHolder);

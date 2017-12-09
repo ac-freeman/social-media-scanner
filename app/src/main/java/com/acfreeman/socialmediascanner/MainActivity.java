@@ -18,13 +18,17 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import android.support.v7.widget.SearchView;
+
 import android.text.SpannableStringBuilder;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,13 +40,17 @@ import com.acfreeman.socialmediascanner.db.Phone;
 import com.acfreeman.socialmediascanner.db.Social;
 import com.acfreeman.socialmediascanner.scancode.ScancodeFragment;
 import com.acfreeman.socialmediascanner.showcode.ShowcodeFragment;
+import com.acfreeman.socialmediascanner.showfriends.DataModel;
 import com.acfreeman.socialmediascanner.showfriends.ShowfriendsFragment;
 import com.acfreeman.socialmediascanner.social.SocialMediaLoginActivity;
 import com.twitter.sdk.android.core.Twitter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
@@ -63,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
     Boolean firstProfileCreation;
     ShowfriendsFragment showfriendsFragment = new ShowfriendsFragment();
     ShowcodeFragment showcodeFragment = new ShowcodeFragment();
+    SearchView searchView;
 
     /**
      * Called when activity begins
@@ -85,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
     private Menu menu;
     boolean hideMenuButtons = true;
+    boolean showSearchButton = true;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -92,8 +102,19 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
         this.menu = menu;
         MenuItem deleteButton =  menu.findItem(R.id.action_delete);
         MenuItem saveContactsButton = menu.findItem(R.id.action_save_contact);
-        if(hideMenuButtons){
-            if (deleteButton != null && saveContactsButton != null) {
+        MenuItem searchButton = menu.findItem(R.id.action_search);
+        searchView = (SearchView) MenuItemCompat.getActionView(searchButton);
+        if (showSearchButton && searchButton != null) {
+            searchButton.setVisible(true);
+        } else if (searchButton != null) {
+            searchButton.collapseActionView();
+            searchButton.setVisible(false);
+            searchView.setIconified(true);
+            searchView.setVisibility(View.GONE);
+            searchView.clearFocus();
+        }
+        if (hideMenuButtons){
+            if (deleteButton != null && saveContactsButton != null ) {
                 deleteButton.setVisible(false);
                 saveContactsButton.setVisible(false);
             }
@@ -101,13 +122,20 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
             if (deleteButton != null && saveContactsButton != null) {
                 deleteButton.setVisible(true);
                 saveContactsButton.setVisible(true);
+
             }
         }
+
         return true;
     }
 
     public void hideAppbarButtons() {
         hideMenuButtons = true;
+        showSearchButton = false;
+        invalidateOptionsMenu();
+    }
+    public void showSearchButton() {
+        showSearchButton = true;
         invalidateOptionsMenu();
     }
 
@@ -118,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
 
     public void toggleAppbarButtons() {
         hideMenuButtons = !hideMenuButtons;
+        showSearchButton = !showSearchButton;
         invalidateOptionsMenu();
     }
 
@@ -149,9 +178,79 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                 Intent startIntent = new Intent(getApplicationContext(), SettingsActivity.class);
                 startActivity(startIntent);
                 return true;
+
+            case R.id.action_search:
+                return searchForQuery();
             default:
                 return super.onOptionsItemSelected(item);
         }
+
+    }
+
+    private boolean searchForQuery() {
+        dataModelCopy.clear();
+        for(DataModel d : showfriendsFragment.adapter.dataSet) {
+            dataModelCopy.add(d);
+        }
+        searchView.setQueryHint("Search Contacts...");
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                querySearch();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                querySearch();
+                return true;
+            }
+        });
+
+        return true;
+    }
+
+    ArrayList<DataModel> dataModelRemoved = new ArrayList<DataModel>();
+    ArrayList<DataModel> dataModelCopy = new ArrayList<DataModel>();
+
+    public void querySearch() {
+        LocalDatabase db = new LocalDatabase(getApplicationContext());
+        String query = searchView.getQuery().toString().toLowerCase();
+
+        if (query.length() > 0) {
+            showfriendsFragment.adapter.dataSet.clear();
+
+            ArrayList<Contact> contacts = new ArrayList<>(db.getAllContacts());
+
+            for (int i = 0; i < dataModelCopy.size(); i++) {
+
+                boolean match = false;
+                String name = dataModelCopy.get(i).getName().toLowerCase();
+                String[] nameWords = name.split(" ");
+                for (String word : nameWords) {
+                    if (word.startsWith(query)) {
+                        match = true;
+                    }
+                }
+                if (name.startsWith(query)) {
+                    match = true;
+                }
+
+                // If our query matches this user
+                if (match) {
+                    showfriendsFragment.adapter.dataSet.add(dataModelCopy.get(i));
+                    Log.i("EEEEEEEEEEEEEEE", contacts.get(i).getName());
+                }
+            }
+
+        } else {
+            showfriendsFragment.adapter.dataSet.clear();
+            for(DataModel d : dataModelCopy) {
+                showfriendsFragment.adapter.dataSet.add(d);
+            }
+        }
+        showfriendsFragment.adapter.notifyDataSetChanged();
+
 
     }
 
@@ -183,6 +282,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
                     showCode = false;
                     showFriends();
                     hideAppbarButtons();
+                    showSearchButton();
 
                     return true;
 
@@ -590,6 +690,7 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
             }
             showfriendsFragment.adapter.notifyDataSetChanged();
             hideAppbarButtons();
+            showSearchButton();
         } else {
             Log.i("BACKBUTTON", "null");
             this.doubleBackToExitPressedOnce = true;

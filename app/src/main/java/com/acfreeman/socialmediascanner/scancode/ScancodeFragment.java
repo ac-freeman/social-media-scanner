@@ -16,6 +16,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.util.AttributeSet;
@@ -27,12 +28,14 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.CustomDialogFragment;
 import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.db.Contact;
 import com.acfreeman.socialmediascanner.db.Email;
 import com.acfreeman.socialmediascanner.db.LocalDatabase;
+import com.acfreeman.socialmediascanner.db.Owner;
 import com.acfreeman.socialmediascanner.db.Phone;
 import com.acfreeman.socialmediascanner.db.Social;
 import com.acfreeman.socialmediascanner.social.SocialAdder;
@@ -42,6 +45,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import me.dm7.barcodescanner.core.IViewFinder;
@@ -91,7 +95,7 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
 
         ConnectivityReceiver cr = new ConnectivityReceiver();
         cr.onReceive(getApplicationContext(), new Intent());
-        if(!connectedInternet) {
+        if (!connectedInternet) {
             Log.e("FFFFFFFFFFFFFF", "Internet not connected");
             //Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
             internetWarning = new CustomDialogFragment();
@@ -135,107 +139,120 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
             String raw = rawResult.getText();
             String[] rawArray = raw.split("\\|");   //pipe character must be escaped in regex
 
-            LocalDatabase database = new LocalDatabase(getActivity());
-            List<Contact> allContacts = database.getAllContacts();
+            if(rawArray.length > 1) {
 
-            String t = rawArray[1];
-            String userName = t;
+                LocalDatabase database = new LocalDatabase(getActivity());
+                List<Contact> allContacts = database.getAllContacts();
+
+                String t = rawArray[1];
+                String userName = t;
 //            Toast.makeText(this, "Name: " + userName, Toast.LENGTH_SHORT).show();
-            Contact contact = new Contact(userName);
-            database.addContact(contact);
+                Contact contact = new Contact(userName);
+                database.addContact(contact);
 
-            for (int i = 2; i < rawArray.length; i++) {
-
-                t = rawArray[i];
-                String uri;
-
-
-                switch (t) {
-
-                    case "ph":
-                        String phoneNumber = rawArray[i + 1];
-//                        Toast.makeText(this, "Phone: " + phoneNumber, Toast.LENGTH_SHORT).show();
-                        String typePhone = rawArray[i + 2];
-                        Log.i("PHONEDEBUG", "Contact id: " + contact.getId());
-                        Phone phone = new Phone(contact.getId(), Integer.parseInt(phoneNumber), typePhone);
-                        database.addPhone(phone);
-                        break;
-
-                    case "em":
-                        String emailStr = rawArray[i + 1];
-//                        Toast.makeText(this, "Email: " + emailStr, Toast.LENGTH_SHORT).show();
-                        String typeEmail = rawArray[i + 2];
-                        Email email = new Email(contact.getId(), emailStr, typeEmail);
-                        database.addEmail(email);
-                        break;
+                Owner owner = database.getOwner(0);
+                ArrayList<Social> socials = database.getUserSocials(owner.getId());
+                String[] socialNameArray = new String[socials.size()];
+                for (int i = 0; i < socials.size(); i++) {
+                    socialNameArray[i] = socials.get(i).getType();
+                }
+                List socialNameList = Arrays.asList(socialNameArray);
 
 
-                    //when adding a new social media platform, simply copy this format
-                    case "tw":
-                        String twitter_id = rawArray[i + 1];
-                        uri = "https://twitter.com/intent/follow?user_id=" + (twitter_id);
-                        socialAdderArrayList.add(new SocialAdder(uri, "Twitter"));
-                        Social twitterSocial = new Social(contact.getId(), "Twitter", twitter_id);
-                        database.addSocial(twitterSocial);
-                        break;
-                    case "li":
+                Boolean hideUnconnected = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("hide_disconnected_socials_switch", true);
 
-                        String linkedin_id = rawArray[i + 1];
-                        uri = "https://www.linkedin.com/profile/view?id=" + (linkedin_id);
-                        socialAdderArrayList.add(new SocialAdder(uri, "LinkedIn"));
-                        Social linkedinSocial = new Social(contact.getId(), "LinkedIn", linkedin_id);
-                        database.addSocial(linkedinSocial);
-                        break;
+                for (int i = 2; i < rawArray.length; i++) {
 
-                    case "sp":
-                        String spotify_id = rawArray[i + 1];
-                        uri = "spotify:user:" + spotify_id;
-                        socialAdderArrayList.add(new SocialAdder(uri, "Spotify"));
-                        Social spotifySocial = new Social(contact.getId(), "Spotify", spotify_id);
-                        database.addSocial(spotifySocial);
-                        break;
+                    t = rawArray[i];
+                    String uri;
 
-                    case "fb":
-                        String facebook_id = rawArray[i + 1];
 
-                        try {
-                            getActivity().getPackageManager().getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
-                            uri = "fb://facewebmodal/f?href=" + "https://www.facebook.com/" + facebook_id; //Tries with FB's URI
-                        } catch (Exception e) {
-                            uri = "https://www.facebook.com/" + (facebook_id); //catches a url to the desired page
-                        }
+                    switch (t) {
 
-                        socialAdderArrayList.add(new SocialAdder(uri, "Facebook"));
-                        Social facebookSocial = new Social(contact.getId(), "Facebook", facebook_id);
-                        database.addSocial(facebookSocial);
-                        break;
+                        case "ph":
+                            String phoneNumber = rawArray[i + 1];
+                            String typePhone = rawArray[i + 2];
+                            Log.i("PHONEDEBUG", "Contact id: " + contact.getId());
+                            Phone phone = new Phone(contact.getId(), Long.parseLong(phoneNumber), typePhone);
+                            database.addPhone(phone);
+                            break;
 
-                    case "go":
-                        String google_id = rawArray[i + 1];
-                        uri = "https://plus.google.com/" + google_id;
-                        socialAdderArrayList.add(new SocialAdder(uri, "Google+"));
-                        Social googlePlusSocial = new Social(contact.getId(), "Google+", google_id);
-                        database.addSocial(googlePlusSocial);
-                        break;
+                        case "em":
+                            String emailStr = rawArray[i + 1];
+                            String typeEmail = rawArray[i + 2];
+                            Email email = new Email(contact.getId(), emailStr, typeEmail);
+                            database.addEmail(email);
+                            break;
+
+
+                        //when adding a new social media platform, simply copy this format
+                        case "tw":
+                            String twitter_id = rawArray[i + 1];
+                            uri = "https://twitter.com/intent/follow?user_id=" + (twitter_id);
+                            if (!hideUnconnected || socialNameList.contains("tw"))
+                                socialAdderArrayList.add(new SocialAdder(uri, "Twitter"));
+                            Social twitterSocial = new Social(contact.getId(), "Twitter", twitter_id);
+                            database.addSocial(twitterSocial);
+                            break;
+                        case "li":
+
+                            String linkedin_id = rawArray[i + 1];
+                            uri = "https://www.linkedin.com/profile/view?id=" + (linkedin_id);
+                            if (!hideUnconnected || socialNameList.contains("li"))
+                                socialAdderArrayList.add(new SocialAdder(uri, "LinkedIn"));
+                            Social linkedinSocial = new Social(contact.getId(), "LinkedIn", linkedin_id);
+                            database.addSocial(linkedinSocial);
+                            break;
+
+                        case "sp":
+                            String spotify_id = rawArray[i + 1];
+                            uri = "spotify:user:" + spotify_id;
+                            if (!hideUnconnected || socialNameList.contains("sp"))
+                                socialAdderArrayList.add(new SocialAdder(uri, "Spotify"));
+                            Social spotifySocial = new Social(contact.getId(), "Spotify", spotify_id);
+                            database.addSocial(spotifySocial);
+                            break;
+
+                        case "fb":
+                            String facebook_id = rawArray[i + 1];
+
+                            try {
+                                getActivity().getPackageManager().getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
+                                uri = "fb://facewebmodal/f?href=" + "https://www.facebook.com/" + facebook_id; //Tries with FB's URI
+                            } catch (Exception e) {
+                                uri = "https://www.facebook.com/" + (facebook_id); //catches a url to the desired page
+                            }
+
+                            if (!hideUnconnected || socialNameList.contains("fb"))
+                                socialAdderArrayList.add(new SocialAdder(uri, "Facebook"));
+                            Social facebookSocial = new Social(contact.getId(), "Facebook", facebook_id);
+                            database.addSocial(facebookSocial);
+                            break;
+
+                        case "go":
+                            String google_id = rawArray[i + 1];
+                            uri = "https://plus.google.com/" + google_id;
+                            if (!hideUnconnected || socialNameList.contains("go"))
+                                socialAdderArrayList.add(new SocialAdder(uri, "Google+"));
+                            Social googlePlusSocial = new Social(contact.getId(), "Google+", google_id);
+                            database.addSocial(googlePlusSocial);
+                            break;
+                    }
+
                 }
 
+                showCameraRequestDialog(contact);
+            } else {
+                Toast.makeText(getActivity(), "Not a valid Sosha code", Toast.LENGTH_SHORT).show();
+                scannerView.setResultHandler(this);
+                scannerView.startCamera();
             }
 
-            showCameraRequestDialog(contact);
-//            showCameraPreview(contact);
-
-            //////////////////////////////
-//            BottomNavigationView bottomNavigationView;
-//            bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
-//            bottomNavigationView.setSelectedItemId(R.id.navigation_friends);
-
-//            showNoticeDialog(userName);
-/////////////////////////////////////////
         } else {
 
             scannerView.setResultHandler(this);
             scannerView.startCamera();
-            //TODO: Doesn't work
+
         }
     }
 
@@ -261,39 +278,20 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
             // Continue only if the File was successfully created
             if (photoFile != null) {
 
-
                 Uri photoURI = FileProvider.getUriForFile(getActivity(),
                         "com.acfreeman.socialmediascanner.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
                 List res = new ArrayList();
-//                LocalDatabase db = new LocalDatabase(getApplicationContext());
-//
-//                Bitmap image = BitmapFactory.decodeFile(mCurrentPhotoPath);
-//
-//// convert bitmap to byte
-//
-//                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//
-//                image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-//
-//                byte imageInByte[] = stream.toByteArray();
-//                contact.setImage(imageInByte);
-//                db.updateImage(contact);
             }
         }
-//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-//            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-//        }
     }
 
     String mCurrentPhotoPath;
 
     private File createImageFile() throws IOException {
         // Create an image file name
-//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + "lastcontactscan";
         File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
@@ -392,9 +390,6 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-//            Bundle extras = data.getExtras();
-//            Bitmap imageBitmap = (Bitmap) extras.get("data");
-
             LocalDatabase db = new LocalDatabase(getActivity());
 
             Bitmap image = BitmapFactory.decodeFile(mCurrentPhotoPath);
@@ -433,13 +428,8 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
                 }
             }
 
-//            BottomNavigationView bottomNavigationView;
-//            bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
-//            bottomNavigationView.setSelectedItemId(R.id.navigation_friends);
-
             showSocialAddDialog(currentContact.getName());
 
-//            mImageView.setImageBitmap(imageBitmap);
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             LocalDatabase db = new LocalDatabase(getActivity());
@@ -461,34 +451,27 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
             currentContact.setBitmap(resizedBitmap2);
             db.updateImage(currentContact);
 
-//            BottomNavigationView bottomNavigationView;
-//            bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
-//            bottomNavigationView.setSelectedItemId(R.id.navigation_friends);
-
             showSocialAddDialog(currentContact.getName());
-
-//            mImageView.setImageBitmap(imageBitmap);
         }
     }
 
     ArrayList<DialogFragment> dialogsList = new ArrayList<>();
 
     public void showCameraRequestDialog(Contact contact) {
-            handleScan = false;
-            // Create an instance of the dialog fragment and show it
-            DialogFragment dialog = new CustomDialogFragment();
-            dialogsList.add(dialog);
+        handleScan = false;
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new CustomDialogFragment();
+        dialogsList.add(dialog);
 
-            Bundle args = new Bundle();
-            args.putString("dialog_title", "Would you like to take a photo of " + contact.getName() + "?");
-            args.putString("name", contact.getName());
-            args.putString("action", "photoCapture");
-            currentContact = contact;
+        Bundle args = new Bundle();
+        args.putString("dialog_title", "Would you like to take a photo of " + contact.getName() + "?");
+        args.putString("name", contact.getName());
+        args.putString("action", "photoCapture");
+        currentContact = contact;
 
 
-
-            dialog.setArguments(args);
-            dialog.show(getFragmentManager(), "CustomDialogFragment");
+        dialog.setArguments(args);
+        dialog.show(getFragmentManager(), "CustomDialogFragment");
     }
 
 
@@ -529,13 +512,13 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
         @Override
         public void onReceive(Context context, Intent intent) {
             ConnectivityManager cm =
-                    (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                    (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
             boolean isConnected = activeNetwork != null &&
                     activeNetwork.isConnectedOrConnecting();
 
-            if(isConnected) {
+            if (isConnected) {
                 connectedInternet = true;
             } else {
                 connectedInternet = false;

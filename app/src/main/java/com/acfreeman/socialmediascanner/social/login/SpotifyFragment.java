@@ -50,7 +50,6 @@ public class SpotifyFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        super.onAttach(context);
         if (context instanceof LinkedInFragment.ConnectionChangedListener) {
             mCallback = (LinkedInFragment.ConnectionChangedListener) context;
         } else {
