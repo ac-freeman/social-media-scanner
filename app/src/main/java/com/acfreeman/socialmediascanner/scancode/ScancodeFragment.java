@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.acfreeman.socialmediascanner.CustomDialogFragment;
 import com.acfreeman.socialmediascanner.R;
@@ -138,113 +139,120 @@ public class ScancodeFragment extends Fragment implements ZXingScannerView.Resul
             String raw = rawResult.getText();
             String[] rawArray = raw.split("\\|");   //pipe character must be escaped in regex
 
-            LocalDatabase database = new LocalDatabase(getActivity());
-            List<Contact> allContacts = database.getAllContacts();
+            if(rawArray.length > 1) {
 
-            String t = rawArray[1];
-            String userName = t;
+                LocalDatabase database = new LocalDatabase(getActivity());
+                List<Contact> allContacts = database.getAllContacts();
+
+                String t = rawArray[1];
+                String userName = t;
 //            Toast.makeText(this, "Name: " + userName, Toast.LENGTH_SHORT).show();
-            Contact contact = new Contact(userName);
-            database.addContact(contact);
+                Contact contact = new Contact(userName);
+                database.addContact(contact);
 
-            Owner owner = database.getOwner(0);
-            ArrayList<Social> socials = database.getUserSocials(owner.getId());
-            String[] socialNameArray = new String[socials.size()];
-            for (int i = 0; i < socials.size(); i++) {
-                socialNameArray[i] = socials.get(i).getType();
-            }
-            List socialNameList = Arrays.asList(socialNameArray);
-
-
-            Boolean hideUnconnected = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("hide_disconnected_socials_switch", true);
-
-            for (int i = 2; i < rawArray.length; i++) {
-
-                t = rawArray[i];
-                String uri;
+                Owner owner = database.getOwner(0);
+                ArrayList<Social> socials = database.getUserSocials(owner.getId());
+                String[] socialNameArray = new String[socials.size()];
+                for (int i = 0; i < socials.size(); i++) {
+                    socialNameArray[i] = socials.get(i).getType();
+                }
+                List socialNameList = Arrays.asList(socialNameArray);
 
 
-                switch (t) {
+                Boolean hideUnconnected = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("hide_disconnected_socials_switch", true);
 
-                    case "ph":
-                        String phoneNumber = rawArray[i + 1];
-                        String typePhone = rawArray[i + 2];
-                        Log.i("PHONEDEBUG", "Contact id: " + contact.getId());
-                        Phone phone = new Phone(contact.getId(), Long.parseLong(phoneNumber), typePhone);
-                        database.addPhone(phone);
-                        break;
+                for (int i = 2; i < rawArray.length; i++) {
 
-                    case "em":
-                        String emailStr = rawArray[i + 1];
-                        String typeEmail = rawArray[i + 2];
-                        Email email = new Email(contact.getId(), emailStr, typeEmail);
-                        database.addEmail(email);
-                        break;
+                    t = rawArray[i];
+                    String uri;
 
 
-                    //when adding a new social media platform, simply copy this format
-                    case "tw":
-                        String twitter_id = rawArray[i + 1];
-                        uri = "https://twitter.com/intent/follow?user_id=" + (twitter_id);
-                        if (!hideUnconnected || socialNameList.contains("tw"))
-                            socialAdderArrayList.add(new SocialAdder(uri, "Twitter"));
-                        Social twitterSocial = new Social(contact.getId(), "Twitter", twitter_id);
-                        database.addSocial(twitterSocial);
-                        break;
-                    case "li":
+                    switch (t) {
 
-                        String linkedin_id = rawArray[i + 1];
-                        uri = "https://www.linkedin.com/profile/view?id=" + (linkedin_id);
-                        if (!hideUnconnected || socialNameList.contains("li"))
-                            socialAdderArrayList.add(new SocialAdder(uri, "LinkedIn"));
-                        Social linkedinSocial = new Social(contact.getId(), "LinkedIn", linkedin_id);
-                        database.addSocial(linkedinSocial);
-                        break;
+                        case "ph":
+                            String phoneNumber = rawArray[i + 1];
+                            String typePhone = rawArray[i + 2];
+                            Log.i("PHONEDEBUG", "Contact id: " + contact.getId());
+                            Phone phone = new Phone(contact.getId(), Long.parseLong(phoneNumber), typePhone);
+                            database.addPhone(phone);
+                            break;
 
-                    case "sp":
-                        String spotify_id = rawArray[i + 1];
-                        uri = "spotify:user:" + spotify_id;
-                        if (!hideUnconnected || socialNameList.contains("sp"))
-                            socialAdderArrayList.add(new SocialAdder(uri, "Spotify"));
-                        Social spotifySocial = new Social(contact.getId(), "Spotify", spotify_id);
-                        database.addSocial(spotifySocial);
-                        break;
+                        case "em":
+                            String emailStr = rawArray[i + 1];
+                            String typeEmail = rawArray[i + 2];
+                            Email email = new Email(contact.getId(), emailStr, typeEmail);
+                            database.addEmail(email);
+                            break;
 
-                    case "fb":
-                        String facebook_id = rawArray[i + 1];
 
-                        try {
-                            getActivity().getPackageManager().getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
-                            uri = "fb://facewebmodal/f?href=" + "https://www.facebook.com/" + facebook_id; //Tries with FB's URI
-                        } catch (Exception e) {
-                            uri = "https://www.facebook.com/" + (facebook_id); //catches a url to the desired page
-                        }
+                        //when adding a new social media platform, simply copy this format
+                        case "tw":
+                            String twitter_id = rawArray[i + 1];
+                            uri = "https://twitter.com/intent/follow?user_id=" + (twitter_id);
+                            if (!hideUnconnected || socialNameList.contains("tw"))
+                                socialAdderArrayList.add(new SocialAdder(uri, "Twitter"));
+                            Social twitterSocial = new Social(contact.getId(), "Twitter", twitter_id);
+                            database.addSocial(twitterSocial);
+                            break;
+                        case "li":
 
-                        if (!hideUnconnected || socialNameList.contains("fb"))
-                            socialAdderArrayList.add(new SocialAdder(uri, "Facebook"));
-                        Social facebookSocial = new Social(contact.getId(), "Facebook", facebook_id);
-                        database.addSocial(facebookSocial);
-                        break;
+                            String linkedin_id = rawArray[i + 1];
+                            uri = "https://www.linkedin.com/profile/view?id=" + (linkedin_id);
+                            if (!hideUnconnected || socialNameList.contains("li"))
+                                socialAdderArrayList.add(new SocialAdder(uri, "LinkedIn"));
+                            Social linkedinSocial = new Social(contact.getId(), "LinkedIn", linkedin_id);
+                            database.addSocial(linkedinSocial);
+                            break;
 
-                    case "go":
-                        String google_id = rawArray[i + 1];
-                        uri = "https://plus.google.com/" + google_id;
-                        if (!hideUnconnected || socialNameList.contains("go"))
-                            socialAdderArrayList.add(new SocialAdder(uri, "Google+"));
-                        Social googlePlusSocial = new Social(contact.getId(), "Google+", google_id);
-                        database.addSocial(googlePlusSocial);
-                        break;
+                        case "sp":
+                            String spotify_id = rawArray[i + 1];
+                            uri = "spotify:user:" + spotify_id;
+                            if (!hideUnconnected || socialNameList.contains("sp"))
+                                socialAdderArrayList.add(new SocialAdder(uri, "Spotify"));
+                            Social spotifySocial = new Social(contact.getId(), "Spotify", spotify_id);
+                            database.addSocial(spotifySocial);
+                            break;
+
+                        case "fb":
+                            String facebook_id = rawArray[i + 1];
+
+                            try {
+                                getActivity().getPackageManager().getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
+                                uri = "fb://facewebmodal/f?href=" + "https://www.facebook.com/" + facebook_id; //Tries with FB's URI
+                            } catch (Exception e) {
+                                uri = "https://www.facebook.com/" + (facebook_id); //catches a url to the desired page
+                            }
+
+                            if (!hideUnconnected || socialNameList.contains("fb"))
+                                socialAdderArrayList.add(new SocialAdder(uri, "Facebook"));
+                            Social facebookSocial = new Social(contact.getId(), "Facebook", facebook_id);
+                            database.addSocial(facebookSocial);
+                            break;
+
+                        case "go":
+                            String google_id = rawArray[i + 1];
+                            uri = "https://plus.google.com/" + google_id;
+                            if (!hideUnconnected || socialNameList.contains("go"))
+                                socialAdderArrayList.add(new SocialAdder(uri, "Google+"));
+                            Social googlePlusSocial = new Social(contact.getId(), "Google+", google_id);
+                            database.addSocial(googlePlusSocial);
+                            break;
+                    }
+
                 }
 
+                showCameraRequestDialog(contact);
+            } else {
+                Toast.makeText(getActivity(), "Not a valid Sosha code", Toast.LENGTH_SHORT).show();
+                scannerView.setResultHandler(this);
+                scannerView.startCamera();
             }
-
-            showCameraRequestDialog(contact);
 
         } else {
 
             scannerView.setResultHandler(this);
             scannerView.startCamera();
-            //TODO: Doesn't work
+
         }
     }
 
