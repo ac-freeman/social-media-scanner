@@ -16,7 +16,6 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:layout_marginVertical="@dimen/activity_vertical_margin"
             android:text="Submit"
             android:background="@color/primary"
             android:textColor="@color/white"/>
