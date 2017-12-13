@@ -68,7 +68,7 @@
     <string name="pref_title_max_brightness">Max brightness on code display</string>
     <string name="pref_title_google_plus">Show Google+ toggle</string>
     <string name="pref_title_hide_disconnected_socials">Hide requests for unconnected social media </string>
-    <string name="pref_title_business_social_media">Business social information</string>
+    <string name="pref_title_business_social_media">Share only Business social information</string>
     <string name="pref_title_toggle_all_switches">Share everything by default</string>
 
     <!--<string name="pref_title_sync_frequency">Sync frequency</string>-->
