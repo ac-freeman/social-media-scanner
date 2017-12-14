@@ -260,7 +260,7 @@ public class RegistrationInformation extends AppCompatActivity {
                         Phone phone = new Phone(owner.getId(), Long.parseLong(numFormated), type);
                         Log.i("PHONEDEBUG", String.valueOf(phone.getNumber()));
                         database.addPhone(phone);
-                        Toast.makeText(getApplicationContext(), "Phone number stored as: " + numFormated, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), "Phone number stored as: " + numFormated, Toast.LENGTH_SHORT).show();
                     }
 
                     for (EmailRow e : EmailRowList) {
@@ -268,7 +268,7 @@ public class RegistrationInformation extends AppCompatActivity {
                         String type = e.getSpinner().getSelectedItem().toString();
                         Email email = new Email((long) owner.getId(), e.getEditText().getText().toString(), type);
                         database.addEmail(email);
-                        Toast.makeText(getApplicationContext(), "Email stored as: " + email.getEmail(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), "Email stored as: " + email.getEmail(), Toast.LENGTH_SHORT).show();
                     }
 
 
