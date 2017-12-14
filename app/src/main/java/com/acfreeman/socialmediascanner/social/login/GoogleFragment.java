@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.acfreeman.socialmediascanner.R;
 import com.acfreeman.socialmediascanner.db.Email;
@@ -112,6 +113,7 @@ public class GoogleFragment extends Fragment {
         layoutParams.height = SocialMediaLoginActivity.convertDpToPixel(68, getContext());
         imageView.setLayoutParams(layoutParams);
 
+        Button visibleButton = view.findViewById(R.id.login_button);
         if (!connected) {
 
 
@@ -131,7 +133,7 @@ public class GoogleFragment extends Fragment {
                     .build();
 
 
-            Button visibleButton = view.findViewById(R.id.login_button);
+
             visibleButton.setText("Sign in with Google");
             visibleButton.setTextColor(ContextCompat.getColor(getContext(), R.color.google_blue));
             visibleButton.setOnClickListener(new View.OnClickListener() {
@@ -145,8 +147,6 @@ public class GoogleFragment extends Fragment {
 
         } else {
 
-
-            Button visibleButton = view.findViewById(R.id.login_button);
             visibleButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
