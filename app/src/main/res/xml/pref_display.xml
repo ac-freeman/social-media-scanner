@@ -39,6 +39,12 @@
         android:title="@string/pref_title_toggle_all_switches"
         android:summary="Every switch will be enabled by default when sharing your Sosha code"/>
 
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="toggle_buisness_switch"
+        android:title="@string/pref_title_business_social_media"
+        android:summary="Only business switches will be enabled">
+    </SwitchPreference>
 
 
 </PreferenceScreen>
