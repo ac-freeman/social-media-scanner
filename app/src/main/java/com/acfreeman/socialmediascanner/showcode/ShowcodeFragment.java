@@ -80,15 +80,32 @@ public class ShowcodeFragment extends Fragment {
         
         // Toggle all switches from preference
         if(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("toggle_all_switch", true))
+        { Log.i("SWITCHERBUG", "Toggle all");
+            for(SwitchModel s: switchModels){
+                String name = s.getSwitchName();
+                Log.i("SWITCHERBUG", "name = " + name);
+                  s.setState(true);
+            }
+        }
+
+        // Toggle business switches from preference
+        if(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("toggle_buisness_switch", true))
         {
             for(SwitchModel s: switchModels){
-                  s.setState(true);
+                if (s.getTag().equals("li")){
+                    s.setState(true);
+                }
+                if (s.getTag().equals("ph") && s.getPhone().getType().equals("Work")){
+                    s.setState(true);
+                }
+                if (s.getTag().equals("em")&& s.getEmail().getType().equals("Work")|| s.getTag().equals("em")&& s.getEmail().getType().equals("School")){
+                    s.setState(true);
+                }
             }
         }
 
         showcodeAdapter = new ShowcodeAdapter(switchModels, getActivity());
         codeListView.setAdapter(showcodeAdapter);
-
 
         codeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
